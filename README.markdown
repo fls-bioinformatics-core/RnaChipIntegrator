@@ -80,6 +80,13 @@ The following analysis methods are available:
     (See the section below on _Input Files_ for an explanation of the
     significance flag for input gene/transcript data.)
 
+Set up and prerequisites
+------------------------
+
+The program depends on the `Spreadsheet` module from the FLS Bioinformatics
+Core `genomics` repository, which in turn also needs the `xlwt`, `xlrd` and
+`xlutils` 3rd party Python modules.
+
 Program usage
 -------------
 
@@ -323,7 +330,17 @@ order that columns from the `<input_file>` must be written in, e.g.
 The output is directed to stdout; redirect to a file name to create a
 new file.
 
-Appendix B: using the Python classes and functions interactively
+
+Appendix B: running tests
+-------------------------
+
+A set of unit tests are provided in the `test_RnaChipIntegrator.py`
+module. To run them:
+
+    python test_RnaChipIntegrator.py
+
+
+Appendix C: using the Python classes and functions interactively
 ----------------------------------------------------------------
 
 The analyses are built around a set of Python classes and functions can be
