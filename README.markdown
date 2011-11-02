@@ -121,6 +121,13 @@ _Options for NearestPeaksToTranscripts_
 
 _General options_
 
+*   `--chip`: do ChIP-seq-centric analyses
+*   `--rna`:  do RNA-seq-centric analyses
+
+(If neither or both `--chip`/`--rna` are specified then all analyses are
+performed.)
+
+*   `--xls`: output an XLS spreadsheet in addition to other files
 *   `--project=<name>`: set a basename to be used for output files from the
     analyses; see the section on _Output files_ below.
 *   `--debug`: produce screen output for each analysis.
@@ -308,10 +315,6 @@ Issues
 
 4.   (Internal) The outputs could be separated from the analyses.
 
-5.   There is not currently an option for writing analyses to XLS spreadsheets.
-
-6.   There is not currently an option to select a subset of analyses (i.e.
-     all analyses always run).
 
 Appendix A: `rearrange_columns.py`: manipulating tab-delimited data files
 -------------------------------------------------------------------------
