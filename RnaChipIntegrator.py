@@ -31,13 +31,22 @@ ChIP-seq data has 3 columns of data:
 #######################################################################
 
 import sys
-import logging
 import os
-import Spreadsheet
 
 # Set default logging level and output
+import logging
 logging.getLogger().setLevel(logging.ERROR)
 logging.basicConfig(format='%(levelname)s: %(message)s')
+
+# Get the Spreadsheet module
+try:
+    import Spreadsheet
+except ImportError:
+    logging.error("Failed to import the Spreadsheet module")
+    logging.error("Set your PYTHONPATH to include the directory with this module, or get the")
+    logging.error("latest version from github via:")
+    logging.error("https://github.com/fls-bioinformatics-core/genomics/blob/master/share/Spreadsheet.py")
+    sys.exit(1)
 
 #######################################################################
 # Class definitions
