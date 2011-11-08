@@ -1412,19 +1412,19 @@ if __name__ == "__main__":
         print "Implements various methods for reporting 'nearest' ChIP peaks to"
         print "genes/gene transcripts."
         print ""
-        print "Options:"
+        print "Options for individual analyses:"
         print ""
-        print "NearestTSSToSummits:"
+        print "NearestTSSToSummits (ChIP-seq):"
         print "  --cutoff=<max_distance> (default %d bp)" % max_distance
         print "           Maximum distance transcript TSS can be from peak"
         print "           before being omitted from analysis"
         print ""
-        print "NearestPeaksToTranscripts:"
+        print "NearestPeaksToTranscripts (RNA-seq):"
         print "  --window=<window_width> (default %d bp)" % window_width
         print "           Maximum distance peaks can be from transcript TSS"
         print "           before being omitted from analysis"
         print ""
-        print "NearestTranscriptsToPeakEdge/NearestTSSToPeakEdge:"
+        print "NearestTranscriptsToPeakEdge/NearestTSSToPeakEdge (ChIP-seq):"
         print "  --edge-cutoff=<max_distance> (default %d)" % max_edge_distance
         print "           Maximum distance transcript TSS can be from peak"
         print "           edge before being omitted from analysis (set to"
@@ -1436,6 +1436,9 @@ if __name__ == "__main__":
         print "                           (default -%d to %d bp of TSS)" % \
             promoter_region
         print "           Define promoter region with respect to gene TSS"
+        print ""
+        print "NB each of the options above only apply to the analysis that they're"
+        print "listed under."
         print ""
         print "General options:"
         print "  --chip   Do ChIP-seq-centric analyses"
