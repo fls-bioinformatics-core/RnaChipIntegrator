@@ -46,6 +46,7 @@ except ImportError:
     logging.error("Set your PYTHONPATH to include the directory with this module, or get the")
     logging.error("latest version from github via:")
     logging.error("https://github.com/fls-bioinformatics-core/genomics/blob/master/share/Spreadsheet.py")
+    logging.error("and ensure that the underlying xlwt, xlrd and xlutils libraries are installed")
     sys.exit(1)
 
 #######################################################################
