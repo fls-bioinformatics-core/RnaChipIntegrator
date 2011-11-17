@@ -127,7 +127,6 @@ _General options_
 (If neither or both `--chip`/`--rna` are specified then all analyses are
 performed.)
 
-*   `--xls`: output an XLS spreadsheet in addition to other files
 *   `--project=<name>`: set a basename to be used for output files from the
     analyses; see the section on _Output files_ below.
 *   `--debug`: produce screen output for each analysis.

@@ -1460,7 +1460,6 @@ if __name__ == "__main__":
         print "           analysis method will use this with the method name"
         print "           appended"
         print "           (Defaults to the input file names)"
-        print "  --xls    Output XLS spreadsheet in addition to other files"
         print "  --debug  Verbose output for debugging"
         sys.exit()
 
