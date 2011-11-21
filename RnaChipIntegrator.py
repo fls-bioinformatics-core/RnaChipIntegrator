@@ -1348,6 +1348,8 @@ dist_TSS\tdistance from the closest edge to the gene TSS.
 dist_TES\tdistance from the closest edge to the gene TES.
 overlap_transcript\tindicates whether the gene region overlaps the the peak region at any point (1 indicates an overlap, 0 no overlap).
 overlap_promoter\tindicates whether the gene promoter region overlaps the peak region at any point (1 indicates an overlap, 0 no overlap).
+
+<style font=bold>NB "summary" pages list only the top hits for each peak or transcript.</style>
 """
 
 xls_notes_for_nearest_peaks_to_transcripts = \
