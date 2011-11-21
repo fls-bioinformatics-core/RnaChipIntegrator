@@ -27,6 +27,12 @@ ChIP-seq data has 3 columns of data:
 # chr  start  end"""
 
 #######################################################################
+# Module metadata
+#######################################################################
+
+__version__ = "0.1.0"
+
+#######################################################################
 # Import modules that this module depends on
 #######################################################################
 
@@ -1416,6 +1422,10 @@ if __name__ == "__main__":
     logging.getLogger().setLevel(logging.INFO)
 
     # Process command line
+    if "-V" in sys.argv or "--version" in sys.argv:
+        print "%s %s" % (os.path.basename(sys.argv[0]),__version__)
+        sys.exit()
+
     if len(sys.argv) < 3:
         print "Usage: %s [OPTIONS] <rna-data> <chip-data>" % sys.argv[0]
         print ""
@@ -1461,6 +1471,8 @@ if __name__ == "__main__":
         print "           appended"
         print "           (Defaults to the input file names)"
         print "  --debug  Verbose output for debugging"
+        print "  -V, --version"
+        print "           Print the program version and exit"
         sys.exit()
 
     # Input files
