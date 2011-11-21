@@ -1619,6 +1619,10 @@ if __name__ == "__main__":
         if xls: xls_notes.addText(
             xls_notes_for_nearest_peaks_to_transcripts % window_width)
 
+    # Add the program version information to the spreadsheet
+    xls_notes.addText("Produced by %s %s" % (os.path.basename(sys.argv[0]),
+                                             __version__))
+
     # Close the XLS file
     xls.save(xls_out)
 
