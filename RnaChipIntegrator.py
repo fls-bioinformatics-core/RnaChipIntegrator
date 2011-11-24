@@ -30,7 +30,7 @@ ChIP-seq data has 3 columns of data:
 # Module metadata
 #######################################################################
 
-__version__ = "0.1.0"
+__version__ = "0.1.1"
 
 #######################################################################
 # Import modules that this module depends on
@@ -966,6 +966,11 @@ def AnalyseNearestTSSToSummits(chip_seq,rna_seq,max_distance,
     # After sorting the top results will be the closest
     logging.debug("Starting AnalyseNearestTranscriptsToPeaks:")
 
+    # Check that we have summit data for ChIP peaks
+    if not chip_seq.isSummit():
+        logging.warning("The supplied ChIP data only defines regions")
+        logging.warning("This analysis is intended to work with summit data")
+
     # Create subset of "significant" i.e. flagged RNA-seq data
     if rna_seq.isFlagged():
         significant_rna_seq = rna_seq.filterByFlag(matchFlag=1)
@@ -1081,6 +1086,11 @@ def AnalyseNearestPeaksToTranscripts(rna_seq,chip_seq,window_width,
         to add the results to as a new sheet
     """
     logging.debug("Starting AnalyseNearestPeaksToTranscripts:")
+    # Check that we have summit data for ChIP peaks
+    if not chip_seq.isSummit():
+        logging.warning("The supplied ChIP data only defines regions")
+        logging.warning("This analysis is intended to work with summit data")
+    # Do the analysis
     results = AnalysisResult()
     max_peaks = 0
     for rna_data in rna_seq:
@@ -1183,6 +1193,11 @@ def AnalyseNearestTranscriptsToPeakEdges(chip_seq,rna_seq,
         to add the results to as a new sheet
     """
     logging.debug("Starting AnalyseNearestTranscriptsToPeakEdges:")
+    # Check that we have region data for ChIP peaks
+    if chip_seq.isSummit():
+        logging.warning("The supplied ChIP data only defines summits")
+        logging.warning("This analysis is intended to work with regions")
+    # Check mode of operation
     if not TSS_only:
         logging.debug("Use both TSS and TES in analysis (TSS_only = %s)" %
                       TSS_only)
@@ -1542,8 +1557,8 @@ if __name__ == "__main__":
     if options.debug: logging.getLogger().setLevel(logging.DEBUG)
 
     # Report settings
-    print "Input transcripts file (RNA-seq) :\t%s" % rnaseq_file
-    print "Input peaks file (ChIP-seq)      :\t%s" % chipseq_file
+    print "Input transcripts file (RNA-seq) : %s" % rnaseq_file
+    print "Input peaks file (ChIP-seq)      : %s" % chipseq_file
     if do_chip_analyses:
         print ""
         print "ChIP analyses:"
@@ -1595,17 +1610,18 @@ if __name__ == "__main__":
         # "Nearest TSS to summit" analysis
         outfile = chip_basename+"_NearestTSSToSummits.txt"
         print "Running AnalyseNearestTSSToSummits"
-        print "\tOutput written to %s" % outfile
+        print "\tWriting output to %s" % outfile
         AnalyseNearestTSSToSummits(chip_seq,rna_seq,max_distance,
                                          max_closest,outfile,
                                          xls=xls)
+        print "\tDone"
         if xls: xls_notes.addText(xls_notes_for_nearest_TSS_to_summits %
                                   max_distance)
 
         # "Nearest edge to peak region" analysis
         outfile = chip_basename+"_NearestTranscriptsToPeakEdges.txt"
         print "Running AnalyseNearestTranscriptsToPeakEdges (TSS/TES)"
-        print "\tOutput written to %s" % outfile
+        print "\tWriting output to %s" % outfile
         AnalyseNearestTranscriptsToPeakEdges(chip_seq,rna_seq,
                                              promoter_region,
                                              max_closest,
@@ -1613,6 +1629,7 @@ if __name__ == "__main__":
                                              TSS_only=False,
                                              filename=outfile,
                                              xls=xls)
+        print "\tDone"
         if xls: xls_notes.addText(
             xls_notes_for_nearest_transcripts_to_peak_edges %
             (promoter_region,max_closest,max_edge_distance))
@@ -1620,7 +1637,7 @@ if __name__ == "__main__":
         # "Nearest TSS to peak region" analysis
         outfile = chip_basename+"_NearestTSSToPeakEdges.txt"
         print "Running AnalyseNearestTranscriptsToPeakEdges (TSS only)"
-        print "\tOutput written to %s" % outfile
+        print "\tWriting output to %s" % outfile
         AnalyseNearestTranscriptsToPeakEdges(chip_seq,rna_seq,
                                              promoter_region,
                                              max_closest,
@@ -1628,16 +1645,18 @@ if __name__ == "__main__":
                                              TSS_only=True,
                                              filename=outfile,
                                              xls=xls)
+        print "\tDone"
 
     # RNA-seq-based analysese
     if do_rna_analyses:
         # "Nearest peak summits to TSS" analysis
         outfile = rna_basename+"_NearestPeaksToTranscripts.txt"
         print "Running AnalyseNearestPeaksToTranscripts"
-        print "\tOutput written to %s" % outfile
+        print "\tWriting output to %s" % outfile
         AnalyseNearestPeaksToTranscripts(rna_seq,chip_seq,window_width,
                                          filename=outfile,
                                          xls=xls)
+        print "\tDone"
         if xls: xls_notes.addText(
             xls_notes_for_nearest_peaks_to_transcripts % window_width)
 
