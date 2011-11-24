@@ -38,6 +38,7 @@ __version__ = "0.1.0"
 
 import sys
 import os
+import optparse
 
 # Set default logging level and output
 import logging
@@ -1423,101 +1424,117 @@ if __name__ == "__main__":
     # Set default logging level
     logging.getLogger().setLevel(logging.INFO)
 
-    # Process command line
-    if "-V" in sys.argv or "--version" in sys.argv:
-        print "%s %s" % (os.path.basename(sys.argv[0]),__version__)
-        sys.exit()
+    p = optparse.OptionParser(usage="%prog [options] RNA-seq_data ChIP-seq_data",
+                              version="%prog "+__version__,
+                              description=
+                              "Implements various methods for reporting the nearest ChIP peaks "+
+                              "to genes/gene transcripts from RNA-seq data, and vice versa. "
+                              "ChIP-centric analyses report the nearest transcripts to each "+
+                              "ChIP peak; RNA-seq-centric analyses report the nearest peaks to "+
+                              "each transcript. 'RNA-seq_data' file must contain tab-delimited "+
+                              "columns 'ID,chr,start,end,strand[,flag,...]'. 'ChIP-seq_data' "+
+                              "file must contain tab-delimited columns 'chr,start,stop' and "+
+                              "defines either summits (start/stop differ by 1 bp) or regions "+
+                              "(start/stop extend over several bps).")
 
-    if len(sys.argv) < 3:
-        print "Usage: %s [OPTIONS] <rna-data> <chip-data>" % sys.argv[0]
-        print ""
-        print "Implements various methods for reporting 'nearest' ChIP peaks to"
-        print "genes/gene transcripts."
-        print ""
-        print "Options for individual analyses:"
-        print ""
-        print "NearestTSSToSummits (ChIP-seq):"
-        print "  --cutoff=<max_distance> (default %d bp)" % max_distance
-        print "           Maximum distance transcript TSS can be from peak"
-        print "           before being omitted from analysis"
-        print ""
-        print "NearestPeaksToTranscripts (RNA-seq):"
-        print "  --window=<window_width> (default %d bp)" % window_width
-        print "           Maximum distance peaks can be from transcript TSS"
-        print "           before being omitted from analysis"
-        print ""
-        print "NearestTranscriptsToPeakEdge/NearestTSSToPeakEdge (ChIP-seq):"
-        print "  --edge-cutoff=<max_distance> (default %d)" % max_edge_distance
-        print "           Maximum distance transcript TSS can be from peak"
-        print "           edge before being omitted from analysis (set to"
-        print "           zero to indicate no cut-off)"
-        print "  --number=<n>             (default %d)" % max_closest
-        print "           Maximum number of transcripts to report from"
-        print "           from analysis"
-        print "  --promoter_region=<leading>,<trailing>"
-        print "                           (default -%d to %d bp of TSS)" % \
-            promoter_region
-        print "           Define promoter region with respect to gene TSS"
-        print ""
-        print "NB each of the options above only apply to the analysis that they're"
-        print "listed under."
-        print ""
-        print "General options:"
-        print "  --chip   Do ChIP-seq-centric analyses"
-        print "  --rna    Do RNA-seq-centric analyses"
-        print "           (If neither or both --chip/--rna are specified then"
-        print "           all analyses are performed)"
-        print "  --project=<basename>"
-        print "           Set basename for output files; output from each"
-        print "           analysis method will use this with the method name"
-        print "           appended"
-        print "           (Defaults to the input file names)"
-        print "  --debug  Verbose output for debugging"
-        print "  -V, --version"
-        print "           Print the program version and exit"
-        sys.exit()
+    # General options
+    p.add_option('--chip',action="store_true",dest="do_chip_analyses",
+                     help="Do ChIP-seq-centric analyses")
+    p.add_option('--rna',action="store_true",dest="do_rna_analyses",
+                     help="Do RNA-seq-centric analyses")
+    p.add_option('--project',action="store",dest="basename",
+                     help="Set basename for output files; output from each "+
+                     "analysis method will use this, with the method name appended"+
+                     " (defaults to the input file names)")
+    p.add_option('--debug',action="store_true",dest="debug",
+                     help="Verbose output for debugging")
+
+    # Options for NearestTSSToSummits
+    group = optparse.OptionGroup(p,"NearestTSSToSummits (ChIP-seq)",
+                                 description="For each ChIP peak summit, reports the "+
+                                 "transcripts with TSS positions that lie within the specified "+
+                                 "cut-off distance of the peak summit.")
+    group.add_option('--cutoff',action="store",dest="max_distance",
+                     default=max_distance,type='int',
+                     help="Maximum distance a transcript TSS can be from each peak "+
+                     "before being omitted from the analysis "+
+                     "(default %d bp)" % max_distance)
+    p.add_option_group(group)
+
+    # Options for NearestPeaksToTranscripts
+    group = optparse.OptionGroup(p,"NearestPeaksToTranscripts (RNA-seq)",
+                                 description="For each transcript, reports the peaks with summit "+
+                                 "positions that lie within the specified 'window' distance of "+
+                                 "the transcript TSS.")
+    group.add_option('--window',action="store",dest="window_width",
+                     default=window_width,type='int',
+                     help="Maximum distance a peak can be from each transcript TSS "+
+                     "before being omitted from analysis "+
+                     "(default %d bp)" % window_width)
+    p.add_option_group(group)
+
+    # Options for NearestTranscriptsToPeakEdge/NearestTSSToPeakEdge
+    group = optparse.OptionGroup(p,"NearestTranscriptsToPeakEdge/NearestTSSToPeakEdge (ChIP-seq)",
+                                 description="For each ChIP peak, reports the transcripts that "+
+                                 "lie closest to either 'edge' of the peak region, by "+
+                                 "considering the TSS alone (NearestTSSToPeakEdge) or by "+
+                                 "considering both the TSS and TES positions "+
+                                 "(NearestTranscriptsToPeakEdge).")
+    group.add_option('--edge-cutoff',action="store",dest="max_edge_distance",
+                     default=max_edge_distance,type='int',
+                     help="Maximum distance a transcript TSS can be from the peak "+
+                     "edge before being omitted from analysis. Set to "+
+                     "zero to indicate no cut-off (default %d bp)" % max_edge_distance)
+    group.add_option('--number',action="store",dest="max_closest",
+                     default=max_closest,type='int',
+                     help="Maximum number of transcripts to report from "+
+                     "from the analysis (default %d)" % max_closest)
+    group.add_option('--promoter_region',action="store",dest="promoter_region",
+                     default="%d,%d" % promoter_region,
+                     help="Define promoter region with respect to gene TSS "+
+                     "(default -%d to %d bp of TSS)" %  promoter_region)
+    p.add_option_group(group)
+
+    # Process the command line
+    options,arguments = p.parse_args()
 
     # Input files
-    rnaseq_file = sys.argv[-2]
-    chipseq_file = sys.argv[-1]
-
-    # Default output file basenames
-    rna_basename = os.path.basename(os.path.splitext(rnaseq_file)[0])
-    chip_basename = os.path.basename(os.path.splitext(chipseq_file)[0])
-    xls_out = chip_basename + "_summary.xls"
-
-    # Options
-    for arg in sys.argv[1:-2]:
-        if arg.startswith('--cutoff='):
-            max_distance = int(arg.split('=')[1])
-        elif arg.startswith('--edge-cutoff='):
-            max_edge_distance = int(arg.split('=')[1])
-        elif arg.startswith('--window='):
-            window_width = int(arg.split('=')[1])
-        elif arg.startswith('--promoter_region='):
-            promoter_region = (abs(int(arg.split('=')[1].split(',')[0])),
-                               abs(int(arg.split('=')[1].split(',')[1])))
-        elif arg.startswith('--number='):
-            max_closest = int(arg.split('=')[1])
-        elif arg.startswith('--project='):
-            chip_basename = arg.split('=')[1] + "_peaks"
-            rna_basename = arg.split('=')[1] + "_transcripts"
-            xls_out = arg.split('=')[1] + ".xls"
-        elif arg == '--chip':
-            do_chip_analyses = True
-        elif arg == '--rna':
-            do_rna_analyses = True
-        elif arg.startswith('--debug'):
-            logging.getLogger().setLevel(logging.DEBUG)
-        else:
-            logging.error("Unrecognised argument: '%s'" % arg)
-            sys.exit(1)
+    if len(arguments) != 2:
+        p.error("incorrect number of arguments")
+    else:
+        rnaseq_file = arguments[0]
+        chipseq_file = arguments[1]
 
     # Sort out analysis settings
+    do_chip_analyses = options.do_chip_analyses
+    do_rna_analyses = options.do_rna_analyses
     if not (do_chip_analyses or do_rna_analyses):
         # Neither explicitly requested - do both
         do_chip_analyses = True
         do_rna_analyses = True
+
+    # Handle options
+    max_distance = options.max_distance
+    window_width = options.window_width
+    max_edge_distance = options.max_edge_distance
+    max_closest = options.max_closest
+
+    # Promoter region
+    promoter_region = (abs(int(options.promoter_region.split(',')[0])),
+                       abs(int(int(options.promoter_region.split(',')[1]))))
+
+    # Output basename
+    if options.basename:
+        chip_basename = options.basename + "_peaks"
+        rna_basename = options.basename + "_transcripts"
+        xls_out = options.basename + ".xls"
+    else:
+        rna_basename = os.path.basename(os.path.splitext(rnaseq_file)[0])
+        chip_basename = os.path.basename(os.path.splitext(chipseq_file)[0])
+        xls_out = chip_basename + "_summary.xls"
+
+    # Debugging output
+    if options.debug: logging.getLogger().setLevel(logging.DEBUG)
 
     # Report settings
     print "Input transcripts file (RNA-seq) :\t%s" % rnaseq_file
@@ -1558,6 +1575,8 @@ if __name__ == "__main__":
         print "%d ChIP-seq records read in" % len(chip_seq)
         if chip_seq.isSummit():
             print "ChIP data appears to be peak summits"
+
+    sys.exit()
 
     # Create initial XLS document
     xls = Spreadsheet.Workbook()
