@@ -1581,8 +1581,6 @@ if __name__ == "__main__":
         if chip_seq.isSummit():
             print "ChIP data appears to be peak summits"
 
-    sys.exit()
-
     # Create initial XLS document
     xls = Spreadsheet.Workbook()
     xls_notes = xls.addSheet('Notes')
