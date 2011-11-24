@@ -1090,6 +1090,8 @@ def AnalyseNearestPeaksToTranscripts(rna_seq,chip_seq,window_width,
     if not chip_seq.isSummit():
         logging.warning("The supplied ChIP data only defines regions")
         logging.warning("This analysis is intended to work with summit data")
+    # Get flag status of RNA-seq data
+    rna_seq_is_flagged = rna_seq.isFlagged()
     # Do the analysis
     results = AnalysisResult()
     max_peaks = 0
@@ -1100,8 +1102,9 @@ def AnalyseNearestPeaksToTranscripts(rna_seq,chip_seq,window_width,
                   rna_data.getTSS()+window_width)
         logging.debug("\t\tWindow: %d - %d" % (window[0],window[1]))
         # Get ChIP peaks on the matching chromosome that lie in this window
-        # Only do this for the significant (i.e. flagged) genes
-        if rna_data.flag == 1:
+        # Only do this for the significant (i.e. flagged) genes, unless
+        # the data is not flagged
+        if not rna_seq_is_flagged or rna_data.flag == 1:
             chip_peaks = chip_seq.\
                 filterByChr(rna_data.chr).filterByPosition(window[0],window[1])
             chip_peaks.sortByDistanceFrom(rna_data.getTSS())
