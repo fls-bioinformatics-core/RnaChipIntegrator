@@ -1435,7 +1435,12 @@ if __name__ == "__main__":
                               "columns 'ID,chr,start,end,strand[,flag,...]'. 'ChIP-seq_data' "+
                               "file must contain tab-delimited columns 'chr,start,stop' and "+
                               "defines either summits (start/stop differ by 1 bp) or regions "+
-                              "(start/stop extend over several bps).")
+                              "(start/stop extend over several bps).",
+                              epilog="The outputs are tab-delimited files (one for each "+
+                              "analysis performed), named after either the RNA-seq_data file "+
+                              "or the ChIP-seq_data file as appropriate (unless the --project "+
+                              "option was specified), plus an XLS spreadsheet with worksheets "+
+                              "containing the data from each analysis.")
 
     # General options
     p.add_option('--chip',action="store_true",dest="do_chip_analyses",
