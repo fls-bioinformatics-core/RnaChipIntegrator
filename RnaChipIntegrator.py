@@ -30,7 +30,7 @@ ChIP-seq data has 3 columns of data:
 # Module metadata
 #######################################################################
 
-__version__ = "0.1.1"
+__version__ = "0.1.2"
 
 #######################################################################
 # Import modules that this module depends on
@@ -1453,12 +1453,11 @@ if __name__ == "__main__":
                               "columns 'ID,chr,start,end,strand[,flag,...]'. 'ChIP-seq_data' "+
                               "file must contain tab-delimited columns 'chr,start,stop' and "+
                               "defines either summits (start/stop differ by 1 bp) or regions "+
-                              "(start/stop extend over several bps).",
-                              epilog="The outputs are tab-delimited files (one for each "+
-                              "analysis performed), named after either the RNA-seq_data file "+
-                              "or the ChIP-seq_data file as appropriate (unless the --project "+
-                              "option was specified), plus an XLS spreadsheet with worksheets "+
-                              "containing the data from each analysis.")
+                              "(start/stop extend over several bps)."+
+                              "The outputs are: one tab-delimited file for each analysis "+
+                              "performed (named after the appropriate input file unless "+
+                              "overriden by the --project option), and an XLS spreadsheet with "+
+                              "one worksheet per analysis.")
 
     # General options
     p.add_option('--chip',action="store_true",dest="do_chip_analyses",
