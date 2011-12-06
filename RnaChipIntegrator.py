@@ -125,6 +125,11 @@ class RNASeqData:
                                     ('\t'.join(errline)))
                 # Skip to next line
                 continue
+            elif int(items[2]) >= int(items[3]):
+                # Start position is same or higher than end
+                logging.warning("RNA file: skipped line: %s" % line.strip())
+                logging.warning("Inconsistent start/end positions")
+                continue
             # Store in a new RNASeqDataLine object
             dataline = RNASeqDataLine(items[0],
                                       items[1],
