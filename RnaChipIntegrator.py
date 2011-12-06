@@ -727,19 +727,20 @@ class AnalysisResult:
                     item = pad
                 # Split too-long items into multiple items/columns
                 # This is because the Spreadsheet writer truncates cells
-                # that exceed 250 characters
-                while len(item) > 250:
+                # that exceed the spreadsheet cell character limit
+                char_limit = Spreadsheet.MAX_LEN_WORKSHEET_CELL_VALUE
+                while len(item) > char_limit:
                     # Split on ';'
                     try:
-                        # Locate nearest semicolon to 250'th character
-                        i = item[:250].rindex(';')
+                        # Locate nearest semicolon to the character limit
+                        i = item[:char_limit].rindex(';')
                         items.append(item[:i])
                         item = item[i:].strip(';')
                     except ValueError:
                         # Unable to locate semicolon so split on the
-                        # 250'th character
-                        items.append(item[:250])
-                        item = item[250:]
+                        # character limit
+                        items.append(item[:char_limit])
+                        item = item[char_limit:]
                 items.append(item)
             ws.addText('\t'.join(items))
 
