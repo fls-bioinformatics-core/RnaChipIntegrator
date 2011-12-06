@@ -722,9 +722,25 @@ class AnalysisResult:
             items = []
             for field in header:
                 try:
-                    items.append(str(result[field]))
+                    item = str(result[field])
                 except KeyError:
-                    items.append(pad)
+                    item = pad
+                # Split too-long items into multiple items/columns
+                # This is because the Spreadsheet writer truncates cells
+                # that exceed 250 characters
+                while len(item) > 250:
+                    # Split on ';'
+                    try:
+                        # Locate nearest semicolon to 250'th character
+                        i = item[:250].rindex(';')
+                        items.append(item[:i])
+                        item = item[i:].strip(';')
+                    except ValueError:
+                        # Unable to locate semicolon so split on the
+                        # 250'th character
+                        items.append(item[:250])
+                        item = item[250:]
+                items.append(item)
             ws.addText('\t'.join(items))
 
     def __getitem__(self,key):
