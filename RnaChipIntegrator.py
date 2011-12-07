@@ -15,7 +15,7 @@ Provides classes and functions for integrating/analysing RNA-seq and
 ChIP-seq data. __main__ provides a program for running these analyses
 from the command line.
 
-Usage: rna-chip-integrator.py [OPTIONS] <rna-data> <chip-data>
+Usage: RnaChipIntegrator.py [OPTIONS] <rna-data> <chip-data>
 
 RNA-seq data has at least 5 columns of data:
 
