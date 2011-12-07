@@ -718,6 +718,10 @@ class AnalysisResult:
         """
         ws = xls.addSheet(title)
         ws.addText('#'+'\t'.join(header))
+        # Keep track of line number and sheet number
+        i = 1
+        nsheet = 1
+        # Loop over all results
         for result in self.results:
             items = []
             for field in header:
@@ -743,6 +747,20 @@ class AnalysisResult:
                         item = item[char_limit:]
                 items.append(item)
             ws.addText('\t'.join(items))
+            # Update line number and check if the maximum number of lines has been exceeded
+            i += 1
+            if i == Spreadsheet.MAX_NUMBER_ROWS_PER_WORKSHEET:
+                logging.warning("Maximum number of rows in XLS sheet '%s' exceeded (%d)" %
+                                (title,Spreadsheet.MAX_NUMBER_ROWS_PER_WORKSHEET))
+                # Make a new spreadsheet for the excess rows
+                nsheet += 1
+                ws = xls.addSheet("%s(%d)" % (title,nsheet))
+                logging.warning("Created new sheet '%s' to store additional results" %
+                                ws.title)
+                # Add the header
+                ws.addText('#'+'\t'.join(header))
+                # Reset the line index counter
+                i = 1
 
     def __getitem__(self,key):
         return self.results[key]
