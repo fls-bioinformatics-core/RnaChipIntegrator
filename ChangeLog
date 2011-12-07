@@ -1,0 +1,27 @@
+2011-12-07  Peter Briggs  <peter.briggs@manchester.man.ac.uk>
+
+	* Version 0.1.3
+	- Skip input transcripts where 'start' position is higher than 'end'.
+	- In output spreadsheet, splits the lists of "transcripts inbetween" across
+	  multiple columns in the "TSSToSummits" sheet if they exceed 250
+	  characters, and creates multiple sheets for result sets that exceed 65536
+	  rows.
+
+2011-12-05  Peter Briggs  <peter.briggs@manchester.man.ac.uk>
+
+	* Version 0.1.2
+	- Fixed failure when using with Python 2.4 (optparse.OptionParser "epilog"
+	  argument is unsupported)
+
+2011-11-24  Peter Briggs  <peter.briggs@manchester.ac.uk>
+
+	* Version 0.1.1
+	- Updated to use optparse library to process command line arguments, and
+	  substantially expanded help text (available using -h or --help option).
+
+2011-11-21  Peter Briggs  <peter.briggs@manchester.ac.uk>
+
+	* Version 0.1.0
+	- Baseline version of RnaChIPIntegrator.py.
+
+
