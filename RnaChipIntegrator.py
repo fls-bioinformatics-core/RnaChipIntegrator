@@ -734,6 +734,8 @@ class AnalysisResult:
                 # that exceed the spreadsheet cell character limit
                 char_limit = Spreadsheet.MAX_LEN_WORKSHEET_CELL_VALUE
                 while len(item) > char_limit:
+                    logging.warning("Split value across multiple cells in sheet '%s' row %d"
+                                    % (ws.title,row_index))
                     # Split on ';'
                     try:
                         # Locate nearest semicolon to the character limit
