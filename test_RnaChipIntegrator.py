@@ -432,9 +432,7 @@ class TestRNASeqData(unittest.TestCase):
                          "No transcripts should be read from bad input file")
 
     def test_reading_bad_file_end_lower_than_start(self):
-        rna_bad = RNASeqData('Transcripts-ex2a.txt')
-        self.assertEqual(len(rna_bad),0,
-                         "No transcripts should be read from bad input file")
+        self.assertRaises(Exception,RNASeqData,'Transcripts-ex2a.txt')
 
 ########################################################################
 #
@@ -832,5 +830,7 @@ def delete_test_file(name):
 #
 #########################################################################
 if __name__ == "__main__":
+    # Turn off logging output
+    logging.getLogger().setLevel(logging.CRITICAL)
     # Run tests
     unittest.main()

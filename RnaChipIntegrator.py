@@ -115,10 +115,11 @@ class RNASeqData:
                 continue
             elif int(items[2]) >= int(items[3]):
                 # Start position is same or higher than end
-                logging.warning("RNA data: bad line (skipped): %s" % line.strip())
-                logging.warning("                              %s" % 
-                                make_errline(line.strip(),(2,3)))
-                continue
+                logging.error("RNA data: critical error: 'end' comes before 'start':")
+                logging.error("%s" % line.strip())
+                logging.error("%s" % make_errline(line.strip(),(2,3)))
+                # This is a critical error
+                raise Exception, "'end' position must be higher than 'start'"
             # Store in a new RNASeqDataLine object
             dataline = RNASeqDataLine(items[0],
                                       items[1],
@@ -1643,7 +1644,12 @@ if __name__ == "__main__":
     print "Outputting results to XLS file   : %s" % xls_out
 
     # Initialise the data objects
-    rna_seq = RNASeqData(rnaseq_file)
+    try:
+        rna_seq = RNASeqData(rnaseq_file)
+    except Exception, ex:
+        logging.critical("Failed to read in RNA-seq data: %s" % ex)
+        print "Please fix errors in input file before running again"
+        sys.exit(1)
     chip_seq = ChIPSeqData(chipseq_file)
 
     # Check we have data
