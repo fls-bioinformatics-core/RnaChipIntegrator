@@ -42,6 +42,19 @@ CG34099-RB	chr3L	182522	1.8E+05	-	0
 CG40225-RA	chr3LHet	2276035	2.2E+06	-	1
 CG13051-RA	chr3L	16257914	1.6E+0	-	0"""
 #
+# Transcripts-ex2a.txt ("bad" RNA transcripts file)
+transcripts_ex2a = \
+"""CG9130-RB	chr3L	1252012	1200000	+	1
+CG8616-RA	chr3L	7231642	7200000	+	0
+CG32847-RB	chr3L	15114722	15000000	+	0
+CG14448-RA	chr3L	22781539	22000000	+	1
+CG32065-RA	chr3L	10428770	10000000	+	1
+CG10541-RA	chr3L	5787500	5700000	-	0
+CG10583-RA	chr3L	5652794	5600000	-	0
+CG34099-RB	chr3L	182522	180000	-	0
+CG40225-RA	chr3LHet	2276035	2200000	-	1
+CG13051-RA	chr3L	16257914	16000000	-	0"""
+#
 # Transcripts-ex3.txt 
 transcripts_ex3 = \
 """Probe_name	chromosome	start	stop	Strand	DESeq_1200
@@ -286,6 +299,7 @@ class TestRNASeqData(unittest.TestCase):
         # Create input files for tests
         create_test_file('Transcripts-ex1.txt',transcripts_ex1)
         create_test_file('Transcripts-ex2.txt',transcripts_ex2)
+        create_test_file('Transcripts-ex2a.txt',transcripts_ex2a)
 
     def tearDown(self):
         # Remove input files
@@ -412,8 +426,13 @@ class TestRNASeqData(unittest.TestCase):
                                 "Sort by closest TSS to edge failed")
         
 
-    def test_reading_bad_file(self):
+    def test_reading_bad_file_scientific_notation(self):
         rna_bad = RNASeqData('Transcripts-ex2.txt')
+        self.assertEqual(len(rna_bad),0,
+                         "No transcripts should be read from bad input file")
+
+    def test_reading_bad_file_end_lower_than_start(self):
+        rna_bad = RNASeqData('Transcripts-ex2a.txt')
         self.assertEqual(len(rna_bad),0,
                          "No transcripts should be read from bad input file")
 

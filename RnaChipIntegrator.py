@@ -102,33 +102,22 @@ class RNASeqData:
                 continue
             # Check line is valid i.e. start and stop should be
             # numbers, strand should be + or -
-            if not items[2].isdigit() \
-                    or not items[3].isdigit() \
-                    or not (items[4] == '+' or  items[4] == '-'):
-                logging.warning("RNA file: skipped line: %s" % line.strip())
+            problem_fields = []
+            if not items[2].isdigit(): problem_fields.append(2)
+            if not items[3].isdigit(): problem_fields.append(3)
+            if not (items[4] == '+' or  items[4] == '-'): problem_fields.append(4)
+            if problem_fields:
                 # Indicate problem field(s)
-                errline = []
-                for i in range(len(items)):
-                    if i == 2 or i == 3:
-                        if not items[i].isdigit():
-                            errline.append("^"*len(items[i]))
-                        else:
-                            errline.append(" "*len(items[i]))
-                    elif i == 4:
-                        if not (items[i] == '+' or  items[i] == '-'):
-                            errline.append("^"*len(items[i]))
-                        else:
-                            errline.append(" "*len(items[i]))
-                    else:
-                        errline.append(" "*len(items[i]))
-                logging.warning("                        %s" % \
-                                    ('\t'.join(errline)))
+                logging.warning("RNA data: bad line (skipped): %s" % line.strip())
+                logging.warning("                              %s" % 
+                                make_errline(line.strip(),problem_fields))
                 # Skip to next line
                 continue
             elif int(items[2]) >= int(items[3]):
                 # Start position is same or higher than end
-                logging.warning("RNA file: skipped line: %s" % line.strip())
-                logging.warning("Inconsistent start/end positions")
+                logging.warning("RNA data: bad line (skipped): %s" % line.strip())
+                logging.warning("                              %s" % 
+                                make_errline(line.strip(),(2,3)))
                 continue
             # Store in a new RNASeqDataLine object
             dataline = RNASeqDataLine(items[0],
@@ -838,6 +827,39 @@ def GetNearestTranscriptToPeak(rna_data1,rna_data2,chip_peak):
     else:
         # Transcript 1 is nearest
         return rna_data1
+
+def make_errline(line,bad_fields=[]):
+    """Return an 'error line' indicating problem fields in a string
+
+    Given a tab-delimited line and a list of integer indices
+    indicating which fields in the line have problems, this function
+    returns a tab-delimited string where the original fields are
+    replaced by either spaces or '^' characters.
+
+    When printed beneath the original line, the '^'s indicate which
+    fields are 'bad' according to the supplied indices, e.g.
+
+    Input line: 'good    good    bad    bad    good'
+    Error line: '                ^^^    ^^^        '
+
+    Arguments:
+      line: string where tabs delimit fields
+      bad_fields: list of integer indices corresponding to 'bad'
+        values in 'line'
+
+    Returns:
+      Tab-delimited 'error line' to be printed beneath the original
+      line, to indicate which fields are 'bad'.
+    """
+    # Indicate problem field(s)
+    errline = []
+    items = line.split('\t')
+    for i in range(len(items)):
+        if i in bad_fields:
+            errline.append("^"*len(items[i]))
+        else:
+            errline.append(" "*len(items[i]))
+    return '\t'.join(errline)
 
 #######################################################################
 # Analysis Functions
