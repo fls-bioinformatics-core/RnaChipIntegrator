@@ -427,9 +427,7 @@ class TestRNASeqData(unittest.TestCase):
         
 
     def test_reading_bad_file_scientific_notation(self):
-        rna_bad = RNASeqData('Transcripts-ex2.txt')
-        self.assertEqual(len(rna_bad),0,
-                         "No transcripts should be read from bad input file")
+        self.assertRaises(Exception,RNASeqData,'Transcripts-ex2.txt')
 
     def test_reading_bad_file_end_lower_than_start(self):
         self.assertRaises(Exception,RNASeqData,'Transcripts-ex2a.txt')

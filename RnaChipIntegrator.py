@@ -71,6 +71,10 @@ class RNASeqData:
     """
     def __init__(self,rnaseq_file=None):
         """Create a new RNASeqData instance
+
+        Raises an exception if there are errors in the input file data
+        (non-numeric fields for start/end positions, end positions
+        occurring before start positions, or illegal strand values).
         
         Arguments:
           rnaseq_file: (optional) the name of an input file to read
@@ -113,11 +117,19 @@ class RNASeqData:
             if not items[3].isdigit(): problem_fields.append(3)
             if not (items[4] == '+' or  items[4] == '-'): problem_fields.append(4)
             if problem_fields:
-                # Indicate problem field(s)
-                logging.warning("RNA data: bad line (skipped): %s" % line.strip())
-                logging.warning("                              %s" % 
-                                make_errline(line.strip(),problem_fields))
-                # Skip to next line
+                # If this is the first line then assume it's a header and ignore
+                if line_index == 1:
+                    logging.warning("%s: first line ignored as header: %s" % 
+                                    (rnaseq_file,line.strip()))
+                else:
+                    # Indicate problem field(s)
+                    logging.error("%s: critical error line %d: bad values:" %
+                                  (rnaseq_file,line_index))
+                    logging.error("%s" % line.strip())
+                    logging.error("%s" % make_errline(line.strip(),problem_fields))
+                    # This is a critical error: update flag
+                    critical_error = True
+                # Continue to next line
                 continue
             elif int(items[2]) >= int(items[3]):
                 # Start position is same or higher than end
@@ -125,8 +137,7 @@ class RNASeqData:
                               (rnaseq_file,line_index))
                 logging.error("%s" % line.strip())
                 logging.error("%s" % make_errline(line.strip(),(2,3)))
-                
-                # This is a critical error: update flag but continue reading to EOF
+                # This is a critical error: update flag but continue reading
                 critical_error = True
                 continue
             # Store in a new RNASeqDataLine object
