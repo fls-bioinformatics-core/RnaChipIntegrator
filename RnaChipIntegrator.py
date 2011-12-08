@@ -86,8 +86,14 @@ class RNASeqData:
         Arguments:
           rnaseq_file: the name of the input file to read RNA-seq data from.
         """
+        # Local flags etc
+        line_index = 0
+        critical_error = False
+        # Read in data from file
         fp = open(rnaseq_file,'rU')
         for line in fp:
+            # Increment index
+            line_index += 1
             # Skip lines starting with #
             if line.startswith('#'):
                 logging.debug("RNA file: skipped line: %s" % line.strip())
@@ -115,11 +121,14 @@ class RNASeqData:
                 continue
             elif int(items[2]) >= int(items[3]):
                 # Start position is same or higher than end
-                logging.error("RNA data: critical error: 'end' comes before 'start':")
+                logging.error("%s: critical error line %d: 'end' comes before 'start':" %
+                              (rnaseq_file,line_index))
                 logging.error("%s" % line.strip())
                 logging.error("%s" % make_errline(line.strip(),(2,3)))
-                # This is a critical error
-                raise Exception, "'end' position must be higher than 'start'"
+                
+                # This is a critical error: update flag but continue reading to EOF
+                critical_error = True
+                continue
             # Store in a new RNASeqDataLine object
             dataline = RNASeqDataLine(items[0],
                                       items[1],
@@ -141,6 +150,9 @@ class RNASeqData:
             # Store data
             self.data.append(dataline)
         fp.close()
+        # Deal with postponed critical errors
+        if critical_error:
+            raise Exception, "critical error(s) in '%s'" % rnaseq_file
         # Return a reference to this object
         return self
 
