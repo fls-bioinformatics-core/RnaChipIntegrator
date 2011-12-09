@@ -30,7 +30,7 @@ ChIP-seq data has 3 columns of data:
 # Module metadata
 #######################################################################
 
-__version__ = "0.1.3"
+__version__ = "0.1.4"
 
 #######################################################################
 # Import modules that this module depends on
