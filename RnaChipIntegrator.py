@@ -1547,6 +1547,7 @@ if __name__ == "__main__":
                               "performed (named after the appropriate input file unless "+
                               "overriden by the --project option), and an XLS spreadsheet with "+
                               "one worksheet per analysis.")
+    p.print_version()
 
     # General options
     p.add_option('--chip',action="store_true",dest="do_chip_analyses",
