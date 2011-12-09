@@ -1,3 +1,11 @@
+2011-12-08  Peter Briggs  <peter.briggs@manchester.man.ac.uk>
+
+	* Version 0.1.4
+	- Program will stop if it encounters any 'bad' lines in the RNA-seq/transcipt
+	  input data, with the exception of the first line (which is treated as a
+	  header and skipped if it contains bad data).
+	- New option --no-xls: suppresses output of XLS spreadsheet.
+
 2011-12-07  Peter Briggs  <peter.briggs@manchester.man.ac.uk>
 
 	* Version 0.1.3
