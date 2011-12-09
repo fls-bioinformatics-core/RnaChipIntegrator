@@ -1521,6 +1521,7 @@ if __name__ == "__main__":
     # Initialisations
     do_chip_analyses = False
     do_rna_analyses = False
+    xls_out = None
     max_distance = 130000
     max_edge_distance = 0
     window_width = 20000
@@ -1556,6 +1557,8 @@ if __name__ == "__main__":
                      help="Set basename for output files; output from each "+
                      "analysis method will use this, with the method name appended"+
                      " (defaults to the input file names)")
+    p.add_option('--no-xls',action="store_false",dest="write_xls_out",default=True,
+                 help="Don't write an XLS file")
     p.add_option('--debug',action="store_true",dest="debug",
                      help="Verbose output for debugging")
 
@@ -1628,6 +1631,7 @@ if __name__ == "__main__":
     window_width = options.window_width
     max_edge_distance = options.max_edge_distance
     max_closest = options.max_closest
+    write_xls_out = options.write_xls_out
 
     # Promoter region
     promoter_region = (abs(int(options.promoter_region.split(',')[0])),
@@ -1637,11 +1641,13 @@ if __name__ == "__main__":
     if options.basename:
         chip_basename = options.basename + "_peaks"
         rna_basename = options.basename + "_transcripts"
-        xls_out = options.basename + ".xls"
+        if write_xls_out:
+            xls_out = options.basename + ".xls"
     else:
         rna_basename = os.path.basename(os.path.splitext(rnaseq_file)[0])
         chip_basename = os.path.basename(os.path.splitext(chipseq_file)[0])
-        xls_out = chip_basename + "_summary.xls"
+        if write_xls_out:
+            xls_out = chip_basename + "_summary.xls"
 
     # Debugging output
     if options.debug: logging.getLogger().setLevel(logging.DEBUG)
@@ -1663,8 +1669,9 @@ if __name__ == "__main__":
         print "RNA-seq analyses:"
         print "\tWindow width             : %d (bp)" % window_width
         print "\tBasename for output files: %s" % rna_basename
-    print ""
-    print "Outputting results to XLS file   : %s" % xls_out
+    if xls_out:
+        print ""
+        print "Outputting results to XLS file   : %s" % xls_out
 
     # Initialise the data objects
     try:
@@ -1691,9 +1698,12 @@ if __name__ == "__main__":
         if chip_seq.isSummit():
             print "ChIP data appears to be peak summits"
 
-    # Create initial XLS document
-    xls = Spreadsheet.Workbook()
-    xls_notes = xls.addSheet('Notes')
+    if xls_out:
+        # Create initial XLS document
+        xls = Spreadsheet.Workbook()
+        xls_notes = xls.addSheet('Notes')
+    else:
+        xls = None
 
     # Analysis #1a: ChIP-seq perspective
     # NB this analysis disabled for now
@@ -1755,11 +1765,12 @@ if __name__ == "__main__":
         if xls: xls_notes.addText(
             xls_notes_for_nearest_peaks_to_transcripts % window_width)
 
-    # Add the program version information to the spreadsheet
-    xls_notes.addText("Produced by %s" % p.get_version())
-
-    # Close the XLS file
-    xls.save(xls_out)
+    # Finish off spreadsheet output
+    if xls:
+        # Add the program version information to the spreadsheet
+        xls_notes.addText("Produced by %s" % p.get_version())
+        # Write the XLS file to disk
+        xls.save(xls_out)
 
     # Finished
     print "Done"
