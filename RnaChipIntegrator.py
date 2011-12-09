@@ -1547,7 +1547,6 @@ if __name__ == "__main__":
                               "performed (named after the appropriate input file unless "+
                               "overriden by the --project option), and an XLS spreadsheet with "+
                               "one worksheet per analysis.")
-    p.print_version()
 
     # General options
     p.add_option('--chip',action="store_true",dest="do_chip_analyses",
@@ -1618,6 +1617,9 @@ if __name__ == "__main__":
     else:
         rnaseq_file = arguments[0]
         chipseq_file = arguments[1]
+
+    # Report version
+    p.print_version()
 
     # Sort out analysis settings
     do_chip_analyses = options.do_chip_analyses
