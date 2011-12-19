@@ -30,7 +30,7 @@ ChIP-seq data has 3 columns of data:
 # Module metadata
 #######################################################################
 
-__version__ = "0.1.4"
+__version__ = "0.2.0"
 
 #######################################################################
 # Import modules that this module depends on
@@ -1696,8 +1696,16 @@ if __name__ == "__main__":
         sys.exit(1)
     else:
         print "%d ChIP-seq records read in" % len(chip_seq)
+        print
         if chip_seq.isSummit():
-            print "ChIP data appears to be peak summits"
+            print "ChIP data appears to be peak summits, the following analyses will be run:"
+            print "\tNearestTSSToSummits"
+            print "\tNearestPeaksToTranscripts"
+        else:
+            print "ChIP data appears to be regions, the following analyses will be run:"
+            print "\tNearestTranscriptsToPeakEdges"
+            print "\tNearestTranscriptsToPeakEdges (TSS only)"
+        print
 
     if xls_out:
         # Create initial XLS document
