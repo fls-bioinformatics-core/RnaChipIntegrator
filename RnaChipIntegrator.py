@@ -1468,8 +1468,6 @@ Window width:\t%d bp
 <style font=bold>Description of output fields:</style>
 ID\tgene/transcript ID
 chr_RNA\tchromosome
-ID\tgene/transcript ID
-chr_RNA\tchromosome
 start\tgene start position
 end\tgene end position
 strand\tthe strand direction
