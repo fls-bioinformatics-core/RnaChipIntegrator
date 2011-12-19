@@ -1,3 +1,10 @@
+2011-12-19  Peter Briggs  <peter.briggs@manchester.ac.uk>
+
+	* Version 0.2.0
+	- Only performs analyses which are appropriate for the supplied ChIP peak
+	  data i.e. ignore "region"-based analyses if ChIP data are summits, or
+	  summit-based analyses if data are regions.
+
 2011-12-08  Peter Briggs  <peter.briggs@manchester.man.ac.uk>
 
 	* Version 0.1.4
