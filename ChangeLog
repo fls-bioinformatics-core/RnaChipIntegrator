@@ -1,3 +1,13 @@
+2012-01-05  Peter Briggs  <peter.briggs@manchester.ac.uk>
+
+	* Version 0.3.0
+	- Rename "ID" column to "geneID" (using "ID" has the potential to clash with
+	  other programs where this is a reserved word).
+	- Various improvements to some of the column descriptions on the "notes" page
+	  of the output XLS file.
+	- In all analyses, now only use those genes flagged as differentially expressed
+	  (use all if no flag was specified on the input gene data).
+
 2011-12-19  Peter Briggs  <peter.briggs@manchester.ac.uk>
 
 	* Version 0.2.0
