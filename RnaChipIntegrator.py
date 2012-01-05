@@ -1012,7 +1012,7 @@ def AnalyseClosestTranscriptsToPeaksInEachDirection(chip_seq,rna_seq):
                             in_the_gene])
 
     # Write the results to file
-    results.insert(0,["#chr","start","ID","distance_to_TSS","distance_to_TES",
+    results.insert(0,["#chr","start","geneID","distance_to_TSS","distance_to_TES",
                       "strand","in_the_gene"])
     output_results("RNA-seq_to_ChIP-seq.txt",results)
 
@@ -1110,7 +1110,7 @@ def AnalyseNearestTSSToSummits(chip_seq,rna_seq,max_distance,
             results.addResult(chip_data,rna_data,
                               chr=chip_data.chr,
                               start=chip_data.start,
-                              ID=rna_data.id,
+                              geneID=rna_data.id,
                               nearest=nearest,
                               TSS=rna_data.getTSS(),
                               distance_to_TSS=distance_to_TSS,
@@ -1129,7 +1129,7 @@ def AnalyseNearestTSSToSummits(chip_seq,rna_seq,max_distance,
         logging.debug("")
     # Write the results to file
     if filename:
-        results.output(filename,('chr','start','ID','nearest','TSS',
+        results.output(filename,('chr','start','geneID','nearest','TSS',
                                  'distance_to_TSS',
                                  'distance_to_TES',
                                  'strand','in_the_gene',
@@ -1137,7 +1137,7 @@ def AnalyseNearestTSSToSummits(chip_seq,rna_seq,max_distance,
                                  'transcript_ids_inbetween'))
     # Write the results to a spreadsheet
     if xls: results.output_xls(xls,'TSSToSummits',
-                               ('chr','start','ID','nearest','TSS',
+                               ('chr','start','geneID','nearest','TSS',
                                 'distance_to_TSS',
                                 'distance_to_TES',
                                 'strand','in_the_gene',
@@ -1201,7 +1201,7 @@ def AnalyseNearestPeaksToTranscripts(rna_seq,chip_seq,window_width,
             chip_peaks = ChIPSeqData()
             logging.debug("\t\tNo peaks found")
         # Store results
-        result = { 'ID': rna_data.id,
+        result = { 'geneID': rna_data.id,
                    'chr_RNA': rna_data.chr,
                    'start': rna_data.start,
                    'end': rna_data.end,
@@ -1224,7 +1224,7 @@ def AnalyseNearestPeaksToTranscripts(rna_seq,chip_seq,window_width,
         max_peaks = max(len(chip_peaks),max_peaks)
     # Construct header line for output
     if filename or xls:
-        header = ["ID","chr_RNA","start","end","strand",
+        header = ["geneID","chr_RNA","start","end","strand",
                   "differentially_expressed","number_of_peaks"]
         for i in range(max_peaks):
             header.extend(["chr_ChIP_"+str(i+1),
@@ -1343,7 +1343,7 @@ def AnalyseNearestTranscriptsToPeakEdges(chip_seq,rna_seq,
                               chr=chip_peak.chr,
                               start=chip_peak.start,
                               end=chip_peak.end,
-                              ID=rna_data.id,
+                              geneID=rna_data.id,
                               TSS=rna_data.getTSS(),
                               TES=rna_data.getTES(),
                               strand=rna_data.strand,
@@ -1370,7 +1370,7 @@ def AnalyseNearestTranscriptsToPeakEdges(chip_seq,rna_seq,
     # Construct header line and summary results for output
     if filename or xls:
         # Header line
-        header = ["chr","start","end","ID","strand","TSS","TES",
+        header = ["chr","start","end","geneID","strand","TSS","TES",
                   "dist_closest_edge",
                   "dist_TSS","dist_TES",
                   "overlap_transcript",
@@ -1422,15 +1422,15 @@ Cutoff distance from peaks\t%d bp
 
 <style font=bold>Description of output fields:</style>
 chr\tchromosome
-start\tstart position for the peak (assumed to be the summit)
-ID\tID for a closest gene/transcript
+summit\tposition of the peak summit
+geneID\tgeneID for a closest differentially expressed gene/transcript
 nearest\ta string of the form "1 of 4", "2 of 3" etc, indicating how many transcripts are listed for the peak, and which one of these the current transcript is.
 TSS\tthe TSS position for the gene/transcript
-distance_to_TSS\tdistance from the peak start (= summit) to the gene TSS
-distance_to_TES\tdistance from the peak start (= summit) to the gene TES
+distance_to_TSS\tdistance from the peak summit to the gene TSS
+distance_to_TES\tdistance from the peak summit to the gene TES
 strand\tthe strand direction
-in_the_gene\tindicates whether the peak start position (= summit) lies within the gene coordinates (either `YES` or `NO`)
-transcripts_inbetween\tnumber of genes lying between the peak and the current gene
+in_the_gene\tindicates whether the peak summit lies within the gene coordinates (either `YES` or `NO`)
+transcripts_inbetween\tnumber of genes (differentially expressed or not) lying between the peak and the current gene
 transcript_ids_inbetween\tlist of gene names lying between the peak and the current gene
 """
 
@@ -1446,7 +1446,7 @@ Cutoff distance from peaks\t%d bp
 chr\tchromosome
 start\tpeak start position
 end\tpeak end position
-ID\tID for a closest gene/transcript
+geneID\tgeneID for a closest gene/transcript
 strand\tthe strand direction
 TSS\tgene TSS position
 TES\tgene TES position
@@ -1466,17 +1466,17 @@ xls_notes_for_nearest_peaks_to_transcripts = \
 Window width:\t%d bp
 
 <style font=bold>Description of output fields:</style>
-ID\tgene/transcript ID
+geneID\tgene/transcript ID
 chr_RNA\tchromosome
 start\tgene start position
 end\tgene end position
 strand\tthe strand direction
-differentially_expressed\tthe value of the "significance flag" supplied on input
+differentially_expressed\t1 indicates gene is differentially expressed, 0 indicates no significant
 number_of_peaks\tthe number of ChIP peaks found within the "window" distance of the gene TSS
 
 Then for each peak (closest first) there are three columns:
 chr_ChIP_#\tchromosome (same as `chr_RNA` above)
-summit_#\tpeak start (=summit)
+summit_#\tpeak summit
 distance_#\tdistance from the peak summit to the gene TSS
 """
 
