@@ -1623,8 +1623,10 @@ if __name__ == "__main__":
         rnaseq_file = arguments[0]
         chipseq_file = arguments[1]
 
-    # Report version
+    # Report version and authors
     p.print_version()
+    print "Authors: Ian Donaldson, Leo Zeef and Peter Briggs"
+    print
 
     # Sort out analysis settings
     do_chip_analyses = options.do_chip_analyses
