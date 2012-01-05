@@ -141,7 +141,7 @@ chip_peaks_ex5 = \
 #
 # NearestTranscriptToPeak-ex3.txt
 nearest_transcript_to_peak_ex3 = \
-"""#chr	start	ID	nearest	TSS	distance_to_TSS	distance_to_TES	strand	in_the_gene	transcripts_inbetween	transcript_ids_inbetween
+"""#chr	start	geneID	nearest	TSS	distance_to_TSS	distance_to_TES	strand	in_the_gene	transcripts_inbetween	transcript_ids_inbetween
 chr2L	66811	CG31973-RD	1 of 4	59243	-7568	-41409	-	NO	0	
 chr2L	66811	CG2674-RC	2 of 4	107926	41115	47622	+	NO	3	CG2674-RE;CG2674-RB;CG2674-RA
 chr2L	66811	CG2674-RJ	3 of 4	108094	41283	47623	+	NO	8	CG2674-RE;CG2674-RB;CG2674-RA;CG2674-RC;CG2674-RD;CG2674-RH;CG2674-RF;CG2674-RI
@@ -154,7 +154,7 @@ chr2L	605950	CG17941-RA	3 of 3	714969	109019	34071	-	NO	0	"""
 #
 # NearestTranscriptToPeakEdge-ex3.txt
 nearest_transcript_to_peak_edge_ex3 = \
-"""#chr	start	end	ID	strand	TSS	TES	dist_closest_edge	dist_TSS	dist_TES	overlap_transcript	overlap_promoter
+"""#chr	start	end	geneID	strand	TSS	TES	dist_closest_edge	dist_TSS	dist_TES	overlap_transcript	overlap_promoter
 chr2L	66711	66911	CG31973-RD	-	59243	25402	7468	7468	41309	0	0
 chr2L	66711	66911	CG31973-RA	-	59243	25402	7468	7468	41309	0	0
 chr2L	66711	66911	CG31973-RE	-	59243	25402	7468	7468	41309	0	0
@@ -170,7 +170,7 @@ chr2L	605850	606050	CG2762-RA	+	523467	540542	65308	82383	65308	0	0"""
 #
 # NearestTranscriptTSSToPeakEdge-ex3.txt
 nearest_transcript_tss_to_peak_edge_ex3 = \
-"""#chr	start	end	ID	strand	TSS	TES	dist_closest_edge	dist_TSS	dist_TES	overlap_transcript	overlap_promoter
+"""#chr	start	end	geneID	strand	TSS	TES	dist_closest_edge	dist_TSS	dist_TES	overlap_transcript	overlap_promoter
 chr2L	66711	66911	CG31973-RD	-	59243	25402	7468	7468	41309	0	0
 chr2L	66711	66911	CG31973-RA	-	59243	25402	7468	7468	41309	0	0
 chr2L	66711	66911	CG31973-RE	-	59243	25402	7468	7468	41309	0	0
@@ -186,7 +186,7 @@ chr2L	605850	606050	CG17941-RA	-	714969	640021	33971	108919	33971	0	0"""
 #
 # NearestPeakToTranscript-ex4.txt
 nearest_peak_to_transcript_ex4 = \
-"""#ID	chr_RNA	start	end	strand	differentially_expressed	number_of_peaks	chr_ChIP	summit	distance	chr_ChIP	summit	distance	chr_ChIP	summit	distance
+"""#geneID	chr_RNA	start	end	strand	differentially_expressed	number_of_peaks	chr_ChIP	summit	distance	chr_ChIP	summit	distance	chr_ChIP	summit	distance
 CG31973-RD	chr2L	25402	59243	-	1	1	chr2L	66811	-7568	---	---	---	---	---	---
 CG31973-RA	chr2L	25402	59243	-	0	0	---	---	---	---	---	---	---	---	---
 CG14026-RA	chr2L	5218996	5271354	-	1	0	---	---	---	---	---	---	---	---	---
@@ -590,7 +590,7 @@ class TestAnalyseNearestTSSToSummits(unittest.TestCase):
             expected = nearest_transcript_to_peak_ex3.split('\n')[i+1]
             # Build a line from the actual results
             items = []
-            for field in ('chr','start','ID','nearest','TSS',
+            for field in ('chr','start','geneID','nearest','TSS',
                           'distance_to_TSS','distance_to_TES',
                           'strand','in_the_gene','transcripts_inbetween',
                           'transcript_ids_inbetween'):
@@ -638,7 +638,7 @@ class TestAnalyseNearestTranscriptsToPeakEdges(unittest.TestCase):
             expected = nearest_transcript_to_peak_edge_ex3.split('\n')[i+1]
             # Build a line from the actual results
             items = []
-            for field in ('chr','start','end','ID','strand','TSS','TES',
+            for field in ('chr','start','end','geneID','strand','TSS','TES',
                           'dist_closest_edge','dist_TSS','dist_TES',
                           'overlap_transcript','overlap_promoter'):
                 items.append(str(results[i][field]))
@@ -668,7 +668,7 @@ class TestAnalyseNearestTranscriptsToPeakEdges(unittest.TestCase):
             expected = nearest_transcript_tss_to_peak_edge_ex3.split('\n')[i+1]
             # Build a line from the actual results
             items = []
-            for field in ('chr','start','end','ID','strand','TSS','TES',
+            for field in ('chr','start','end','geneID','strand','TSS','TES',
                           'dist_closest_edge','dist_TSS','dist_TES',
                           'overlap_transcript','overlap_promoter'):
                 items.append(str(results[i][field]))
@@ -712,7 +712,7 @@ class TestAnalyseNearestPeaksToTranscripts(unittest.TestCase):
             expected = nearest_peak_to_transcript_ex4.split('\n')[i+1]
             # Build a line from the actual results
             items = []
-            for field in ('ID','chr_RNA','start','end','strand',
+            for field in ('geneID','chr_RNA','start','end','strand',
                           'differentially_expressed','number_of_peaks',
                           'chr_ChIP_1','summit_1','distance_1',
                           'chr_ChIP_2','summit_2','distance_2',
