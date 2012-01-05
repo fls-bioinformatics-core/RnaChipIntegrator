@@ -1288,6 +1288,13 @@ def AnalyseNearestTranscriptsToPeakEdges(chip_seq,rna_seq,
     if chip_seq.isSummit():
         logging.warning("The supplied ChIP data only defines summits")
         logging.warning("This analysis is intended to work with regions")
+    # Create subset of "significant" i.e. flagged RNA-seq data
+    if rna_seq.isFlagged():
+        significant_rna_seq = rna_seq.filterByFlag(matchFlag=1)
+        logging.debug("%d RNA-seq records after filtering on flag" % \
+                          len(significant_rna_seq))
+    else:
+        significant_rna_seq = rna_seq
     # Check mode of operation
     if not TSS_only:
         logging.debug("Use both TSS and TES in analysis (TSS_only = %s)" %
@@ -1303,7 +1310,7 @@ def AnalyseNearestTranscriptsToPeakEdges(chip_seq,rna_seq,
         # Note that this method does not discriminate between situations
         # where the transcript lies partially or wholly within the
         # binding region
-        rna_chr = rna_seq.filterByChr(chip_peak.chr)
+        rna_chr = significant_rna_seq.filterByChr(chip_peak.chr)
         if not TSS_only:
             rna_chr = rna_chr.sortByClosestEdgeTo(chip_peak.start,
                                                   chip_peak.end)
@@ -1691,6 +1698,9 @@ if __name__ == "__main__":
         print "%d RNA-seq records read in" % len(rna_seq)
         if rna_seq.isFlagged():
             print "RNA-seq data is flagged"
+            print "\t%d gene records flagged as differentially expressed" % \
+                len(rna_seq.filterByFlag(matchFlag=1))
+            print "\tOnly these will be used in the analyses"
     if not len(chip_seq):
         print "ERROR No ChIP-seq data read in, stopping"
         sys.exit(1)

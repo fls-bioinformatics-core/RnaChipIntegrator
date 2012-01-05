@@ -184,6 +184,38 @@ chr2L	605850	606050	CG2851-RA	-	594688	583540	11162	11162	22310	0	0
 chr2L	605850	606050	CG2762-RA	+	523467	540542	65308	82383	65308	0	0
 chr2L	605850	606050	CG17941-RA	-	714969	640021	33971	108919	33971	0	0"""
 #
+# NearestTranscriptToPeakEdge_diff_expression-ex3.txt
+nearest_transcript_to_peak_edge_diff_expression_ex3 = \
+"""#chr	start	end	geneID	strand	TSS	TES	dist_closest_edge	dist_TSS	dist_TES	overlap_transcript	overlap_promoter
+chr2L	66711	66911	CG31973-RD	-	59243	25402	7468	7468	41309	0	0
+chr2L	66711	66911	CG2674-RC	+	107926	114433	41015	41015	47522	0	0
+chr2L	66711	66911	CG2674-RJ	+	108094	114434	41183	41183	47523	0	0
+chr2L	66711	66911	CG2674-RG	+	109608	114433	42697	42697	47522	0	0
+chr2L	249077	249277	CG3625-RB	-	285777	283385	34108	36500	34108	0	0
+chr2L	249077	249277	CG3625-RC	-	291011	283385	34108	41734	34108	0	0
+chr2L	249077	249277	CG2674-RJ	+	108094	114434	134643	140983	134643	0	0
+chr2L	249077	249277	CG2674-RC	+	107926	114433	134644	141151	134644	0	0
+chr2L	605850	606050	CG2851-RA	-	594688	583540	11162	11162	22310	0	0
+chr2L	605850	606050	CG17941-RA	-	714969	640021	33971	108919	33971	0	0
+chr2L	605850	606050	CG2762-RA	+	523467	540542	65308	82383	65308	0	0
+chr2L	605850	606050	CG3625-RC	-	291011	283385	314839	314839	322465	0	0"""
+#
+# NearestTranscriptTSSToPeakEdge_diff_expression-ex3.txt
+nearest_transcript_tss_to_peak_edge_diff_expression_ex3 = \
+"""#chr	start	end	geneID	strand	TSS	TES	dist_closest_edge	dist_TSS	dist_TES	overlap_transcript	overlap_promoter
+chr2L	66711	66911	CG31973-RD	-	59243	25402	7468	7468	41309	0	0
+chr2L	66711	66911	CG2674-RC	+	107926	114433	41015	41015	47522	0	0
+chr2L	66711	66911	CG2674-RJ	+	108094	114434	41183	41183	47523	0	0
+chr2L	66711	66911	CG2674-RG	+	109608	114433	42697	42697	47522	0	0
+chr2L	249077	249277	CG3625-RB	-	285777	283385	34108	36500	34108	0	0
+chr2L	249077	249277	CG3625-RC	-	291011	283385	34108	41734	34108	0	0
+chr2L	249077	249277	CG2674-RG	+	109608	114433	134644	139469	134644	0	0
+chr2L	249077	249277	CG2674-RJ	+	108094	114434	134643	140983	134643	0	0
+chr2L	605850	606050	CG2851-RA	-	594688	583540	11162	11162	22310	0	0
+chr2L	605850	606050	CG2762-RA	+	523467	540542	65308	82383	65308	0	0
+chr2L	605850	606050	CG17941-RA	-	714969	640021	33971	108919	33971	0	0
+chr2L	605850	606050	CG3625-RC	-	291011	283385	314839	314839	322465	0	0"""
+#
 # NearestPeakToTranscript-ex4.txt
 nearest_peak_to_transcript_ex4 = \
 """#geneID	chr_RNA	start	end	strand	differentially_expressed	number_of_peaks	chr_ChIP	summit	distance	chr_ChIP	summit	distance	chr_ChIP	summit	distance
@@ -624,6 +656,11 @@ class TestAnalyseNearestTranscriptsToPeakEdges(unittest.TestCase):
         chip_seq = ChIPSeqData('ChIP_peaks_binding_region-ex3.txt')
         promoter_region = (10000,2500)
         max_closest=4
+        # Remove the flag from the gene data
+        self.assertTrue(rna_seq.isFlagged(),"initial gene data should be flagged")
+        for data in rna_seq:
+            data.flag = None
+        self.assertFalse(rna_seq.isFlagged(),"failed to remove flag on gene data")
         # Run the analysis
         results = AnalyseNearestTranscriptsToPeakEdges(chip_seq,
                                                        rna_seq,
@@ -645,7 +682,38 @@ class TestAnalyseNearestTranscriptsToPeakEdges(unittest.TestCase):
             actual = '\t'.join(items)
             self.assertEqual(actual,expected,
                              "Result differs for line %s\nRef:%s\nAct:%s" % \
-                                 (i,expected,actual))
+                                 (i+1,expected,actual))
+
+    def test_AnalyseNearestTranscriptsToPeakEdges_with_diff_expression(self):
+        # Initialise data
+        rna_seq = RNASeqData('Transcripts-ex3.txt')
+        chip_seq = ChIPSeqData('ChIP_peaks_binding_region-ex3.txt')
+        promoter_region = (10000,2500)
+        max_closest=4
+        # Check the differential expression flag on the gene data
+        self.assertTrue(rna_seq.isFlagged(),"gene data should be flagged")
+        # Run the analysis
+        results = AnalyseNearestTranscriptsToPeakEdges(chip_seq,
+                                                       rna_seq,
+                                                       promoter_region,
+                                                       max_closest)
+        # Verify the results are as expected
+        self.assertEqual(len(results),
+                         nearest_transcript_to_peak_edge_diff_expression_ex3.count('\n'),
+                         "Didn't get expected number of results")
+        for i in range(len(results)):
+            # Get the expected line from the reference output
+            expected = nearest_transcript_to_peak_edge_diff_expression_ex3.split('\n')[i+1]
+            # Build a line from the actual results
+            items = []
+            for field in ('chr','start','end','geneID','strand','TSS','TES',
+                          'dist_closest_edge','dist_TSS','dist_TES',
+                          'overlap_transcript','overlap_promoter'):
+                items.append(str(results[i][field]))
+            actual = '\t'.join(items)
+            self.assertEqual(actual,expected,
+                             "Result differs for line %s\nRef:%s\nAct:%s" % \
+                                 (i+1,expected,actual))
 
     def test_AnalyseNearestTranscriptTSSToPeakEdges(self):
         # Initialise data
@@ -653,6 +721,11 @@ class TestAnalyseNearestTranscriptsToPeakEdges(unittest.TestCase):
         chip_seq = ChIPSeqData('ChIP_peaks_binding_region-ex3.txt')
         promoter_region = (10000,2500)
         max_closest=4
+        # Remove the flag from the gene data
+        self.assertTrue(rna_seq.isFlagged(),"initial gene data should be flagged")
+        for data in rna_seq:
+            data.flag = None
+        self.assertFalse(rna_seq.isFlagged(),"failed to remove flag on gene data")
         # Run the analysis
         results = AnalyseNearestTranscriptsToPeakEdges(chip_seq,
                                                        rna_seq,
@@ -675,7 +748,39 @@ class TestAnalyseNearestTranscriptsToPeakEdges(unittest.TestCase):
             actual = '\t'.join(items)
             self.assertEqual(actual,expected,
                              "Result differs for line %s\nRef:%s\nAct:%s" % \
-                                 (i,expected,actual))
+                                 (i+1,expected,actual))
+
+    def test_AnalyseNearestTranscriptTSSToPeakEdges_with_diff_expression(self):
+        # Initialise data
+        rna_seq = RNASeqData('Transcripts-ex3.txt')
+        chip_seq = ChIPSeqData('ChIP_peaks_binding_region-ex3.txt')
+        promoter_region = (10000,2500)
+        max_closest=4
+        # Check the differential expression flag on the gene data
+        self.assertTrue(rna_seq.isFlagged(),"gene data should be flagged")
+        # Run the analysis
+        results = AnalyseNearestTranscriptsToPeakEdges(chip_seq,
+                                                       rna_seq,
+                                                       promoter_region,
+                                                       max_closest,
+                                                       TSS_only=True)
+        # Verify the results are as expected
+        self.assertEqual(len(results),
+                         nearest_transcript_tss_to_peak_edge_diff_expression_ex3.count('\n'),
+                         "Didn't get expected number of results")
+        for i in range(len(results)):
+            # Get the expected line from the reference output
+            expected = nearest_transcript_tss_to_peak_edge_diff_expression_ex3.split('\n')[i+1]
+            # Build a line from the actual results
+            items = []
+            for field in ('chr','start','end','geneID','strand','TSS','TES',
+                          'dist_closest_edge','dist_TSS','dist_TES',
+                          'overlap_transcript','overlap_promoter'):
+                items.append(str(results[i][field]))
+            actual = '\t'.join(items)
+            self.assertEqual(actual,expected,
+                             "Result differs for line %s\nRef:%s\nAct:%s" % \
+                                 (i+1,expected,actual))
 
 ########################################################################
 #
