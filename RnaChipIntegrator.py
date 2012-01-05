@@ -1692,7 +1692,7 @@ if __name__ == "__main__":
 
     # Check we have data
     if not len(rna_seq):
-        print "ERROR No RNA-seq data read in, stopping"
+        logging.error("No RNA-seq data read in")
         sys.exit(1)
     else:
         print "%d RNA-seq records read in" % len(rna_seq)
@@ -1702,7 +1702,7 @@ if __name__ == "__main__":
                 len(rna_seq.filterByFlag(matchFlag=1))
             print "\tOnly these will be used in the analyses"
     if not len(chip_seq):
-        print "ERROR No ChIP-seq data read in, stopping"
+        logging.error("No ChIP-seq data read in")
         sys.exit(1)
     else:
         print "%d ChIP-seq records read in" % len(chip_seq)
