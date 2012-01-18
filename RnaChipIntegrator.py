@@ -1598,12 +1598,12 @@ if __name__ == "__main__":
                                  "(NearestTranscriptsToPeakEdge).")
     group.add_option('--edge-cutoff',action="store",dest="max_edge_distance",
                      default=max_edge_distance,type='int',
-                     help="Maximum distance a transcript TSS can be from the peak "+
-                     "edge before being omitted from analysis. Set to "+
+                     help="Maximum distance a transcript edge can be from the peak "+
+                     "edge before being omitted from the analysis. Set to "+
                      "zero to indicate no cut-off (default %d bp)" % max_edge_distance)
     group.add_option('--number',action="store",dest="max_closest",
                      default=max_closest,type='int',
-                     help="Maximum number of transcripts to report from "+
+                     help="Maximum number of transcripts per peak to report from "+
                      "from the analysis (default %d)" % max_closest)
     group.add_option('--promoter_region',action="store",dest="promoter_region",
                      default="%d,%d" % promoter_region,
