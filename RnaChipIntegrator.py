@@ -48,13 +48,11 @@ logging.basicConfig(format='%(levelname)s: %(message)s')
 # Get the Spreadsheet module
 try:
     import Spreadsheet
+    __imported_spreadsheet__ = True
 except ImportError:
-    logging.error("Failed to import the Spreadsheet module")
-    logging.error("Set your PYTHONPATH to include the directory with this module, or get the")
-    logging.error("latest version from github via:")
-    logging.error("https://github.com/fls-bioinformatics-core/genomics/blob/master/share/Spreadsheet.py")
-    logging.error("and ensure that the underlying xlwt, xlrd and xlutils libraries are installed")
-    sys.exit(1)
+    logging.warning("Failed to import the Spreadsheet module")
+    logging.warning("Unable to output XLS file")
+    __imported_spreadsheet__ = False
 
 #######################################################################
 # Class definitions
@@ -1642,6 +1640,11 @@ if __name__ == "__main__":
     max_edge_distance = options.max_edge_distance
     max_closest = options.max_closest
     write_xls_out = options.write_xls_out
+
+    # Check if XLS output is available
+    if write_xls_out and not __imported_spreadsheet__:
+        logging.warning("Spreadsheet module is unavailable: unable to write output XLS file")
+        write_xls_out = False
 
     # Promoter region
     promoter_region = (abs(int(options.promoter_region.split(',')[0])),
