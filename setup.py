@@ -12,7 +12,7 @@ This will install RnaChipIntegrator and its dependencies and provide the
 'RnaChipIntegrator' command.
 """
 
-from setuptools import setup, find_packages
+from setuptools import setup
 import RnaChipIntegrator
 setup(
     name = "RnaChipIntegrator",
@@ -20,7 +20,6 @@ setup(
     maintainer = 'Peter Briggs',
     maintainer_email = 'peter.briggs@manchester.ac.uk',
     license = 'Artistic License 2.0',
-    packages = find_packages(),
     py_modules = ['RnaChipIntegrator','Spreadsheet'],
     install_requires = ['xlwt >= 0.7.2',
                         'xlrd >= 0.7.1',
