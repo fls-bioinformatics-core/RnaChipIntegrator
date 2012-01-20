@@ -4,8 +4,9 @@ RnaChipIntegrator.py: analyse RNA-seq and ChIP-seq data
 Introduction
 ------------
 
-This program implements a number of different analyses of RNA-seq data combined
-with ChIP-seq data (and vice versa):
+This program implements a number of different analyses of genomic feature data
+(originally data from RNA-seq experiments) combined with ChIP-seq data (and vice
+versa):
 
 * **ChIP-seq data** consists of a number of peaks, which are described by the
   chromosome name plus either the summit (essentially a single point) or by
@@ -32,13 +33,15 @@ is reported.
 
 The following analysis methods are available:
 
-1.  "**NearestTranscriptsToPeaks**"
+1.  "**NearestTSSToSummits**"
 
     For each ChIP peak, consider only the subset of genes that are flagged as
-    "significant" and which lie on the same chromosome; from that subset find
-    the genes with the closest _TSS position_ to the _peak summit_ within a
+    differentially expressed and which lie on the same chromosome; from that subset,
+    find the genes with the closest _TSS position_ to the _peak summit_ within a
     user-defined cut-off distance (default 130 kb), regardless of whether they
-    lie upstream or downstream.
+    lie upstream or downstream:
+
+    <img src="rnachipintegrator_nearestTSStoSummit.png" width=500>
 
     (See the section below on _Input Files_ for an explanation of the
     significance flag for input gene/transcript data.)
@@ -47,7 +50,9 @@ The following analysis methods are available:
 
     For each ChIP peak, consider only the subset of genes which lie on the
     same chromosome; find the genes with the smallest distance from _either
-    their TSS or TES_ to the nearest _peak edge_.
+    their TSS or TES_ to the nearest _peak edge_:
+
+    <img src="rnachipintegrator_nearestEdgetoPeak.png" width=500>
 
     (Note that in this analysis all genes are considered, regardless of
     whether or not they are flagged as "significant".)
@@ -56,15 +61,13 @@ The following analysis methods are available:
 
     For each ChIP peak, consider only the subset of genes which lie on the
     same chromosome; find the genes with the smallest distance from their
-    _TSS position_ to the nearest _peak edge_.
+    _TSS position_ to the nearest _peak edge_:
+
+    <img src="rnachipintegrator_nearestTSStoPeak.png" width=500>
 
     (Note that in this analysis all genes are considered, regardless of
     whether or not they are flagged as "significant".)
 
-(A fourth method "_ClosestTranscriptsToPeaksInEachDirection_", which looks
-for the single nearest transcript TSS to each peak summit on each strand
-and in each upstream and downstream position - is only partially
-implemented.)
 
 ### Nearest ChIP peaks to genes ###
 
@@ -75,17 +78,12 @@ The following analysis methods are available:
     Matches peaks to genes. For each gene transcript flagged as "significant",
     find all ChIP peaks on the same chromosome for which the _peak summit_
     lies within a specified "window" around the gene _TSS position_
-    (default is 20 kb upstream and downstream from the TSS).
+    (default is 20 kb upstream and downstream from the TSS):
+
+    <img src="rnachipintegrator_nearestTSStoSummit.png" width=500>
 
     (See the section below on _Input Files_ for an explanation of the
     significance flag for input gene/transcript data.)
-
-Set up and prerequisites
-------------------------
-
-The program depends on the `Spreadsheet` module from the FLS Bioinformatics
-Core `genomics` repository, which in turn also needs the `xlwt`, `xlrd` and
-`xlutils` 3rd party Python modules.
 
 Program usage
 -------------
@@ -96,7 +94,7 @@ To run the analyses:
 
 The available command line options set parameters for different analyses:
 
-_Options for NearestTranscriptsToPeaks_
+_Options for NearestTSSToSummits_
 
 *   `--cutoff=<max_distance>`: sets the maximum distance that transcript
     TSS values can be from the peak summit in the
@@ -121,15 +119,19 @@ _Options for NearestPeaksToTranscripts_
 
 _General options_
 
+*   `--version`: show program's version number and exit
+*   `-h`,`--help`: show the help message and exit
 *   `--chip`: do ChIP-seq-centric analyses
 *   `--rna`:  do RNA-seq-centric analyses
 
-(If neither or both `--chip`/`--rna` are specified then all analyses are
-performed.)
+(If neither or both `--chip`/`--rna` are specified then all appropriate analyses
+are performed.)
 
-*   `--project=<name>`: set a basename to be used for output files from the
-    analyses; see the section on _Output files_ below.
-*   `--debug`: produce screen output for each analysis.
+*   `--project=BASENAME`: set basename for output files; output from each
+    analysis method will use this, with the method name appended (defaults to the
+    input file names; see the section on _Output files_ below).
+*   `--no-xls`: don't write an XLS file
+*   `--debug`: verbose output for debugging.
 
 Input Files
 -----------
@@ -159,15 +161,12 @@ discarded:
 >    `ID | chr | start | end | strand | [flag]`
 
 If there is a 6th column then the program attempts to process this as a
-_significance flag_. The only valid values for significance flags are 1 and 0.
-If any other values appear in this line then the dataset as a whole is
-not considered to be flagged.
-
-(Use the `rearrange_columns.py` program to put columns into the correct order;
-see appendix A.)
+_significance flag_, which indicates whether the gene was differentially
+expressed. The only valid values for this flags are 1 and 0. If any other values
+appear in this line then the dataset as a whole is not considered to be flagged.
 
 `ID` is an arbitrary (to the analysis program) identifier for the gene or
-transcript.
+transcript - this is used to identify genes in the output.
 
 Output Files
 ------------
@@ -175,7 +174,7 @@ Output Files
 The following files are produced from each run; the "basename" is set by the
 `--project` command line option, and defaults to the name of the program.
 
-1.  **NearestTranscriptsToPeaks**: `<basename>_peaks_NearestTranscriptsToPeaks.txt`
+1.  **NearestTSSToSummits**: `<basename>_peaks_NearestTSSToSummits.txt`
 
     Each line has one ChIP peak matched to a closest gene transcript,
     with the following tab-delimited fields:
@@ -205,9 +204,9 @@ The following files are produced from each run; the "basename" is set by the
     > `in_the_gene`: indicates whether the peak start position (= summit) lies
     > within the gene coordinates (either `YES` or `NO`).
     >
-    > `transcripts_inbetween`: for analyses involving "flagged" genes, this is
-    > the number of unflagged genes which lie closer to the peak position than
-    > the current gene.
+    > `transcripts_inbetween`: for analyses involving "flagged" (i.e. differentially
+    > expressed genes, this is the number of unflagged genes which lie closer to the
+    > peak position than the current gene.
     >
     > `transcript_ids_inbetween`: for analyses involving "flagged" genes, this
     > is a semi-colon separated list of the unflagged gene names between the
@@ -299,20 +298,6 @@ The following files are produced from each run; the "basename" is set by the
     There is also a second file called
     `<basename>_peaks_NearestTSSToPeakEdges_summary.txt` which contains the
     data for just the single nearest transcript to each gene.
-
-Issues
-------
-
-1.   Not all analyses might be appropriate/useful for all data (e.g. peak
-     summit data versus peak regions).
-
-2.   "Flagged" gene/transcript data is not handled consistently (i.e. the
-     flag is accounted for in some analyses but not others).
-
-3.   There is potential ambiguity in analyses which consider peak regions, if
-     the peak is partially or wholly within the gene/transcript.
-
-4.   (Internal) The outputs could be separated from the analyses.
 
 
 Appendix A: `rearrange_columns.py`: manipulating tab-delimited data files
