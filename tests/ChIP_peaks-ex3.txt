@@ -1,4 +1,0 @@
-#chr	SummitMidpoint 	SummitMidpoint+1
-chr2L	66811	66812
-chr2L	249177	249178
-chr2L	605950	605951
