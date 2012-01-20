@@ -1,3 +1,9 @@
+2012-01-20  Peter Briggs  <peter.briggs@manchester.ac.uk>
+
+	* Version 0.3.1
+	- Added setup.py into an installable Python package.
+	- Updated documentation.
+
 2012-01-05  Peter Briggs  <peter.briggs@manchester.ac.uk>
 
 	* Version 0.3.0
