@@ -1532,8 +1532,12 @@ def output_results(filen,results):
 # Main program
 #######################################################################
 
-if __name__ == "__main__":
+def main():
+    """Run the RnaChipIntegrator program
 
+    This function should be invoked from __main__ to execute the program in
+    command line mode.
+    """
     # Initialisations
     do_chip_analyses = False
     do_rna_analyses = False
@@ -1817,4 +1821,8 @@ if __name__ == "__main__":
     # Finished
     print "Done"
     sys.exit()
+
+if __name__ == "__main__":
+    # Run the program in command line mode
+    main()
                                       
