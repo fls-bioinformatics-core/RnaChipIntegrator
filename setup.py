@@ -26,5 +26,13 @@ setup(
                         'xlutils >= 1.4.1'],
     entry_points = { 'console_scripts':
                          ['RnaChipIntegrator = RnaChipIntegrator:main']
-                     }
+                     },
+    data_files = [ ('RnaChipIntegrator', ['README.markdown',
+                                          'LICENCE',
+                                          'INSTALL',
+                                          'ChangeLog']),
+                   ('RnaChipIntegrator/doc', ['doc/README.markdown',
+                                              'doc/rnachipintegrator_nearestEdgetoPeak.png',
+                                              'doc/rnachipintegrator_nearestTSStoSummit.png',
+                                              'doc/rnachipintegrator_nearestTSStoPeak.png']) ]
 )
