@@ -50,6 +50,11 @@ that explains the data from each analysis.
 For full descriptions of each analysis see the `README` document in the `doc`
 subdirectory.
 
+Installation
+------------
+
+See the `INSTALL` document.
+
 More information
 ----------------
 
