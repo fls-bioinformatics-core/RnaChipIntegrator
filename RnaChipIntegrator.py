@@ -1,7 +1,12 @@
 #!/bin/env python
 #
 #     RnaChipIntegrator.py: analyse RNA-seq and ChIP-seq data
-#     Copyright (C) University of Manchester 2011-12 Peter Briggs, Leo Zeef & Ian Donaldson
+#     Copyright (C) University of Manchester 2011-12 Peter Briggs, Leo Zeef
+#     & Ian Donaldson
+#
+#     This code is free software; you can redistribute it and/or modify it
+#     under the terms of the Artistic License 2.0 (see the file LICENSE
+#     included with the distribution).
 #
 ########################################################################
 #
