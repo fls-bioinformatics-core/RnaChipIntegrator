@@ -1,7 +1,7 @@
 #!/bin/env python
 #
 #     RnaChipIntegrator.py: analyse RNA-seq and ChIP-seq data
-#     Copyright (C) University of Manchester 2011 Peter Briggs
+#     Copyright (C) University of Manchester 2011-12 Peter Briggs, Leo Zeef & Ian Donaldson
 #
 ########################################################################
 #
@@ -11,20 +11,28 @@
 
 """RnaChipIntegrator.py
 
-Provides classes and functions for integrating/analysing RNA-seq and
-ChIP-seq data. __main__ provides a program for running these analyses
-from the command line.
+Utility for integrated analyses of RNA-seq and ChIP-seq data.
 
 Usage: RnaChipIntegrator.py [OPTIONS] <rna-data> <chip-data>
 
-RNA-seq data has at least 5 columns of data:
+The RNA-seq data file should have at least 5 columns of data for each
+gene or transcript:
 
 # ID  chr  start  end  strand
 
-Optionally there might be a 6th column (flag)
+Optionally there can be a 6th column, indicating whether the gene was
+differentially expressed (= 1) or not (= 0).
 
-ChIP-seq data has 3 columns of data:
-# chr  start  end"""
+The ChIP-seq data file should have 3 columns of data for each ChIP peak:
+
+# chr  start  end
+
+The data can be either peak summits (in which case 'end' - 'start' = 1),
+or peak regions (with 'start' and 'end' indicating the extent).
+
+The program performs analyses to locate the nearest peaks to each
+transcript and vice versa using various criteria to define "nearest".
+"""
 
 #######################################################################
 # Module metadata
