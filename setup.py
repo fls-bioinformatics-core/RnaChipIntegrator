@@ -28,7 +28,7 @@ setup(
                          ['RnaChipIntegrator = RnaChipIntegrator:main']
                      },
     data_files = [ ('RnaChipIntegrator', ['README.markdown',
-                                          'LICENCE',
+                                          'LICENSE',
                                           'INSTALL',
                                           'ChangeLog']),
                    ('RnaChipIntegrator/doc', ['doc/README.markdown',
