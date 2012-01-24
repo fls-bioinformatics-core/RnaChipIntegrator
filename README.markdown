@@ -2,9 +2,9 @@ RnaChipIntegrator: analyses of RNA-Seq and ChIP-Seq data
 ========================================================
 
 RnaChipIntegrator is a utility that performs integrated analyses of RNA-Seq
-and ChIP-Seq data, identifying the nearest ChIP peaks to each transcript. The
-analyses differ in the criteria that is used to calculate the distances
-between peaks and transcripts.
+and ChIP-Seq data, identifying the nearest ChIP peaks to each transcript, and
+vice versa. The individual analyses differ from each other according to the
+criteria that are used to calculate the distances between peaks and transcripts.
 
 The program was originally written specifically for RNA-Seq data but can be used
 with any set of genomic features e.g. canonical genes, CpG islands etc.
