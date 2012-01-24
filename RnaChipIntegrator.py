@@ -1554,18 +1554,19 @@ def main():
     p = optparse.OptionParser(usage="%prog [options] RNA-seq_data ChIP-seq_data",
                               version="%prog "+__version__,
                               description=
-                              "Implements various methods for reporting the nearest ChIP peaks "+
-                              "to genes/gene transcripts from RNA-seq data, and vice versa. "
-                              "ChIP-centric analyses report the nearest transcripts to each "+
-                              "ChIP peak; RNA-seq-centric analyses report the nearest peaks to "+
-                              "each transcript. 'RNA-seq_data' file must contain tab-delimited "+
-                              "columns 'ID,chr,start,end,strand[,flag,...]'. 'ChIP-seq_data' "+
-                              "file must contain tab-delimited columns 'chr,start,stop' and "+
-                              "defines either summits (start/stop differ by 1 bp) or regions "+
-                              "(start/stop extend over several bps)."+
-                              "The outputs are: one tab-delimited file for each analysis "+
-                              "performed (named after the appropriate input file unless "+
-                              "overriden by the --project option), and an XLS spreadsheet with "+
+                              "Perform analyses of RNA-Seq data (or any set of genomic features) "
+                              "with ChIP-Seq peak data, reporting nearest peaks to each feature "
+                              "(and vice versa) according to different criteria for calculating "
+                              "distances between them. ChIP-centric analyses report the nearest "
+                              "features to each peak; RNA-seq-centric analyses report the nearest "
+                              "peaks to each feature. Input 'RNA-seq_data' file must contain "
+                              "tab-delimited columns 'ID,chr,start,end,strand[,flag]'. "
+                              "Input 'ChIP-seq_data' file must contain tab-delimited columns "
+                              "'chr,start,stop' defining either summits (start/stop differ by 1 "
+                              "bp) or regions (start/stop extend over several bps). "
+                              "The outputs are: one tab-delimited file from each analysis "
+                              "performed (named after the appropriate input file unless "
+                              "overriden by the --project option), and an XLS spreadsheet with "
                               "one worksheet per analysis.")
 
     # General options
@@ -1582,18 +1583,6 @@ def main():
     p.add_option('--debug',action="store_true",dest="debug",
                      help="Verbose output for debugging")
 
-    # Options for NearestTSSToSummits
-    group = optparse.OptionGroup(p,"NearestTSSToSummits (ChIP-seq)",
-                                 description="For each ChIP peak summit, reports the "+
-                                 "transcripts with TSS positions that lie within the specified "+
-                                 "cut-off distance of the peak summit.")
-    group.add_option('--cutoff',action="store",dest="max_distance",
-                     default=max_distance,type='int',
-                     help="Maximum distance a transcript TSS can be from each peak "+
-                     "before being omitted from the analysis "+
-                     "(default %d bp)" % max_distance)
-    p.add_option_group(group)
-
     # Options for NearestPeaksToTranscripts
     group = optparse.OptionGroup(p,"NearestPeaksToTranscripts (RNA-seq)",
                                  description="For each transcript, reports the peaks with summit "+
@@ -1604,6 +1593,18 @@ def main():
                      help="Maximum distance a peak can be from each transcript TSS "+
                      "before being omitted from analysis "+
                      "(default %d bp)" % window_width)
+    p.add_option_group(group)
+
+    # Options for NearestTSSToSummits
+    group = optparse.OptionGroup(p,"NearestTSSToSummits (ChIP-seq)",
+                                 description="For each ChIP peak summit, reports the "+
+                                 "transcripts with TSS positions that lie within the specified "+
+                                 "cut-off distance of the peak summit.")
+    group.add_option('--cutoff',action="store",dest="max_distance",
+                     default=max_distance,type='int',
+                     help="Maximum distance a transcript TSS can be from each peak "+
+                     "before being omitted from the analysis "+
+                     "(default %d bp)" % max_distance)
     p.add_option_group(group)
 
     # Options for NearestTranscriptsToPeakEdge/NearestTSSToPeakEdge
