@@ -56,6 +56,13 @@ Installation
 
 See the `INSTALL` document.
 
+Examples
+--------
+
+Example data files can be found in the `examples` subdirectory, and which can be used
+as input to the program for test or demonstration purposes; see the `README` file in
+the same directory for more information.
+
 Licensing
 ---------
 
