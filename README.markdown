@@ -6,8 +6,9 @@ and ChIP-Seq data, identifying the nearest ChIP peaks to each transcript, and
 vice versa. The individual analyses differ from each other according to the
 criteria that are used to calculate the distances between peaks and transcripts.
 
-The program was originally written specifically for RNA-Seq data but can be used
-with any set of genomic features e.g. canonical genes, CpG islands etc.
+The program was originally written specifically for ChIP-Seq and RNA-Seq data but
+can be used with any set of genomic features e.g. canonical genes, CpG islands etc,
+or expression data e.g. microarrays.
 
 Basic usage
 -----------

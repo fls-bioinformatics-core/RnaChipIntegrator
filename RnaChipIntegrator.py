@@ -1550,17 +1550,18 @@ def main():
 
     # Set default logging level
     logging.getLogger().setLevel(logging.INFO)
-
     p = optparse.OptionParser(usage="%prog [options] RNA-seq_data ChIP-seq_data",
                               version="%prog "+__version__,
                               description=
-                              "Perform analyses of RNA-Seq data (or any set of genomic features) "
-                              "with ChIP-Seq peak data, reporting nearest peaks to each feature "
-                              "(and vice versa) according to different criteria for calculating "
-                              "distances between them. ChIP-centric analyses report the nearest "
-                              "features to each peak; RNA-seq-centric analyses report the nearest "
-                              "peaks to each feature. Input 'RNA-seq_data' file must contain "
-                              "tab-delimited columns 'ID,chr,start,end,strand[,flag]'. "
+                              "Perform analyses of RNA-Seq data (or any set of genomic features "
+                              "or expression data) with ChIP-Seq peaks, reporting nearest peaks "
+                              "to each feature (and vice versa) according to various criteria "
+                              "for calculating distances between them. ChIP-centric analyses "
+                              "report the nearest features to each peak; RNA-seq-centric "
+                              "analyses report the nearest peaks to each feature. "
+                              "Input 'RNA-seq_data' file must contain tab-delimited columns "
+                              "'ID,chr,start,end,strand[,flag]' (flag indicates differential "
+                              "expression, either 1=yes or 0=no). "
                               "Input 'ChIP-seq_data' file must contain tab-delimited columns "
                               "'chr,start,stop' defining either summits (start/stop differ by 1 "
                               "bp) or regions (start/stop extend over several bps). "
