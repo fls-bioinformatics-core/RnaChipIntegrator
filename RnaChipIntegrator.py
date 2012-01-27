@@ -1671,15 +1671,12 @@ def main():
 
     # Output basename
     if options.basename:
-        chip_basename = options.basename + "_peaks"
-        rna_basename = options.basename + "_transcripts"
-        if write_xls_out:
-            xls_out = options.basename + ".xls"
+        output_basename = options.basename
     else:
-        rna_basename = os.path.basename(os.path.splitext(rnaseq_file)[0])
-        chip_basename = os.path.basename(os.path.splitext(chipseq_file)[0])
-        if write_xls_out:
-            xls_out = chip_basename + "_summary.xls"
+        output_basename = os.path.basename(os.path.splitext(rnaseq_file)[0]) + \
+            "_vs_" + os.path.basename(os.path.splitext(chipseq_file)[0])
+    if write_xls_out:
+        xls_out = output_basename + ".xls"
 
     # Debugging output
     if options.debug: logging.getLogger().setLevel(logging.DEBUG)
@@ -1695,15 +1692,15 @@ def main():
         print "\tMax no. of closest genes : %d" % max_closest
         print "\tPromoter region          : -%d to %d (bp from TSS)" % \
             promoter_region
-        print "\tBasename for output files: %s" % chip_basename
     if do_rna_analyses:
         print ""
         print "RNA-seq analyses:"
         print "\tWindow width             : %d (bp)" % window_width
-        print "\tBasename for output files: %s" % rna_basename
+    print
+    print "Basename for output files        : %s" % output_basename
     if xls_out:
-        print ""
         print "Outputting results to XLS file   : %s" % xls_out
+    print
 
     # Initialise the data objects
     try:
@@ -1757,7 +1754,7 @@ def main():
     if do_chip_analyses:
         if chip_seq.isSummit():
             # "Nearest TSS to summit" analysis
-            outfile = chip_basename+"_NearestTSSToSummits.txt"
+            outfile = output_basename+"_NearestTSSToSummits.txt"
             print "Running AnalyseNearestTSSToSummits"
             print "\tWriting output to %s" % outfile
             AnalyseNearestTSSToSummits(chip_seq,rna_seq,max_distance,
@@ -1768,7 +1765,7 @@ def main():
                                       max_distance)
         else:
             # "Nearest edge to peak region" analysis
-            outfile = chip_basename+"_NearestTranscriptsToPeakEdges.txt"
+            outfile = output_basename+"_NearestTranscriptsToPeakEdges.txt"
             print "Running AnalyseNearestTranscriptsToPeakEdges (TSS/TES)"
             print "\tWriting output to %s" % outfile
             AnalyseNearestTranscriptsToPeakEdges(chip_seq,rna_seq,
@@ -1784,7 +1781,7 @@ def main():
                 (promoter_region,max_closest,max_edge_distance))
 
             # "Nearest TSS to peak region" analysis
-            outfile = chip_basename+"_NearestTSSToPeakEdges.txt"
+            outfile = output_basename+"_NearestTSSToPeakEdges.txt"
             print "Running AnalyseNearestTranscriptsToPeakEdges (TSS only)"
             print "\tWriting output to %s" % outfile
             AnalyseNearestTranscriptsToPeakEdges(chip_seq,rna_seq,
@@ -1800,7 +1797,7 @@ def main():
     if do_rna_analyses:
         if chip_seq.isSummit():
             # "Nearest peak summits to TSS" analysis
-            outfile = rna_basename+"_NearestPeaksToTranscripts.txt"
+            outfile = output_basename+"_NearestPeaksToTranscripts.txt"
             print "Running AnalyseNearestPeaksToTranscripts"
             print "\tWriting output to %s" % outfile
             AnalyseNearestPeaksToTranscripts(rna_seq,chip_seq,window_width,
