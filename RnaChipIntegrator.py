@@ -52,6 +52,7 @@ __version__ = "0.3.1"
 import sys
 import os
 import optparse
+import time,datetime
 
 # Set default logging level and output
 import logging
@@ -1642,6 +1643,7 @@ def main():
 
     # Report version and authors
     p.print_version()
+    print "Manchester University - Bioinformatics Core Facility"
     print "Authors: Ian Donaldson, Leo Zeef and Peter Briggs"
     print
 
@@ -1812,8 +1814,9 @@ def main():
 
     # Finish off spreadsheet output
     if xls:
-        # Add the program version information to the spreadsheet
-        xls_notes.addText("Produced by %s" % p.get_version())
+        # Add the program version information etc to the spreadsheet
+        xls_notes.addText("Produced by %s on %s" % (p.get_version(),datetime.date.today()))
+        xls_notes.addText("Manchester University - Bioinformatics Core Facility")
         # Write the XLS file to disk
         xls.save(xls_out)
 
