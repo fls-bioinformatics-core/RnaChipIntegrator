@@ -56,6 +56,11 @@ Installation
 
 See the `INSTALL` document.
 
+Licensing
+---------
+
+This software is licensed under the Artistic License 2.0; see the `LICENSE` document.
+
 More information
 ----------------
 
