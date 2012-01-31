@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset='utf-8'>
+
+  <title>fls-bioinformatics-core/RnaChipIntegrator @ GitHub</title>
+
+  <style type="text/css">
+    body {
+      margin-top: 1.0em;
+      background-color: #ffffff;
+      font-family: Helvetica, Arial, FreeSans, san-serif;
+      color: #000000;
+    }
+    #container {
+      margin: 0 auto;
+      width: 700px;
+    }
+    h1 { font-size: 3.8em; color: #000000; margin-bottom: 3px; }
+    h1 .small { font-size: 0.4em; }
+    h1 a { text-decoration: none }
+    h2 { font-size: 1.5em; color: #000000; }
+    h3 { text-align: center; color: #000000; }
+    a { color: #000000; }
+    .description { font-size: 1.2em; margin-bottom: 30px; margin-top: 30px; font-style: italic;}
+    .download { float: right; }
+    pre { background: #000; color: #fff; padding: 15px;}
+    hr { border: 0; width: 80%; border-bottom: 1px solid #aaa}
+    .footer { text-align:center; padding-top:30px; font-style: italic; }
+  </style>
+</head>
+
+<body>
+  <a href="https://github.com/fls-bioinformatics-core/RnaChipIntegrator"><img style="position: absolute; top: 0; right: 0; border: 0;" src="http://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub" /></a>
+
+  <div id="container">
+
+    <div class="download">
+      <a href="https://github.com/fls-bioinformatics-core/RnaChipIntegrator/zipball/master">
+        <img border="0" width="90" src="https://github.com/images/modules/download/zip.png"></a>
+      <a href="https://github.com/fls-bioinformatics-core/RnaChipIntegrator/tarball/master">
+        <img border="0" width="90" src="https://github.com/images/modules/download/tar.png"></a>
+    </div>
+
+    <h1><a href="https://github.com/fls-bioinformatics-core/RnaChipIntegrator">RnaChipIntegrator</a>
+      <span class="small">by <a href="https://github.com/fls-bioinformatics-core">fls-bioinformatics-core</a></span></h1>
+
+    <div class="description">
+      Utility for integrated analyses of RNA-Seq and other genomic feature data with ChIP-Seq data.
+    </div>
+
+    
+      <p>RnaChipIntegrator is a utility that performs integrated analyses of RNA-Seq and ChIP-Seq data, identifying the nearest ChIP peaks to each transcript, and vice versa. The individual analyses differ from each other according to the criteria that are used to calculate the distances between peaks and transcripts.
+
+The program was originally written specifically for ChIP-Seq and RNA-Seq data but can be used with any set of genomic features e.g. canonical genes, CpG islands etc, or expression data e.g. microarrays.
+
+The most basic form of usage is:
+
+RnaChipIntegrator <rna-data-file> <chip-data-file>
+
+The RNA-seq data file must be a tab-delimited file with 5 columns of data for each genomic feature (one per line):
+
+# ID  chr  start  end  strand
+
+chr is the chromosome name, start and end define the limits of the feature, and strand must be either + or -. ID is a name which is used to identify the genomic feature in the output.
+
+Optionally there can be a 6th column, indicating whether the gene was differentially expressed (= 1) or not (= 0).
+
+The ChIP-seq data file must be a tab-delimited file with 3 columns of data for each ChIP peak (one per line):
+
+# chr  start  end
+
+chr is the chromosome name (must match those in the RNA-seq file), and start and end define the ChIP peaks - these can either be summits (in which case 'end' - 'start' = 1), or regions (with 'start' and 'end' indicating the extent).
+
+Note that different analyses will be selected depending on whether the ChIP peaks are defined as summits or regions.
+
+See the Manual page for more detail on the program's operation and the analyses that are run.
+
+Also running
+
+RnaChipIntegrator.py -h
+
+will produce a list of options and descriptions of their functions.</p>
+    
+
+    
+      <h2>Dependencies</h2>
+      <p>RnaChipIntegrator uses the xlwt, xlrd and xlutils Python libraries to write its XLS output files. If these are not available then the program will still run but won't produce an XLS file.</p>
+    
+
+    
+      <h2>Install</h2>
+      <p>Download the latest version from 
+
+Go to the downloads page https://github.com/fls-bioinformatics-core/RnaChipIntegrator/downloads
+
+You can use Python's setuptools to install the RnaChipIntegrator code: download the archive (either .tar.gz or .zip), unpack it and then do:
+
+python setup.py install
+
+in the unpacked directory.
+
+Alternatively if you're using pip to manage your Python installations then you can do
+
+pip install RnaChipIntegrator.tar.gz
+
+If you don't want to do a system install then you can just unpack the archive and run the program directory using:
+
+/path/to/RnaChipIntegrator.py [options] ...</p>
+    
+
+    
+      <h2>License</h2>
+      <p>Artistic Licence 2.0</p>
+    
+
+    
+      <h2>Authors</h2>
+      <p>Ian Donaldson, Leo Zeef and Peter Briggs, Manchester University Bioinformatics Core Facility</p>
+    
+
+    
+      <h2>Contact</h2>
+      <p> Peter Briggs (peter.briggs@manchester.ac.uk)<br/>      </p>
+    
+
+    <h2>Download</h2>
+    <p>
+      You can download this project in either
+      <a href="https://github.com/fls-bioinformatics-core/RnaChipIntegrator/zipball/master">zip</a> or
+      <a href="https://github.com/fls-bioinformatics-core/RnaChipIntegrator/tarball/master">tar formats.
+    </p>
+    <p>You can also clone the project with <a href="http://git-scm.com">Git</a>
+      by running:
+      <pre>$ git clone git://github.com/fls-bioinformatics-core/RnaChipIntegrator</pre>
+    </p>
+
+    <div class="footer">
+      get the source code on GitHub : <a href="https://github.com/fls-bioinformatics-core/RnaChipIntegrator">fls-bioinformatics-core/RnaChipIntegrator</a>
+    </div>
+
+  </div>
+
+</body>
+</html>
