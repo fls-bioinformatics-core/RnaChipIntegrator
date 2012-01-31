@@ -22,7 +22,7 @@
     h1 .small { font-size: 0.4em; }
     h1 a { text-decoration: none }
     h2 { font-size: 1.2em; color: #000000; }
-    h3 { text-align: center; color: #000000; }
+    h3 { color: #000000; font-size: 1.0em; font-style: italic;}
     a { color: #000000; }
     .description { font-size: 1.1em; margin-bottom: 20px; margin-top: 10px; font-style: italic;}
     .download { float: right; }
@@ -30,6 +30,7 @@
     hr { border: 0; width: 80%; border-bottom: 1px solid #aaa}
     .footer { text-align:center; padding-top:30px; font-style: italic; }
     .box { padding:10px; background: #ddd; }
+    .code { font-family: Courier, monospace; }
   </style>
 </head>
 
@@ -40,17 +41,13 @@
     <h1><a href="https://github.com/fls-bioinformatics-core/RnaChipIntegrator">RnaChipIntegrator</a></h1>
 
     <div class="description">
-      Integrated analyses of RNA-Seq and other genomic feature data with ChIP-Seq data
+      Integrative analyses of RNA-Seq with ChIP-Seq data
     </div>
 
     <div class="box">
     <h2>About</h2>
       <p>RnaChipIntegrator is a utility that performs integrated analyses of RNA-Seq and ChIP-Seq
-	data, identifying the nearest ChIP peaks to each transcript, and vice versa. The individual
-	analyses differ from each other according to the criteria that are used to calculate the
-	distances between peaks and transcripts.</p>
-
-      <p>The program was originally written specifically for ChIP-Seq and RNA-Seq data but can be
+	data, identifying the nearest ChIP peaks to each transcript, and vice versa. It can also be
 	used with any set of genomic features e.g. canonical genes, CpG islands etc, or expression
 	data e.g. microarrays.</p>
     </div>
@@ -86,39 +83,58 @@
 
     <h2>Usage</h2>
 
-      <p>The most basic form of usage is:</p>
+      <p>General usage syntax is:</p>
 
-      <pre>RnaChipIntegrator &lt;rna-data-file&gt; &lt;chip-data-file&gt;</pre>
+      <pre>RnaChipIntegrator [options] &lt;rna-data-file&gt; &lt;chip-data-file&gt;</pre>
 
-      <p>The RNA-seq data file must be a tab-delimited file with 5 columns of data for each genomic
-	feature (one per line):</p>
+      <p>Use <span class="code">-h</span> to produce a list of options and descriptions of their
+	functions:</p>
 
-      <pre># ID  chr  start  end  strand</pre>
+      <pre>RnaChipIntegrator -h</pre>
 
-      <p>chr is the chromosome name, start and end define the limits of the feature, and strand
-	must be either + or -. ID is a name which is used to identify the genomic feature in the
-	output.</p>
+      <p>Specific examples using example data included in the downloads:</p>
+
+      <pre>RnaChipIntegrator --window=130000 ExpressionData.txt ChIP_edges.txt
+RnaChipIntegrator --window=130000 ExpressionData.txt ChIP_peaks.txt</pre>
+
+      <p>See the <a href="https://github.com/fls-bioinformatics-core/RnaChipIntegrator/wiki/RnaChipIntegrator:%20Manual">manual</a> for more detailed information about the analyses.<p>
+
+      <h3>Expression Data</h3>
+
+      <p>The expression data (RNA-seq) file must be a tab-delimited file with 5 columns of data
+	for each genomic feature (one per line):</p>
+
+      <pre># GeneID  chr  start  end  strand</pre>
+
+      <p><span class="code">chr</span> is the chromosome name, <span class="code">start</span> and
+	<span class="code">end</span> define the limits of the feature, and
+	<span class="code">strand</span> must be either + or -. <span class="code">GeneID</span>
+	is a name which is used to identify the genomic feature in the output. Genes in between a
+	reported gene and the ChIP site are also reported.</p>
 
       <p>Optionally there can be a 6th column, indicating whether the gene was differentially
 	expressed (= 1) or not (= 0).</p>
+
+      <p>(See the example <a href="https://raw.github.com/fls-bioinformatics-core/RnaChipIntegrator/master/examples/ExpressionData.txt">ExpressionData.txt</a> file.)</p>
+
+      <h3>ChIP-Seq Data</h3>
 
       <p>The ChIP-seq data file must be a tab-delimited file with 3 columns of data for each
 	ChIP peak (one per line):</p>
 
       <pre># chr  start  end</pre>
 
-      <p>chr is the chromosome name (must match those in the RNA-seq file), and start and end
-	define the ChIP peaks - these can either be summits (in which case 'end' - 'start' = 1),
-	or regions (with 'start' and 'end' indicating the extent).</p>
+      <p><span class="code">chr</span> is the chromosome name (must match those in the expression
+	data file), and <span class="code">start</span> and <span class="code">end</span>
+	define the ChIP peaks - these can either be summits (in which case
+	<span class="code">end</span> - <span class="code">start</span> = 1), or regions (with
+	 <span class="code">start</span> and <span class="code">end</span> indicating the
+	 extent).</p>
+
+      <p>(See the example <a href="https://raw.github.com/fls-bioinformatics-core/RnaChipIntegrator/master/examples/ChIP_edges.txt">ChIP_edges.txt</a> and <a href="https://raw.github.com/fls-bioinformatics-core/RnaChipIntegrator/master/examples/ChIP_peaks.txt">ChIP_peaks.txt</a> files.)</p>
 
       <p>Note that different analyses will be selected depending on whether the ChIP peaks are
 	defined as summits or regions.</p>
-
-      <p>Also running</p>
-
-      <pre>RnaChipIntegrator.py -h</pre>
-
-      <p>will produce a list of options and descriptions of their functions.</p>
     
       <h2>Dependencies</h2>
       <p>RnaChipIntegrator was written for Python 2.7, but has also been used with Python
