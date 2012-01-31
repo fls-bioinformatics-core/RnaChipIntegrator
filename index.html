@@ -16,17 +16,18 @@
       margin: 0 auto;
       width: 700px;
     }
-    h1 { font-size: 3.8em; color: #000000; margin-bottom: 3px; }
+    h1 { font-size: 3.0em; color: #000000; margin-bottom: 3px; }
     h1 .small { font-size: 0.4em; }
     h1 a { text-decoration: none }
-    h2 { font-size: 1.5em; color: #000000; }
+    h2 { font-size: 1.2em; color: #000000; }
     h3 { text-align: center; color: #000000; }
     a { color: #000000; }
-    .description { font-size: 1.2em; margin-bottom: 30px; margin-top: 30px; font-style: italic;}
+    .description { font-size: 1.0em; margin-bottom: 30px; margin-top: 30px; font-style: italic;}
     .download { float: right; }
     pre { background: #000; color: #fff; padding: 15px;}
     hr { border: 0; width: 80%; border-bottom: 1px solid #aaa}
     .footer { text-align:center; padding-top:30px; font-style: italic; }
+    .box { padding:10px; background: #ddd; }
   </style>
 </head>
 
@@ -40,6 +41,7 @@
       Integrated analyses of RNA-Seq and other genomic feature data with ChIP-Seq data
     </div>
 
+    <div class="box">
     <h2>About</h2>
       <p>RnaChipIntegrator is a utility that performs integrated analyses of RNA-Seq and ChIP-Seq
 	data, identifying the nearest ChIP peaks to each transcript, and vice versa. The individual
@@ -49,6 +51,36 @@
       <p>The program was originally written specifically for ChIP-Seq and RNA-Seq data but can be
 	used with any set of genomic features e.g. canonical genes, CpG islands etc, or expression
 	data e.g. microarrays.</p>
+    </div>
+    
+    <h2>Download</h2>
+
+      <p>Download the latest version:</p>
+
+      <ul>
+	<li><a href="https://github.com/downloads/fls-bioinformatics-core/RnaChipIntegrator/RnaChipIntegrator-0.3.2.tar.gz">RnaChipIntegrator-0.3.2.tar.gz</a></li>
+	<li><a href="https://github.com/downloads/fls-bioinformatics-core/RnaChipIntegrator/RnaChipIntegrator-0.3.2.zip">RnaChipIntegrator-0.3.2.zip</a></li>
+      </ul>
+
+       See the <a href="https://github.com/fls-bioinformatics-core/RnaChipIntegrator/downloads">downloads page</a> for all available versions.</p>
+    
+    <h2>Installation</h2>
+
+      <p>You can use Python's setuptools to install the RnaChipIntegrator code: download the
+	archive (either .tar.gz or .zip), unpack it and then do:</p>
+
+      <pre>python setup.py install</pre>
+
+      <p>in the unpacked directory.</p>
+
+      <p>Alternatively if you're using pip to manage your Python installations then you can do</p>
+
+      <pre>pip install RnaChipIntegrator.tar.gz</pre>
+
+      <p>If you don't want to do a system install then you can just unpack the archive and run
+	the program directory using:</p>
+
+      <pre>/path/to/RnaChipIntegrator.py [options] ...</pre>
 
     <h2>Usage</h2>
 
@@ -85,39 +117,12 @@
       <pre>RnaChipIntegrator.py -h</pre>
 
       <p>will produce a list of options and descriptions of their functions.</p>
-
-    
-      <h2>Download and Install</h2>
-
-      <p>Download the latest version:</p>
-
-      <ul>
-	<li><a href="https://github.com/downloads/fls-bioinformatics-core/RnaChipIntegrator/RnaChipIntegrator-0.3.2.tar.gz">RnaChipIntegrator-0.3.2.tar.gz</a></li>
-	<li><a href="https://github.com/downloads/fls-bioinformatics-core/RnaChipIntegrator/RnaChipIntegrator-0.3.2.zip">RnaChipIntegrator-0.3.2.zip</a></li>
-      </ul>
-
-       See the <a href="https://github.com/fls-bioinformatics-core/RnaChipIntegrator/downloads">downloads page</a> for all available versions.</p>
-
-      <p>You can use Python's setuptools to install the RnaChipIntegrator code: download the
-	archive (either .tar.gz or .zip), unpack it and then do:</p>
-
-      <pre>python setup.py install</pre>
-
-      <p>in the unpacked directory.</p>
-
-      <p>Alternatively if you're using pip to manage your Python installations then you can do</p>
-
-      <pre>pip install RnaChipIntegrator.tar.gz</pre>
-
-      <p>If you don't want to do a system install then you can just unpack the archive and run
-	the program directory using:</p>
-
-      <pre>/path/to/RnaChipIntegrator.py [options] ...</pre>
     
       <h2>Dependencies</h2>
-      <p>RnaChipIntegrator uses the xlwt, xlrd and xlutils Python libraries to write its XLS
-	output files. If these are not available then the program will still run but won't
-	produce an XLS file.</p>
+      <p>RnaChipIntegrator was written for Python 2.7, but has also been used with Python
+	2.4. It uses the xlwt, xlrd and xlutils Python libraries to write its XLS output files.
+	If these are not available then the program will still run but won't produce an XLS
+	file.</p>
     
       <h2>License</h2>
       <p>Artistic Licence 2.0</p>
