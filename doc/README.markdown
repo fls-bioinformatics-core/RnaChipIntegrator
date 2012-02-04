@@ -4,16 +4,16 @@ RnaChipIntegrator.py: analyse RNA-seq and ChIP-seq data
 Introduction
 ------------
 
-This program implements a number of different analyses of genomic feature data
-(originally data from RNA-seq experiments) combined with ChIP-seq data (and vice
-versa):
+This program implements a number of different analyses of expression data
+(originally data from RNA-seq experiments) combined with genomic features 
+(originally data from ChIP-seq experiments) and vice versa:
 
 * **ChIP-seq data** consists of a number of peaks, which are described by the
-  chromosome name plus either the summit (essentially a single point) or by
-  the binding region (essentially the width of the peak as defined by upper
-  and lower limits).
+  chromosome name plus either the summit (essentially a single base position) or by
+  the binding region (essentially the width of the bound regions defined by 
+  it full coordinate span).
 
-* **RNA-seq data** consists of genes, transcripts or isomers. These are
+* **RNA-seq data** consists of genes, transcripts or isoforms. These are
   described by the chromosome name, start and end coordinates and direction
   (\+ indicating the forward strand, \- indicating the reverse strand).
 
@@ -146,11 +146,11 @@ three columns are read; additional columns are discarded.
 
 The peaks can be described by either a _summit_:
 
->    `chr | summit | summit+1`
+>    `chr	summit	summit+1`
 
 or by a _region_:
 
->    `chr | start | end`
+>    `chr	start	end`
 
 ### Gene transcipts ###
 
@@ -158,15 +158,15 @@ Gene transcript files should contain at least 5 columns; if more columns are
 supplied then only the first 6 columns are processed and the rest are
 discarded:
 
->    `ID | chr | start | end | strand | [flag]`
+>    `ID	chr	start	 end	strand	[flag]`
 
 If there is a 6th column then the program attempts to process this as a
 _significance flag_, which indicates whether the gene was differentially
 expressed. The only valid values for this flags are 1 and 0. If any other values
 appear in this line then the dataset as a whole is not considered to be flagged.
 
-`ID` is an arbitrary (to the analysis program) identifier for the gene or
-transcript - this is used to identify genes in the output.
+`ID` is an arbitrary identifier for the gene or transcript - this is used to 
+identify genes in the output.
 
 Output Files
 ------------
@@ -178,10 +178,6 @@ The following files are produced from each run; the "basename" is set by the
 
     Each line has one ChIP peak matched to a closest gene transcript,
     with the following tab-delimited fields:
-
-    `#chr | start | ID | nearest | TSS | distance_to_TSS | distance_to_TES | strand | in_the_gene | transcripts_inbetween | transcript_ids_inbetween`
-
-    Descriptions of each of the fields:
 
     > `chr`: chromosome
     >
@@ -217,10 +213,6 @@ The following files are produced from each run; the "basename" is set by the
     Each line has one gene transcript along with the closest ChIP peak
     summits, with the following tab-delimited fields:
 
-    `#ID | chr_RNA | start | end | strand | differentially_expressed | number_of_peaks | chr_ChIP_1 | summit_1 | distance_1 | ...`
-
-    Descriptions of each of the fields:
-
     > `ID`: gene/transcript ID
     >
     > `chr_RNA`: chromosome
@@ -249,10 +241,6 @@ The following files are produced from each run; the "basename" is set by the
 
     Each line has one ChIP peak matched to a closest gene transcript,
     with the following tab-delimited fields:
-
-    `#chr | start | end | ID | strand | TSS | TES | dist_closest_edge | dist_TSS | dist_TES | overlap_transcript | overlap_promoter`
-
-    Descriptions of each of the fields:
 
     > `chr`: chromosome
     >
@@ -322,7 +310,8 @@ Appendix B: running tests
 -------------------------
 
 A set of unit tests are provided in the `test_RnaChipIntegrator.py`
-module. To run them:
+module provided with the .tar.gz archive. To run them, extract the archive and
+execute:
 
     python test_RnaChipIntegrator.py
 
@@ -376,4 +365,3 @@ or from a region:
 There is more documentation available by running [`pydoc`](http://docs.python.org/library/pydoc.html) on the Python source, e.g.:
 
     pydoc RnaChipIntegrator
-
