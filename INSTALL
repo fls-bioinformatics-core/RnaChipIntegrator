@@ -1,31 +1,30 @@
 Installing RnaChipIntegrator
 ============================
 
-You can use Python's setuptools to install the RnaChipIntegrator code: download the
-archive (either .tar.gz or .zip), unpack it and then do:
+1. You can use Python's setuptools to install the RnaChipIntegrator code. To do this, download the
+archive (either .tar.gz or .zip), unpack it and install as follows:
 
-    python setup.py install
+	$ wget https://github.com/downloads/fls-bioinformatics-core/RnaChipIntegrator/RnaChipIntegrator-0.3.2.tar.gz
+    $ tar -xvzf RnaChipIntegrator-0.3.2.tar.gz
+    $ cd RnaChipIntegrator-0.3.2
+    $ python setup.py install
 
-in the unpacked directory.
+2. Alternatively if you're using pip (see http://www.pip-installer.org/en/latest/index.html) to manage your Python installations then you can install as follows:
 
-Alternatively if you're using pip to manage your Python installations then you can do
+	$ wget https://github.com/downloads/fls-bioinformatics-core/RnaChipIntegrator/RnaChipIntegrator-0.3.2.tar.gz
+    $ pip install RnaChipIntegrator-0.3.2.tar.gz
 
-    pip install RnaChipIntegrator.tar.gz
+You can also use pip to install directly from github as follows:
 
-You can also use pip to install directly from github using
+    $ pip install -e git+git://github.com/fls-bioinformatics-core/RnaChipIntegrator#egg=RnaChipIntegrator
 
-    pip install -e git+git://github.com/fls-bioinformatics-core/RnaChipIntegrator#egg=RnaChipIntegrator
+or to get install specific version:
 
-or to get a specific version:
+    $ pip install -e git+git://github.com/fls-bioinformatics-core/RnaChipIntegrator@v0.3.1#egg=RnaChipIntegrator
 
-   pip install -e git+git://github.com/fls-bioinformatics-core/RnaChipIntegrator@v0.3.1#egg=RnaChipIntegrator
+Any of these options will make the `RnaChipIntegrator` utility available to run.
 
-Any of these will make the `RnaChipIntegrator` command available to run the program.
-
-(To find out more about Python pip see http://www.pip-installer.org/en/latest/index.html)
-
-If you don't want to do a system install then you can just unpack the archive and run
-the program directory using
+Note: If you don't want to do a system install then you can just unpack the archive and run the program directly:
 
    /path/to/RnaChipIntegrator.py [options] ...
 
