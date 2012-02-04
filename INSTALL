@@ -17,13 +17,13 @@ installations then you can install as follows:
 
 You can also use pip to install directly from github as follows:
 
-    $ pip install -e git+git://github.com/fls-bioinformatics-core/RnaChipIntegrator#egg=RnaChipIntegrator
+    $ sudo pip install -e git+git://github.com/fls-bioinformatics-core/RnaChipIntegrator#egg=RnaChipIntegrator
 
 Or to get install a specific version using pip:
 
-    $ pip install -e git+git://github.com/fls-bioinformatics-core/RnaChipIntegrator@v0.3.1#egg=RnaChipIntegrator
+    $ sudo pip install -e git+git://github.com/fls-bioinformatics-core/RnaChipIntegrator@v0.3.1#egg=RnaChipIntegrator
 
-Any of these options will make the `RnaChipIntegrator` utility available to run.
+Any of these options will make the `RnaChipIntegrator` utility available to run system-wide.
 
 Note: If you don't want to do a system install then you can just unpack the archive and run the program directly:
 
