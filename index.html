@@ -65,36 +65,38 @@
     
     <h2>Installation</h2>
 
-      <p>You can use Python's setuptools to install the RnaChipIntegrator code: download the
-	archive (either .tar.gz or .zip), unpack it and then do:</p>
+      <p>1. You can use Python's setuptools to install the RnaChipIntegrator code. To do this, download the
+archive (either .tar.gz or .zip), unpack it and install as follows:
 
-      <pre>python setup.py install</pre>
+    <pre>$ cd RnaChipIntegrator-0.3.2
+$ sudo python setup.py install</pre>
 
-      <p>in the unpacked directory.</p>
+      <p>2. Alternatively if you're using pip (see http://www.pip-installer.org/en/latest/index.html) to manage your Python
+installations then you can install as follows:</p>
 
-      <p>Alternatively if you're using pip to manage your Python installations then you can do</p>
-
-      <pre>pip install RnaChipIntegrator.tar.gz</pre>
+      <pre>$ sudo pip install RnaChipIntegrator.tar.gz</pre>
 
       <p>If you don't want to do a system install then you can just unpack the archive and run
 	the program directory using:</p>
 
-      <pre>/path/to/RnaChipIntegrator.py [options] ...</pre>
+      <pre>$ /path/to/RnaChipIntegrator.py [options] ...</pre>
+
+      <p>See the <a href="https://github.com/fls-bioinformatics-core/RnaChipIntegrator/blob/master/INSTALL">INSTALL</a> document for more detailed information about the how to install and uninatall the utility.<p>
 
     <h2>Usage</h2>
 
       <p>General usage syntax is:</p>
 
-      <pre>RnaChipIntegrator [options] &lt;rna-data-file&gt; &lt;chip-data-file&gt;</pre>
+      <pre>$ RnaChipIntegrator [options] &lt;rna-data-file&gt; &lt;chip-data-file&gt;</pre>
 
       <p>Use <span class="code">-h</span> to produce a list of options and descriptions of their
 	functions:</p>
 
-      <pre>RnaChipIntegrator -h</pre>
+      <pre>$ RnaChipIntegrator -h</pre>
 
       <p>Specific examples using example data included in the downloads:</p>
 
-      <pre>RnaChipIntegrator --window=130000 ExpressionData.txt ChIP_edges.txt
+      <pre>$ RnaChipIntegrator --window=130000 ExpressionData.txt ChIP_edges.txt
 RnaChipIntegrator --window=130000 ExpressionData.txt ChIP_peaks.txt</pre>
 
       <p>See the <a href="https://github.com/fls-bioinformatics-core/RnaChipIntegrator/wiki/RnaChipIntegrator:%20Manual">manual</a> for more detailed information about the analyses.<p>
@@ -104,7 +106,7 @@ RnaChipIntegrator --window=130000 ExpressionData.txt ChIP_peaks.txt</pre>
       <p>The expression data (RNA-seq) file must be a tab-delimited file with 5 columns of data
 	for each genomic feature (one per line):</p>
 
-      <pre># GeneID  chr  start  end  strand</pre>
+      <pre>ID  chr  start  end  strand</pre>
 
       <p><span class="code">chr</span> is the chromosome name, <span class="code">start</span> and
 	<span class="code">end</span> define the limits of the feature, and
@@ -122,7 +124,7 @@ RnaChipIntegrator --window=130000 ExpressionData.txt ChIP_peaks.txt</pre>
       <p>The ChIP-seq data file must be a tab-delimited file with 3 columns of data for each
 	ChIP peak (one per line):</p>
 
-      <pre># chr  start  end</pre>
+      <pre>chr  start  end</pre>
 
       <p><span class="code">chr</span> is the chromosome name (must match those in the expression
 	data file), and <span class="code">start</span> and <span class="code">end</span>
