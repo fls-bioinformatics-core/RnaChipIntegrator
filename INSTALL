@@ -27,7 +27,7 @@ Any of these options will make the `RnaChipIntegrator` utility available to run.
 
 Note: If you don't want to do a system install then you can just unpack the archive and run the program directly:
 
-   /path/to/RnaChipIntegrator.py [options] ...
+    $ /path/to/RnaChipIntegrator.py [options] ...
 
 (Note that in this case if you would like spreadsheet output from the program then you
 will need to install the `xlwt`, `xlrd` and `xlutils` third-party Python libraries.)
@@ -46,7 +46,7 @@ archive (either .tar.gz or .zip), unpack it, reinstall to get a list of files, a
     
 2. If you installed RnaChipIntegrator with pip, you should uninstall using this utility as well. You can do this as follows:
 
-	$ sudo pip uninstall RnaChipIntegrator
+    $ sudo pip uninstall RnaChipIntegrator
 
 
 
