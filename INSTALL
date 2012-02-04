@@ -4,14 +4,15 @@ Installing RnaChipIntegrator
 1. You can use Python's setuptools to install the RnaChipIntegrator code. To do this, download the
 archive (either .tar.gz or .zip), unpack it and install as follows:
 
-	$ wget https://github.com/downloads/fls-bioinformatics-core/RnaChipIntegrator/RnaChipIntegrator-0.3.2.tar.gz
+    $ wget https://github.com/downloads/fls-bioinformatics-core/RnaChipIntegrator/RnaChipIntegrator-0.3.2.tar.gz
     $ tar -xvzf RnaChipIntegrator-0.3.2.tar.gz
     $ cd RnaChipIntegrator-0.3.2
     $ python setup.py install
 
-2. Alternatively if you're using pip (see http://www.pip-installer.org/en/latest/index.html) to manage your Python installations then you can install as follows:
+2. Alternatively if you're using pip (see http://www.pip-installer.org/en/latest/index.html) to manage your Python 
+installations then you can install as follows:
 
-	$ wget https://github.com/downloads/fls-bioinformatics-core/RnaChipIntegrator/RnaChipIntegrator-0.3.2.tar.gz
+    $ wget https://github.com/downloads/fls-bioinformatics-core/RnaChipIntegrator/RnaChipIntegrator-0.3.2.tar.gz
     $ pip install RnaChipIntegrator-0.3.2.tar.gz
 
 You can also use pip to install directly from github as follows:
