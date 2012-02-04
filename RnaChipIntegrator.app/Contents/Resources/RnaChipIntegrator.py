@@ -1643,9 +1643,7 @@ def main():
 
     # Report version and authors
     p.print_version()
-    print "University of Manchester"
-    print "Faculty of Life Sciences"
-    print "Bioinformatics Core Facility"
+    print "Manchester University - Bioinformatics Core Facility"
     print "Authors: Ian Donaldson, Leo Zeef and Peter Briggs"
     print
 
@@ -1818,7 +1816,7 @@ def main():
     if xls:
         # Add the program version information etc to the spreadsheet
         xls_notes.addText("Produced by %s on %s" % (p.get_version(),datetime.date.today()))
-        xls_notes.addText("University of Manchester - Faculty of Life Sciences - Bioinformatics Core Facility")
+        xls_notes.addText("Manchester University - Bioinformatics Core Facility")
         # Write the XLS file to disk
         xls.save(xls_out)
 
