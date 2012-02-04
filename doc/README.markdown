@@ -9,8 +9,8 @@ This program implements a number of different analyses of expression data
 (originally data from ChIP-seq experiments) and vice versa:
 
 * **ChIP-seq data** consists of a number of peaks, which are described by the
-  chromosome name plus either the summit (essentially a single base position) or by
-  the binding region (essentially the width of the bound regions defined by 
+  chromosome name plus either the summit (essentially a single base position) or 
+  by the binding region (essentially the width of the bound regions defined by 
   it full coordinate span).
 
 * **RNA-seq data** consists of genes, transcripts or isoforms. These are
