@@ -48,9 +48,4 @@ archive (either .tar.gz or .zip), unpack it, reinstall to get a list of files, a
 
     $ sudo pip uninstall RnaChipIntegrator
 
-
-
-
-
-
 --
