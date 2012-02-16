@@ -1785,7 +1785,7 @@ def main():
     if do_chip_analyses:
         if chip_seq.isSummit():
             # "Nearest TSS to summit" analysis
-            outfile = output_basename+"_NearestTSSToSummits.txt"
+            outfile = output_basename+"_TSSToSummits.txt"
             print "Running AnalyseNearestTSSToSummits"
             print "\tWriting output to %s" % outfile
             AnalyseNearestTSSToSummits(chip_seq,rna_seq,max_distance,
@@ -1796,7 +1796,7 @@ def main():
                                       max_distance)
         else:
             # "Nearest edge to peak region" analysis
-            outfile = output_basename+"_NearestTranscriptsToPeakEdges.txt"
+            outfile = output_basename+"_TranscriptsToPeakEdges.txt"
             print "Running AnalyseNearestTranscriptsToPeakEdges (TSS/TES)"
             print "\tWriting output to %s" % outfile
             AnalyseNearestTranscriptsToPeakEdges(chip_seq,rna_seq,
@@ -1812,7 +1812,7 @@ def main():
                 (promoter_region,max_closest,max_edge_distance))
 
             # "Nearest TSS to peak region" analysis
-            outfile = output_basename+"_NearestTSSToPeakEdges.txt"
+            outfile = output_basename+"_TSSToPeakEdges.txt"
             print "Running AnalyseNearestTranscriptsToPeakEdges (TSS only)"
             print "\tWriting output to %s" % outfile
             AnalyseNearestTranscriptsToPeakEdges(chip_seq,rna_seq,
@@ -1829,7 +1829,7 @@ def main():
     if do_rna_analyses:
         if chip_seq.isSummit():
             # "Nearest peak summits to TSS" analysis
-            outfile = output_basename+"_NearestPeaksToTranscripts.txt"
+            outfile = output_basename+"_PeaksToTranscripts.txt"
             print "Running AnalyseNearestPeaksToTranscripts"
             print "\tWriting output to %s" % outfile
             AnalyseNearestPeaksToTranscripts(rna_seq,chip_seq,window_width,
