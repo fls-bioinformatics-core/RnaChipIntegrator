@@ -1,3 +1,10 @@
+2012-02-16  Peter Briggs  <peter.briggs@manchester.ac.uk>
+
+	* Version 0.3.3
+	- Added explanatory text to the "notes" page of the output XLS spreadsheet
+	  and standardised naming of output files to match XLS page titles.
+	- Minor updates to READMEs/documentation.
+
 2012-01-27  Peter Briggs  <peter.briggs@manchester.ac.uk>
 
 	* Version 0.3.2

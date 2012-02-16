@@ -43,7 +43,7 @@ transcript and vice versa using various criteria to define "nearest".
 # Module metadata
 #######################################################################
 
-__version__ = "0.3.2"
+__version__ = "0.3.3"
 
 #######################################################################
 # Import modules that this module depends on
