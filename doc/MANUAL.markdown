@@ -19,13 +19,13 @@ This program implements a number of different analyses of expression data
 
 The analyses take one of two perspectives on the data:
 
-1. **ChIP-seq perspective:** for each ChIP peak, locate the "nearest" genes
+1. **ChIP-seq perspective:** for each ChIP peak, locate the nearest genes
    in the RNA-seq data;
 
-2. **RNA-seq perspective:** for each gene, locate the "nearest" peaks in the
+2. **RNA-seq perspective:** for each gene, locate the nearest peaks in the
    ChIP-seq data.
 
-The analyses differ in how "nearest" is defined, the exact nature of the
+The analyses differ in how "nearest" is determined, the exact nature of the
 ChIP peak input data (i.e. summit versus peak width), and the information that
 is reported.
 
@@ -174,7 +174,7 @@ Output Files
 The following files are produced from each run; the "basename" is set by the
 `--project` command line option, and defaults to the name of the program.
 
-1.  **NearestTSSToSummits**: `<basename>_peaks_NearestTSSToSummits.txt`
+1.  **NearestTSSToSummits**: `<basename>_peaks_TSSToSummits.txt`
 
     Each line has one ChIP peak matched to a closest gene transcript,
     with the following tab-delimited fields:
@@ -208,7 +208,7 @@ The following files are produced from each run; the "basename" is set by the
     > is a semi-colon separated list of the unflagged gene names between the
     > peak and the current gene (e.g. `CG12178-RA;CG2674-RE;CG2674-RB`).
 
-2.  **NearestPeaksToTranscripts**: `<basename>_transcripts_NearestPeaksToTranscripts.txt`
+2.  **NearestPeaksToTranscripts**: `<basename>_transcripts_PeaksToTranscripts.txt`
 
     Each line has one gene transcript along with the closest ChIP peak
     summits, with the following tab-delimited fields:
@@ -237,7 +237,7 @@ The following files are produced from each run; the "basename" is set by the
     >
     > `distance_#`: distance from the peak summit to the gene TSS
 
-3.  **NearestTranscriptsToPeakEdges**: `<basename>_peaks_NearestTranscriptsToPeakEdges.txt`
+3.  **NearestTranscriptsToPeakEdges**: `<basename>_peaks_TranscriptsToPeakEdges.txt`
 
     Each line has one ChIP peak matched to a closest gene transcript,
     with the following tab-delimited fields:
@@ -272,10 +272,10 @@ The following files are produced from each run; the "basename" is set by the
     > command line option when running the program.
 
     This file contains groups of transcripts for each peak; a second file
-    called `<basename>_peaks_NearestTranscriptsToPeakEdges_summary.txt`
+    called `<basename>_peaks_TranscriptsToPeakEdges_summary.txt`
     contains the data for just the single nearest transcript to each gene.
 
-4.  **NearestTSSToPeakEdges**: `<basename>_peaks_NearestTSSToPeakEdges.txt`
+4.  **NearestTSSToPeakEdges**: `<basename>_peaks_TSSToPeakEdges.txt`
 
     The output file format and fields are the same as for the
     _NearestTranscriptsToPeakEdges_ analysis, except:
@@ -284,7 +284,7 @@ The following files are produced from each run; the "basename" is set by the
     > (i.e. the same as `dist_TSS`).
 
     There is also a second file called
-    `<basename>_peaks_NearestTSSToPeakEdges_summary.txt` which contains the
+    `<basename>_peaks_TSSToPeakEdges_summary.txt` which contains the
     data for just the single nearest transcript to each gene.
 
 
