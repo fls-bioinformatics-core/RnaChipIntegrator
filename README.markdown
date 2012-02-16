@@ -49,7 +49,25 @@ The output of the program consists of one tab-delimited file for each analysis t
 was performed, plus an XLS spreadsheet which has all the results plus a "notes" page
 that explains the data from each analysis.
 
-For full descriptions of each analysis see the `README` document in the `doc`
+For peaks defined as regions these are:
+
+ * TranscriptsToPeakEdges: reports the nearest transcripts (up to 4) with the smallest
+   distance from either their TSS or TES to the nearest peak edge.
+   (A separate "summary" reports only the top hit for each peak edge.)
+
+ * TSSToPeakEdges: reports the nearest transcripts (up to 4) with the smallest distance
+   from their TSS to the nearest peak edge.
+   (A separate "summary" reports only the top hit for each peak edge.)
+
+For peaks defined as summits:
+
+ * TSSToSummits: reports the nearest transcripts (up to 4) with the smallest distance
+   from the TSS to the nearest peak summit.
+
+ * PeaksToTranscripts: reports the nearest peak summits (up to 4) with the smallest
+   distance to either the TSS or TES of each transcript.
+
+For full descriptions of each analysis see the `MANUAL` document in the `doc`
 subdirectory.
 
 Installation
