@@ -31,7 +31,7 @@ setup(
                                           'LICENSE',
                                           'INSTALL',
                                           'ChangeLog']),
-                   ('RnaChipIntegrator/doc', ['doc/README.markdown',
+                   ('RnaChipIntegrator/doc', ['doc/MANUAL.markdown',
                                               'doc/rnachipintegrator_nearestEdgetoPeak.png',
                                               'doc/rnachipintegrator_nearestTSStoSummit.png',
                                               'doc/rnachipintegrator_nearestTSStoPeak.png']) ]
