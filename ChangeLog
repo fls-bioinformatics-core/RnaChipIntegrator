@@ -1,3 +1,18 @@
+2014-01-20  Peter Briggs  <peter.briggs@manchester.ac.uk>
+
+	* Version 0.4.0
+	- Fixed bug in overlap determination, which manifested when a gene was on
+	  the negative strange *and* was also wider than the peak. In those cases
+	  the start and end of the gene were being assigned incorrectly way around.
+
+	  (The bug didn't affect results for other genes on the negative strand
+	  which were narrower than the peak.)
+
+	  Note that this bug would have a similar effect on determining whether a
+	  peak was within the promoter region of a gene on the negative strand.
+	  However the lists of nearest genes/peaks were not affected and the results
+	  should otherwise have been correct.
+
 2012-02-16  Peter Briggs  <peter.briggs@manchester.ac.uk>
 
 	* Version 0.3.3

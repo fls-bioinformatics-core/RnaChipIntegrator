@@ -1,5 +1,5 @@
 #     test_RnaChipIntegrator.py: unit tests for RnaChipIntegrator.py
-#     Copyright (C) University of Manchester 2011 Peter Briggs
+#     Copyright (C) University of Manchester 2011-4 Peter Briggs
 #
 ########################################################################
 #
@@ -155,10 +155,10 @@ chr2L	605950	CG17941-RA	3 of 3	714969	109019	34071	-	NO	0	"""
 # NearestTranscriptToPeakEdge-ex3.txt
 nearest_transcript_to_peak_edge_ex3 = \
 """#chr	start	end	geneID	strand	TSS	TES	dist_closest_edge	dist_TSS	dist_TES	overlap_transcript	overlap_promoter
-chr2L	66711	66911	CG31973-RD	-	59243	25402	7468	7468	41309	0	0
-chr2L	66711	66911	CG31973-RA	-	59243	25402	7468	7468	41309	0	0
-chr2L	66711	66911	CG31973-RE	-	59243	25402	7468	7468	41309	0	0
-chr2L	66711	66911	CG31973-RB	-	59243	25402	7468	7468	41309	0	0
+chr2L	66711	66911	CG31973-RD	-	59243	25402	7468	7468	41309	0	1
+chr2L	66711	66911	CG31973-RA	-	59243	25402	7468	7468	41309	0	1
+chr2L	66711	66911	CG31973-RE	-	59243	25402	7468	7468	41309	0	1
+chr2L	66711	66911	CG31973-RB	-	59243	25402	7468	7468	41309	0	1
 chr2L	249077	249277	CG3625-RB	-	285777	283385	34108	36500	34108	0	0
 chr2L	249077	249277	CG3625-RC	-	291011	283385	34108	41734	34108	0	0
 chr2L	249077	249277	CG3625-RA	-	286528	283385	34108	37251	34108	0	0
@@ -171,10 +171,10 @@ chr2L	605850	606050	CG2762-RA	+	523467	540542	65308	82383	65308	0	0"""
 # NearestTranscriptTSSToPeakEdge-ex3.txt
 nearest_transcript_tss_to_peak_edge_ex3 = \
 """#chr	start	end	geneID	strand	TSS	TES	dist_closest_edge	dist_TSS	dist_TES	overlap_transcript	overlap_promoter
-chr2L	66711	66911	CG31973-RD	-	59243	25402	7468	7468	41309	0	0
-chr2L	66711	66911	CG31973-RA	-	59243	25402	7468	7468	41309	0	0
-chr2L	66711	66911	CG31973-RE	-	59243	25402	7468	7468	41309	0	0
-chr2L	66711	66911	CG31973-RB	-	59243	25402	7468	7468	41309	0	0
+chr2L	66711	66911	CG31973-RD	-	59243	25402	7468	7468	41309	0	1
+chr2L	66711	66911	CG31973-RA	-	59243	25402	7468	7468	41309	0	1
+chr2L	66711	66911	CG31973-RE	-	59243	25402	7468	7468	41309	0	1
+chr2L	66711	66911	CG31973-RB	-	59243	25402	7468	7468	41309	0	1
 chr2L	249077	249277	CG3625-RB	-	285777	283385	34108	36500	34108	0	0
 chr2L	249077	249277	CG3625-RA	-	286528	283385	34108	37251	34108	0	0
 chr2L	249077	249277	CG3625-RC	-	291011	283385	34108	41734	34108	0	0
@@ -187,7 +187,7 @@ chr2L	605850	606050	CG17941-RA	-	714969	640021	33971	108919	33971	0	0"""
 # NearestTranscriptToPeakEdge_diff_expression-ex3.txt
 nearest_transcript_to_peak_edge_diff_expression_ex3 = \
 """#chr	start	end	geneID	strand	TSS	TES	dist_closest_edge	dist_TSS	dist_TES	overlap_transcript	overlap_promoter
-chr2L	66711	66911	CG31973-RD	-	59243	25402	7468	7468	41309	0	0
+chr2L	66711	66911	CG31973-RD	-	59243	25402	7468	7468	41309	0	1
 chr2L	66711	66911	CG2674-RC	+	107926	114433	41015	41015	47522	0	0
 chr2L	66711	66911	CG2674-RJ	+	108094	114434	41183	41183	47523	0	0
 chr2L	66711	66911	CG2674-RG	+	109608	114433	42697	42697	47522	0	0
@@ -203,7 +203,7 @@ chr2L	605850	606050	CG3625-RC	-	291011	283385	314839	314839	322465	0	0"""
 # NearestTranscriptTSSToPeakEdge_diff_expression-ex3.txt
 nearest_transcript_tss_to_peak_edge_diff_expression_ex3 = \
 """#chr	start	end	geneID	strand	TSS	TES	dist_closest_edge	dist_TSS	dist_TES	overlap_transcript	overlap_promoter
-chr2L	66711	66911	CG31973-RD	-	59243	25402	7468	7468	41309	0	0
+chr2L	66711	66911	CG31973-RD	-	59243	25402	7468	7468	41309	0	1
 chr2L	66711	66911	CG2674-RC	+	107926	114433	41015	41015	47522	0	0
 chr2L	66711	66911	CG2674-RJ	+	108094	114434	41183	41183	47523	0	0
 chr2L	66711	66911	CG2674-RG	+	109608	114433	42697	42697	47522	0	0
@@ -314,7 +314,7 @@ class TestRNASeqDataLine(unittest.TestCase):
                          (self.rna_data.getTSS()-leading,
                           self.rna_data.getTSS()+trailing),
                          "Incorrect promoter region for + strand example")
-        promoter = self.rna_data_2.getPromoterRegion(10000,2500)
+        promoter = self.rna_data_2.getPromoterRegion(leading,trailing)
         self.assertEqual(promoter,
                          (self.rna_data_2.getTSS()+leading,
                           self.rna_data_2.getTSS()-trailing),
@@ -861,6 +861,13 @@ class TestRegionsOverlap(unittest.TestCase):
                         "Regions should overlap")
         self.assertTrue(regions_overlap(region2,region1),
                         "Regions should overlap (reversed)")
+
+    def test_regions_overlap_limit_orders_dont_matter(self):
+        # Check that limits of regions can be in any order
+        self.assertTrue(regions_overlap((0,10),(5,15)))
+        self.assertTrue(regions_overlap((10,0),(5,15)))
+        self.assertTrue(regions_overlap((0,10),(15,5)))
+        self.assertTrue(regions_overlap((10,0),(15,5)))
 
 ########################################################################
 #

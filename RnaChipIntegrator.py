@@ -1,7 +1,7 @@
 #!/bin/env python
 #
 #     RnaChipIntegrator.py: analyse RNA-seq and ChIP-seq data
-#     Copyright (C) University of Manchester 2011-12 Peter Briggs, Leo Zeef
+#     Copyright (C) University of Manchester 2011-14 Peter Briggs, Leo Zeef
 #     & Ian Donaldson
 #
 #     This code is free software; you can redistribute it and/or modify it
@@ -43,7 +43,7 @@ transcript and vice versa using various criteria to define "nearest".
 # Module metadata
 #######################################################################
 
-__version__ = "0.3.3"
+__version__ = "0.4.0"
 
 #######################################################################
 # Import modules that this module depends on
@@ -862,9 +862,9 @@ def regions_overlap(region1,region2):
         wide,narrow = region2,region1
     # Determine upper/lower limits of region #1
     if wide[0] < wide[1]:
-        lower, upper = wide[0],wide[1]
+        lower,upper = wide[0],wide[1]
     else:
-        upper,lower = wide[1],wide[0]
+        lower,upper = wide[1],wide[0]
     # Regions overlap if either start or end of region #2 lies
     # within region #1 (or vice versa)
     return ((lower <= narrow[0] and narrow[0] <= upper) or
