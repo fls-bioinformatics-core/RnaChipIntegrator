@@ -26,6 +26,7 @@
     a { color: #000000; }
     .description { font-size: 1.1em; margin-bottom: 20px; margin-top: 10px; font-style: italic;}
     .download { float: right; }
+    .important { background: #fcc; font-style: italic; }
     pre { background: #000; color: #fff; padding: 15px;}
     hr { border: 0; width: 80%; border-bottom: 1px solid #aaa}
     .footer { text-align:center; padding-top:30px; font-style: italic; }
@@ -57,11 +58,19 @@
       <p>Download the latest version:</p>
 
       <ul>
-	<li><a href="https://github.com/downloads/fls-bioinformatics-core/RnaChipIntegrator/RnaChipIntegrator-0.3.3.tar.gz">RnaChipIntegrator-0.3.3.tar.gz</a></li>
-	<li><a href="https://github.com/downloads/fls-bioinformatics-core/RnaChipIntegrator/RnaChipIntegrator-0.3.3.zip">RnaChipIntegrator-0.3.3.zip</a></li>
+	<li><a href="https://github.com/fls-bioinformatics-core/RnaChipIntegrator/archive/v0.4.0.tar.gz">RnaChipIntegrator-0.4.0.tar.gz</a></li>
+	<li><a href="https://github.com/fls-bioinformatics-core/RnaChipIntegrator/archive/v0.4.0.zip">RnaChipIntegrator-0.4.0.zip</a></li>
       </ul>
 
        <p>See the <a href="https://github.com/fls-bioinformatics-core/RnaChipIntegrator/blob/master/ChangeLog">change log</a> for the most recent changes, and the <a href="https://github.com/fls-bioinformatics-core/RnaChipIntegrator/downloads">downloads page</a> for all available versions.</p>
+
+    <div class="important">
+      <p>This release addresses a bug has been discovered in the previous version of the
+	code (v0.3.3), which meant that peaks within transcripts or promoter regions on
+	the negative strand might sometimes be incorrectly flagged as not within those
+	regions.</p>
+      <p>This bug did <b>not</b> affect the reporting of the peaks and transcripts</p>
+    </div>
     
     <h2>Installation</h2>
 
@@ -71,7 +80,7 @@
       <li><p>You can use Python's setuptools to install the RnaChipIntegrator code. To do this,
 	  download the archive (either .tar.gz or .zip), unpack it and install as follows:</p>
 
-	  <pre>$ cd RnaChipIntegrator-0.3.3
+	  <pre>$ cd RnaChipIntegrator-0.4.0
 $ sudo python setup.py install</pre></li>
 
       <li><p>Alternatively if you're using pip (see
