@@ -90,7 +90,7 @@ This software is licensed under the Artistic License 2.0; see the `LICENSE` docu
 More information
 ----------------
 
-See the `README` document in the `doc` subdirectory for more detailed descriptions of
+See the `MANUAL.md` document in the `doc` subdirectory for more detailed descriptions of
 each analysis, the available options, and the outputs from the program.
 
 --
