@@ -110,6 +110,9 @@ _Options for NearestTranscriptsToPeakEdges_, _NearestTSSToPeakEdges_
     around transcript TSS. _Leading_ defines the number of bases upstream of
     the TSS where the promoter region starts, _trailing_ sets the number
     downstream where it ends. Defaults to -10000 to 2500 bp of TSS.
+*   `--pad`: only affects formatting of the output, adding blank lines when
+    when less than the maximum number of transcripts (specified by `--number`)
+    are found - so that all peaks have the same number of lines.
 
 _Options for NearestPeaksToTranscripts_
 

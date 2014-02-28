@@ -43,7 +43,7 @@ transcript and vice versa using various criteria to define "nearest".
 # Module metadata
 #######################################################################
 
-__version__ = "0.4.0"
+__version__ = "0.4.1"
 
 #######################################################################
 # Import modules that this module depends on
@@ -1031,7 +1031,8 @@ def AnalyseClosestTranscriptsToPeaksInEachDirection(chip_seq,rna_seq):
 def AnalyseNearestTSSToSummits(chip_seq,rna_seq,max_distance,
                                max_closest=4,
                                filename=None,
-                               xls=None):
+                               xls=None,
+                               pad_output=False):
     """Find nearest RNA transcripts to a set of ChIP peaks
 
     Given a set of ChIP peaks in a ChIPSeqData object, and a set of
@@ -1060,6 +1061,10 @@ def AnalyseNearestTSSToSummits(chip_seq,rna_seq,max_distance,
         name to write the results to as tab-delimited data
       xls: (optional) if not None then specifies the XLS file name
         to add the results to as a new sheet
+      pad_output: (optional) if True then always report max_closest
+        lines of output, and pad with blank lines if fewer genes
+        were actually found
+
     """
     # Loop over ChIP peaks and sort RNA transcripts into order
     # for each based on the absolute distance of their TSS from the peak
@@ -1132,8 +1137,12 @@ def AnalyseNearestTSSToSummits(chip_seq,rna_seq,max_distance,
                               transcripts_inbetween=len(transcripts),
                               transcript_ids_inbetween=\
                                   ';'.join(transcript_ids))
-        # Report peaks with no significant genes in the cut-off region
-        if len(closest) == 0:
+        # Pad with blank lines, if requested
+        if pad_output:
+            for i in range(len(closest),max_closest):
+                results.addResult(chip_data,None)
+        elif len(closest) == 0:
+            # Report peaks with no significant genes in the cut-off region
             results.addResult(chip_data,None,
                               chr=chip_data.chr,
                               start=chip_data.start)
@@ -1146,7 +1155,7 @@ def AnalyseNearestTSSToSummits(chip_seq,rna_seq,max_distance,
                                  'distance_to_TES',
                                  'strand','in_the_gene',
                                  'transcripts_inbetween',
-                                 'transcript_ids_inbetween'))
+                                 'transcript_ids_inbetween'),pad='.')
     # Write the results to a spreadsheet
     if xls: results.output_xls(xls,'TSSToSummits',
                                ('chr','start','geneID','nearest','TSS',
@@ -1154,7 +1163,7 @@ def AnalyseNearestTSSToSummits(chip_seq,rna_seq,max_distance,
                                 'distance_to_TES',
                                 'strand','in_the_gene',
                                 'transcripts_inbetween',
-                                'transcript_ids_inbetween'))
+                                'transcript_ids_inbetween'),pad='.')
     # Return results object
     return results
 
@@ -1256,7 +1265,8 @@ def AnalyseNearestTranscriptsToPeakEdges(chip_seq,rna_seq,
                                          max_distance=0,
                                          TSS_only=False,
                                          filename=None,
-                                         xls=None):
+                                         xls=None,
+                                         pad_output=False):
     """Find nearest RNA transcripts to a set of ChIP peaks based on edges
 
     Given a set of ChIP peaks in a ChIPSeqData object, and a set of
@@ -1294,6 +1304,9 @@ def AnalyseNearestTranscriptsToPeakEdges(chip_seq,rna_seq,
         hit for each ChIP peak.
       xls: (optional) if not None then specifies the XLS file name
         to add the results to as a new sheet
+      pad_output: (optional) if True then always report max_closest
+        lines of output, and pad with blank lines if fewer genes
+        were actually found
     """
     logging.debug("Starting AnalyseNearestTranscriptsToPeakEdges:")
     # Check that we have region data for ChIP peaks
@@ -1385,6 +1398,10 @@ def AnalyseNearestTranscriptsToPeakEdges(chip_seq,rna_seq,
         # Finished loop
         if len(closest) == 0:
             logging.debug("\t\tNo transcripts found")
+        # Pad with blank lines, if requested
+        if pad_output:
+            for i in range(len(closest),max_closest):
+                results.addResult(chip_peak,None)
         logging.debug("")
     # Construct header line and summary results for output
     if filename or xls:
@@ -1409,7 +1426,7 @@ def AnalyseNearestTranscriptsToPeakEdges(chip_seq,rna_seq,
     # Write to output file
     if filename:
         # Full results
-        results.output(filename,header)
+        results.output(filename,header,pad='.')
         # Summary
         summary_filename = os.path.splitext(filename)[0]+"_summary"+\
             os.path.splitext(filename)[1]
@@ -1421,7 +1438,7 @@ def AnalyseNearestTranscriptsToPeakEdges(chip_seq,rna_seq,
             xls_title = 'TranscriptsToPeakEdges'
         else:
             xls_title = 'TSSToPeakEdges'
-        results.output_xls(xls,xls_title,header)
+        results.output_xls(xls,xls_title,header,pad='.')
         # Summary results
         xls_title += '(summary)'
         summary_results.output_xls(xls,xls_title,header)
@@ -1655,6 +1672,10 @@ def main():
                      default="%d,%d" % promoter_region,
                      help="Define promoter region with respect to gene TSS "+
                      "(default -%d to %d bp of TSS)" %  promoter_region)
+    group.add_option('--pad',action="store_true",dest="pad_output",
+                 help="Where less than MAX_CLOSEST transcripts are found for a peak "
+                 "add additional lines to the output to ensure that MAX_CLOSEST lines "
+                 "are still reported")
     p.add_option_group(group)
 
     # Process the command line
@@ -1717,10 +1738,11 @@ def main():
     if do_chip_analyses:
         print ""
         print "ChIP analyses:"
-        print "\tMaximum cutoff distance  : %d (bp)" % max_distance
-        print "\tMaximum edge distance    : %d (bp)" % max_edge_distance
-        print "\tMax no. of closest genes : %d" % max_closest
-        print "\tPromoter region          : -%d to %d (bp from TSS)" % \
+        print "\tMaximum cutoff distance   : %d (bp)" % max_distance
+        print "\tMaximum edge distance     : %d (bp)" % max_edge_distance
+        print "\tMax no. of closest genes  : %d" % max_closest
+        print "\tPad output if fewer found : %s" % options.pad_output
+        print "\tPromoter region           : -%d to %d (bp from TSS)" % \
             promoter_region
     if do_rna_analyses:
         print ""
@@ -1790,7 +1812,7 @@ def main():
             print "\tWriting output to %s" % outfile
             AnalyseNearestTSSToSummits(chip_seq,rna_seq,max_distance,
                                        max_closest,outfile,
-                                       xls=xls)
+                                       xls=xls,pad_output=options.pad_output)
             print "\tDone"
             if xls: xls_notes.addText(xls_notes_for_nearest_TSS_to_summits %
                                       max_distance)
@@ -1805,7 +1827,8 @@ def main():
                                                  max_edge_distance,
                                                  TSS_only=False,
                                                  filename=outfile,
-                                                 xls=xls)
+                                                 xls=xls,
+                                                 pad_output=options.pad_output)
             print "\tDone"
             if xls: xls_notes.addText(
                 xls_notes_for_nearest_transcripts_to_peak_edges %
@@ -1821,7 +1844,8 @@ def main():
                                                  max_edge_distance,
                                                  TSS_only=True,
                                                  filename=outfile,
-                                                 xls=xls)
+                                                 xls=xls,
+                                                 pad_output=options.pad_output)
             print "\tDone"
             if xls: xls_notes.addText(xls_notes_for_nearest_tss_to_peak_edges)
 

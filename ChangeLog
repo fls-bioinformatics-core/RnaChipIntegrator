@@ -1,5 +1,11 @@
 2014-01-20  Peter Briggs  <peter.briggs@manchester.ac.uk>
 
+	* Version 0.4.1
+	- Add '--pad' option: for 'NearestTranscriptsToPeakEdge' and
+	  'NearestTSSToPeakEdge' analyses, where necessary adds blank lines to
+	  output files and spreadsheet so that each reported peak has the same
+	  number of lines associated regardless of the number of hits.
+
 	* Version 0.4.0
 	- Fixed bug in overlap determination, which manifested when a gene was on
 	  the negative strange *and* was also wider than the peak. In those cases
