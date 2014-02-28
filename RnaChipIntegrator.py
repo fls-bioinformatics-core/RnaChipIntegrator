@@ -1137,16 +1137,16 @@ def AnalyseNearestTSSToSummits(chip_seq,rna_seq,max_distance,
                               transcripts_inbetween=len(transcripts),
                               transcript_ids_inbetween=\
                                   ';'.join(transcript_ids))
-        # Pad with blank lines, if requested
-        if pad_output:
-            for i in range(len(closest),max_closest):
-                results.addResult(chip_data,None)
-        elif len(closest) == 0:
+        if len(closest) == 0:
             # Report peaks with no significant genes in the cut-off region
             results.addResult(chip_data,None,
                               chr=chip_data.chr,
                               start=chip_data.start)
             logging.debug("\t\tNo transcripts found")
+        elif pad_output:
+            # Pad with blank lines
+            for i in range(len(closest),max_closest):
+                results.addResult(chip_data,None)
         logging.debug("")
     # Write the results to file
     if filename:
@@ -1398,8 +1398,8 @@ def AnalyseNearestTranscriptsToPeakEdges(chip_seq,rna_seq,
         # Finished loop
         if len(closest) == 0:
             logging.debug("\t\tNo transcripts found")
-        # Pad with blank lines, if requested
-        if pad_output:
+        elif pad_output:
+            # Pad with blank lines, if requested
             for i in range(len(closest),max_closest):
                 results.addResult(chip_peak,None)
         logging.debug("")
