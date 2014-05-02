@@ -1,3 +1,9 @@
+2014-05-02  Peter Briggs  <peter.briggs@manchester.ac.uk>
+
+	* Version 0.4.2
+	- Truncate worksheet titles if they exceed maximum length as defined by
+	  the spreadsheet writing libraries.
+
 2014-01-20  Peter Briggs  <peter.briggs@manchester.ac.uk>
 
 	* Version 0.4.1

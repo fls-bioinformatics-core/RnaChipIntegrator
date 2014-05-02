@@ -43,7 +43,7 @@ transcript and vice versa using various criteria to define "nearest".
 # Module metadata
 #######################################################################
 
-__version__ = "0.4.1"
+__version__ = "0.4.2"
 
 #######################################################################
 # Import modules that this module depends on
@@ -792,7 +792,10 @@ class AnalysisResult:
                                 (ws.title,Spreadsheet.MAX_NUMBER_ROWS_PER_WORKSHEET))
                 # Make a new spreadsheet for the excess rows
                 nsheet += 1
-                ws = xls.addSheet("%s(%d)" % (title,nsheet))
+                # Create a unique title
+                tmp_title = truncate_text("%s(%d)" % (title,nsheet),
+                                          Spreadsheet.MAX_LEN_WORKSHEET_TITLE)
+                ws = xls.addSheet(tmp_title)
                 logging.warning("Created new sheet '%s' to store additional results" %
                                 ws.title)
                 # Add the header
@@ -1571,6 +1574,20 @@ def output_results(filen,results):
         items = [str(x) for x in result]
         fp.write('\t'.join(items)+'\n')
     fp.close()
+
+def truncate_text(text,max_len):
+    """Truncate a text string
+
+    Given a title and an optional extension, remove characters
+    and replace with ellipsis (i.e. ...) so that it find into
+    the maxium number of characters (max_len).
+
+    """
+    len_text = len(text)
+    if len_text <= max_len:
+        return text
+    text = text[len_text-max_len:]
+    return '...' + text[3:]
 
 #######################################################################
 # Main program
