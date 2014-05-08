@@ -43,7 +43,7 @@ transcript and vice versa using various criteria to define "nearest".
 # Module metadata
 #######################################################################
 
-__version__ = "0.4.2"
+__version__ = "0.4.3"
 
 #######################################################################
 # Import modules that this module depends on
@@ -1140,15 +1140,17 @@ def AnalyseNearestTSSToSummits(chip_seq,rna_seq,max_distance,
                               transcripts_inbetween=len(transcripts),
                               transcript_ids_inbetween=\
                                   ';'.join(transcript_ids))
-        if len(closest) == 0:
+        n_hits = len(closest)
+        if n_hits == 0:
             # Report peaks with no significant genes in the cut-off region
             results.addResult(chip_data,None,
                               chr=chip_data.chr,
                               start=chip_data.start)
+            n_hits = 1
             logging.debug("\t\tNo transcripts found")
-        elif pad_output:
+        if pad_output:
             # Pad with blank lines
-            for i in range(len(closest),max_closest):
+            for i in range(n_hits,max_closest):
                 results.addResult(chip_data,None)
         logging.debug("")
     # Write the results to file
@@ -1399,12 +1401,16 @@ def AnalyseNearestTranscriptsToPeakEdges(chip_seq,rna_seq,
                 logging.debug("Found %d closest" % max_closest)
                 break
         # Finished loop
-        if len(closest) == 0:
+        n_hits = len(closest)
+        if n_hits == 0:
             logging.debug("\t\tNo transcripts found")
-        elif pad_output:
-            # Pad with blank lines, if requested
-            for i in range(len(closest),max_closest):
-                results.addResult(chip_peak,None)
+        # Pad with blank lines, if requested
+        if pad_output:
+            for i in range(n_hits,max_closest):
+                results.addResult(chip_peak,None,
+                                  chr=chip_peak.chr,
+                                  start=chip_peak.start,
+                                  end=chip_peak.end)
         logging.debug("")
     # Construct header line and summary results for output
     if filename or xls:
@@ -1419,7 +1425,7 @@ def AnalyseNearestTranscriptsToPeakEdges(chip_seq,rna_seq,
         summary_results = AnalysisResult()
         last_chip_peak = None
         for result in results:
-            if result['chip_seq'] != last_chip_peak:
+            if result['chip_seq'] != last_chip_peak and result['rna_seq'] is not None:
                 summary_results.addResult(result['chip_seq'],
                                           result['rna_seq'],
                                           **result)

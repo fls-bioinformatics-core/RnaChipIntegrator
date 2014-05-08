@@ -1,3 +1,10 @@
+2014-05-08  Peter Briggs  <peter.briggs@manchester.ac.uk>
+
+	* Version 0.4.3
+	- Update --pad output so that requested number of lines appears for
+	  peaks even when there are no hits, and "empty" lines contain the
+	  chromosome, start and end positions for the peak in question.
+
 2014-05-02  Peter Briggs  <peter.briggs@manchester.ac.uk>
 
 	* Version 0.4.2
