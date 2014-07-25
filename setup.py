@@ -25,7 +25,8 @@ setup(
                         'xlrd >= 0.7.1',
                         'xlutils >= 1.4.1'],
     entry_points = { 'console_scripts':
-                         ['RnaChipIntegrator = RnaChipIntegrator:main']
+                         ['RnaChipIntegrator = RnaChipIntegrator:main',
+                          'RnaChipIntegrator.py = RnaChipIntegrator:main']
                      },
     data_files = [ ('RnaChipIntegrator', ['README.markdown',
                                           'LICENSE',
