@@ -1,4 +1,4 @@
-#!/bin/env python
+#!/usr/bin/env python
 #
 #     RnaChipIntegrator.py: analyse RNA-seq and ChIP-seq data
 #     Copyright (C) University of Manchester 2011-14 Peter Briggs, Leo Zeef
