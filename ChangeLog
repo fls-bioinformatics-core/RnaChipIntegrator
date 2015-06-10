@@ -1,3 +1,9 @@
+2015-06-10  Peter Briggs  <peter.briggs@manchester.ac.uk>
+
+	* Version 0.4.4
+	- Use /usr/bin/env rather than /bin/env to invoke Python interpreter
+	  in RnaChipIntegrator.py (was broken for e.g. Ubuntu linux).
+
 2014-05-08  Peter Briggs  <peter.briggs@manchester.ac.uk>
 
 	* Version 0.4.3
@@ -21,7 +27,7 @@
 
 	* Version 0.4.0
 	- Fixed bug in overlap determination, which manifested when a gene was on
-	  the negative strange *and* was also wider than the peak. In those cases
+	  the negative strand *and* was also wider than the peak. In those cases
 	  the start and end of the gene were being assigned incorrectly way around.
 
 	  (The bug didn't affect results for other genes on the negative strand
