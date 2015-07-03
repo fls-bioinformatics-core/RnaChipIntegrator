@@ -192,15 +192,15 @@ def AnalyseClosestTranscriptsToPeaksInEachDirection(peaks,features):
     for peak in peaks:
         print "\tMatching to ChIP peak: %s" % peak
         # Initialise the hits
-        print "\t%d total matches in RNA-seq data" % \
-            len(features.filterByChr(peak.chrom))
+        features_chr = features.filterByChr(peak.chrom)
+        print "\t%d total matches in RNA-seq data" % len(features_chr)
         # Process the subset of features with matching chromosome
         # on the + strand
         closest_upstream_on_plus_strand = None
         closest_downstream_on_plus_strand = None
-        print "\t%d matches on + strand" % \
-            len(features.filterByChr(peak.chrom).filterByStrand('+'))
-        for feature in features.filterByChr(peak.chrom).filterByStrand('+'):
+        features_chr_plus = features_chr.filterByStrand('+')
+        print "\t%d matches on + strand" % len(features_chr_plus)
+        for feature in features_chr_plus:
             # Get the distance from the ChIP peak
             distance = feature.getTSS() - peak.start
             # Check if this is closer than anything seen previously
@@ -219,9 +219,9 @@ def AnalyseClosestTranscriptsToPeaksInEachDirection(peaks,features):
         # on the - strand
         closest_upstream_on_minus_strand = None
         closest_downstream_on_minus_strand = None
-        print "\t%d matches on - strand" % \
-            len(features.filterByChr(peak.chrom).filterByStrand('-'))
-        for feature in features.filterByChr(peak.chrom).filterByStrand('-'):
+        features_chr_minus = features_chr.filterByStrand('-')
+        print "\t%d matches on - strand" % len(features_chr_minus)
+        for feature in features_chr_minus:
             # Get the distance from the ChIP peak
             distance = feature.getTSS() - peak.start
             # Check if this is closer than anything seen previously
