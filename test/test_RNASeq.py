@@ -1,0 +1,238 @@
+#
+#     test_RNASeq.py: unit tests for RNASeq module
+#     Copyright (C) University of Manchester 2011-5 Peter Briggs
+
+from common import *
+from rnachipintegrator.RNASeq import RNASeqDataLine
+from rnachipintegrator.RNASeq import RNASeqData
+import unittest
+
+class TestRNASeqDataLine(unittest.TestCase):
+
+    def setUp(self):
+        # Setup RNASeqDataLine objects to be used in the tests
+        # Forward strand example
+        self.rna_data = \
+            RNASeqDataLine('CG9130-RB','chr3L','1252012','1255989','+')
+        # Reverse strand example
+        self.rna_data_2 = \
+            RNASeqDataLine('CG13051-RA','chr3L','16257914','16258166','-')
+
+    def test_contains_position(self):
+        position = 1253000
+        self.assertTrue(self.rna_data.containsPosition(position),
+                        "Transcript should contain position")
+        position = 4250000
+        self.assertFalse(self.rna_data.containsPosition(position),
+                         "Transcript should not contain position")
+        position = 10000
+        self.assertFalse(self.rna_data.containsPosition(position),
+                         "Transcript should not contain position")
+
+    def test_get_closest_edge_distance(self):
+        # Single position
+        position = 1200000
+        # Single reference position
+        self.assertEqual(self.rna_data.getClosestEdgeDistanceTo(position),
+                         abs(self.rna_data.start-position),
+                         "Incorrect closest edge distance #1")
+        position = 1300000
+        self.assertEqual(self.rna_data.getClosestEdgeDistanceTo(position),
+                         abs(self.rna_data.end-position),
+                         "Incorrect closest edge distance #2")
+
+    def test_get_closest_edge_distance_outside_region(self):
+        # Reference region (2 positions)
+        position1 = 1100000
+        position2 = 1200000
+        self.assertEqual(self.rna_data.getClosestEdgeDistanceTo(position1,
+                                                                position2),
+                         abs(self.rna_data.start-position2),
+                         "Incorrect closest edge distance (region #1)")
+        position1 = 1300000
+        position2 = 1400000
+        self.assertEqual(self.rna_data.getClosestEdgeDistanceTo(position1,
+                                                                position2),
+                         abs(self.rna_data.end-position1),
+                         "Incorrect closest edge distance (region #2)")
+
+    def test_get_closest_edge_distance_partially_inside_region(self):
+        # Partially inside reference region
+        position1 = 1200000
+        position2 = 1255000
+        self.assertEqual(self.rna_data.getClosestEdgeDistanceTo(position1,
+                                                                position2),
+                         abs(self.rna_data.end-position2),
+                         "Incorrect closest edge distance (inside region #1)")
+        self.assertEqual(self.rna_data.getClosestEdgeDistanceTo(position1,
+                                                                position2,
+                                                                zero_inside_region=True),
+                         0,
+                         "Incorrect closest edge distance (inside region #2)")
+
+    def test_get_closest_edge_distance_completely_inside_region(self):
+        # Completely inside reference region
+        position1 = 1250000
+        position2 = 1300000
+        self.assertEqual(self.rna_data.getClosestEdgeDistanceTo(position1,
+                                                                position2),
+                         abs(self.rna_data.start-position1),
+                         "Incorrect closest edge distance (inside region #3)")
+        self.assertEqual(self.rna_data.getClosestEdgeDistanceTo(position1,
+                                                                position2,
+                                                                zero_inside_region=True),
+                         0,
+                         "Incorrect closest edge distance (inside region #4)")
+
+    def test_get_promoter_region(self):
+        leading = 10000
+        trailing = 2500
+        promoter = self.rna_data.getPromoterRegion(leading,trailing)
+        self.assertEqual(promoter,
+                         (self.rna_data.getTSS()-leading,
+                          self.rna_data.getTSS()+trailing),
+                         "Incorrect promoter region for + strand example")
+        promoter = self.rna_data_2.getPromoterRegion(leading,trailing)
+        self.assertEqual(promoter,
+                         (self.rna_data_2.getTSS()+leading,
+                          self.rna_data_2.getTSS()-trailing),
+                         "Incorrect promoter region for - strand example")
+
+class TestRNASeqData(unittest.TestCase):
+
+    def setUp(self):
+        # Create input files for tests
+        create_test_file('Transcripts-ex1.txt',transcripts_ex1)
+        create_test_file('Transcripts-ex2.txt',transcripts_ex2)
+        create_test_file('Transcripts-ex2a.txt',transcripts_ex2a)
+
+    def tearDown(self):
+        # Remove input files
+        delete_test_file('Transcripts-ex1.txt')
+        delete_test_file('Transcripts-ex2.txt')
+
+    def test_reading_in_RNAseq_data(self):
+        rna_seq = RNASeqData('Transcripts-ex1.txt')
+        self.assertEqual(len(rna_seq),10,
+                         "Wrong number of lines from RNA-seq file")
+        self.assertTrue(rna_seq.isFlagged(),
+                        "Data should be flagged")
+
+    def test_filter_on_chromosome(self):
+        rna_seq = RNASeqData('Transcripts-ex1.txt')
+        rna_chr = rna_seq.filterByChr('chr3LHet')
+        self.assertEqual(len(rna_chr),1,
+                         "Wrong number of chromosomes")
+        for rna_data in rna_chr:
+            self.assertEqual(rna_data.chr,'chr3LHet',
+                             "Wrong chromosome filtered")
+
+    def test_filter_on_strand(self):
+        rna_seq = RNASeqData('Transcripts-ex1.txt')
+        rna_plus = rna_seq.filterByStrand('+')
+        self.assertEqual(len(rna_plus),5,
+                         "Wrong number of + strands")
+        rna_minus = rna_seq.filterByStrand('-')
+        self.assertEqual(len(rna_minus),5,
+                         "Wrong number of - strands")
+
+    def test_filter_on_flag(self):
+        rna_seq = RNASeqData('Transcripts-ex1.txt')
+        rna_flagged = rna_seq.filterByFlag(1)
+        self.assertEqual(len(rna_flagged),4,
+                         "Wrong number of flagged data lines")
+
+    def test_getTSS(self):
+        rna_seq = RNASeqData('Transcripts-ex1.txt')
+        rna_plus = rna_seq.filterByStrand('+')
+        for rna_data in rna_plus:
+            self.assertTrue((rna_data.strand == '+' and
+                             rna_data.start == rna_data.getTSS()),
+                            "Incorrect TSS on + strand")
+        rna_minus = rna_seq.filterByStrand('-')
+        for rna_data in rna_minus:
+            self.assertTrue((rna_data.strand == '-' and
+                             rna_data.end == rna_data.getTSS()),
+                            "Incorrect TSS on - strand")
+
+    def test_filter_on_TSS(self):
+        rna_seq = RNASeqData('Transcripts-ex1.txt')
+        lower,upper = 5000000,10000000
+        rna_tss = rna_seq.filterByTSS(upper,lower)
+        self.assertEqual(len(rna_tss),3,
+                         "Wrong number of transcripts filtered on TSS")
+        for rna_data in rna_tss:
+            self.assertTrue((rna_data.getTSS() >= lower and
+                             rna_data.getTSS() <= upper),
+                            "Transcript outside range")
+
+    def test_sort_by_distance(self):
+        rna_sort = RNASeqData('Transcripts-ex1.txt')
+        position = 4250000
+        # Do sort on distance
+        # Sort is done in place, so assignment is not required
+        # however the sort function should return a reference to
+        # the initial object
+        result = rna_sort.sortByDistanceFrom(position)
+        self.assertEqual(result,rna_sort,
+                         "Returned object doesn't match subject")
+        # Check that each distance is greater than the previous one
+        last_rna_data = None
+        for rna_data in rna_sort:
+            if not last_rna_data:
+                last_rna_data = rna_data
+        else:
+            self.assertTrue((abs(rna_data.getTSS() - position) >=
+                             abs(last_rna_data.getTSS() - position)),
+                             "Sort by distance failed")
+
+    def test_sort_by_closest_distance_to_edge(self):
+        rna_sort = RNASeqData('Transcripts-ex1.txt')
+        position = 4250000
+        # Do sort
+        # Sort is done in place, so assignment is not required
+        # however the sort function should return a reference to
+        # the initial object
+        result = rna_sort.sortByClosestEdgeTo(position)
+        self.assertEqual(result,rna_sort,
+                         "Returned object doesn't match subject")
+        # Check that the closest distances are in ascending order
+        last_rna_data = None
+        for rna_data in rna_sort:
+            if not last_rna_data:
+                last_rna_data = rna_data
+            else:
+                self.assertTrue((min(abs(rna_data.getTSS() - position),
+                                     abs(rna_data.getTES() - position)) >=
+                                 min(abs(last_rna_data.getTSS() - position),
+                                     abs(last_rna_data.getTES() - position))),
+                                "Sort by closest distance to edge failed")
+
+    def test_sort_by_closest_TSS_to_edge(self):
+        rna_sort = RNASeqData('Transcripts-ex1.txt')
+        position = (16000000,17500000)
+        # Do sort
+        # Sort is done in place, so assignment is not required
+        # however the sort function should return a reference to
+        # the initial object
+        result = rna_sort.sortByClosestTSSTo(*position)
+        self.assertEqual(result,rna_sort,
+                         "Returned object doesn't match subject")
+        # Check that the closest distances are in ascending order
+        last_rna_data = None
+        for rna_data in rna_sort:
+            if not last_rna_data:
+                last_rna_data = rna_data
+            else:
+                self.assertTrue((min(abs(rna_data.getTSS() - position[0]),
+                                     abs(rna_data.getTSS() - position[1])) >=
+                                 min(abs(last_rna_data.getTSS() - position[0]),
+                                     abs(last_rna_data.getTSS() - position[1]))),
+                                "Sort by closest TSS to edge failed")
+        
+
+    def test_reading_bad_file_scientific_notation(self):
+        self.assertRaises(Exception,RNASeqData,'Transcripts-ex2.txt')
+
+    def test_reading_bad_file_end_lower_than_start(self):
+        self.assertRaises(Exception,RNASeqData,'Transcripts-ex2a.txt')
