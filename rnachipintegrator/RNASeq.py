@@ -293,6 +293,8 @@ class Feature:
       start
       end
       strand
+      tss
+      tes
 
     There are also convenience methods (getTSS, getTES, getPromoterRegion)
     and methods for calculating various distances.
@@ -305,6 +307,15 @@ class Feature:
         self.end = int(end)
         self.strand = strand
         self.flag = None
+        # Set the TSS and TES
+        if self.strand == '+':
+            self.tss = self.start
+            self.tes = self.end
+        elif self.strand == '-':
+            self.tss = self.end
+            self.tes = self.start
+        else:
+            raise Exception("Bad strand: '%s'" % self.strand)
 
     def __repr__(self):
         items = [self.id,
@@ -322,13 +333,10 @@ class Feature:
         TTS (transcription start site) is the start position for a +ve 
         strand, or end for a -ve strand.
 
+        This is a wrapper for accessing the 'tss' property.
+
         """
-        if self.strand == '+':
-            return self.start
-        elif self.strand == '-':
-            return self.end
-        # FIXME Should raise an exception
-        return None
+        return self.tss
 
     def getTES(self):
         """Return the TES coordinate
@@ -336,13 +344,10 @@ class Feature:
         TES (transcription end site) is the start position for a +ve
         strand, or end for a -ve strand.
 
+        This is a wrapper for accessing the 'tes' property.
+
         """
-        if self.strand == '+':
-            return self.end
-        elif self.strand == '-':
-            return self.start
-        # FIXME Should raise an exception
-        return None
+        return self.tes
 
     def containsPosition(self,coordinate):
         """Check whether a coordinate is within the gene coordinates
