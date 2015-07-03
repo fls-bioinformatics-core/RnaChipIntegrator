@@ -64,22 +64,6 @@ import rnachipintegrator.Spreadsheet as Spreadsheet
 import rnachipintegrator
 __version__ = rnachipintegrator.get_version()
 
-
-#######################################################################
-# Non-core Functions
-#######################################################################
-
-def count_unique_TSS(rna_seq):
-    """Count the number of unique TSS positions
-
-    Given an RNASeqData object with a list of transcripts, returns
-    the number of unique TSS positions found in the list."""
-    unique = []
-    for rna_data in rna_seq:
-        if not rna_data.getTSS() in unique:
-            unique.append(rna_data.getTSS())
-    return len(unique)
-
 #######################################################################
 # Main program
 #######################################################################
