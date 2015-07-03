@@ -40,12 +40,6 @@ transcript and vice versa using various criteria to define "nearest".
 """
 
 #######################################################################
-# Module metadata
-#######################################################################
-
-__version__ = "0.4.4"
-
-#######################################################################
 # Import modules that this module depends on
 #######################################################################
 
@@ -65,6 +59,9 @@ from rnachipintegrator.analysis import AnalyseNearestTranscriptsToPeakEdges
 from rnachipintegrator.analysis import AnalyseNearestTSSToSummits
 from rnachipintegrator.analysis import AnalyseNearestPeaksToTranscripts
 import rnachipintegrator.Spreadsheet as Spreadsheet
+
+import rnachipintegrator
+__version__ = rnachipintegrator.get_version()
 
 #######################################################################
 # Descriptions of each method for XLS notes
