@@ -398,11 +398,6 @@ def main():
     else:
         xls = None
 
-    # Analysis #1a: ChIP-seq perspective
-    # NB this analysis disabled for now
-    if False:
-        AnalyseClosestTranscriptsToPeaksInEachDirection(chip_seq,rna_seq)
-
     # ChIP-seq-based analyses
     if do_chip_analyses:
         if chip_seq.isSummit():
@@ -480,4 +475,3 @@ def main():
 if __name__ == "__main__":
     # Run the program in command line mode
     main()
-                                      
