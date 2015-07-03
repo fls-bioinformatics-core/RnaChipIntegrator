@@ -54,7 +54,7 @@ logging.getLogger().setLevel(logging.ERROR)
 logging.basicConfig(format='%(levelname)s: %(message)s')
 
 from rnachipintegrator.RNASeq import FeatureSet
-from rnachipintegrator.ChIPSeq import *
+from rnachipintegrator.ChIPSeq import PeakSet
 from rnachipintegrator.analysis import AnalyseNearestTranscriptsToPeakEdges
 from rnachipintegrator.analysis import AnalyseNearestTSSToSummits
 from rnachipintegrator.analysis import AnalyseNearestPeaksToTranscripts
@@ -248,7 +248,7 @@ def main():
         logging.critical("Failed to read in RNA-seq data: %s" % ex)
         print "Please fix errors in input file before running again"
         sys.exit(1)
-    chip_seq = ChIPSeqData(chipseq_file)
+    peaks = PeakSet(chipseq_file)
 
     # Check we have data
     if not len(features):
@@ -261,13 +261,13 @@ def main():
             print "\t%d gene records flagged as differentially expressed" % \
                 len(features.filterByFlag(matchFlag=1))
             print "\tOnly these will be used in the analyses"
-    if not len(chip_seq):
+    if not len(peaks):
         logging.error("No ChIP-seq data read in")
         sys.exit(1)
     else:
-        print "%d ChIP-seq records read in" % len(chip_seq)
+        print "%d ChIP-seq records read in" % len(peaks)
         print
-        if chip_seq.isSummit():
+        if peaks.isSummit():
             print "ChIP data appears to be peak summits, the following analyses will be run:"
             print "\tNearestTSSToSummits"
             print "\tNearestPeaksToTranscripts"
@@ -287,12 +287,12 @@ def main():
 
     # ChIP-seq-based analyses
     if do_chip_analyses:
-        if chip_seq.isSummit():
+        if peaks.isSummit():
             # "Nearest TSS to summit" analysis
             outfile = output_basename+"_TSSToSummits.txt"
             print "Running AnalyseNearestTSSToSummits"
             print "\tWriting output to %s" % outfile
-            AnalyseNearestTSSToSummits(chip_seq,features,max_distance,
+            AnalyseNearestTSSToSummits(peaks,features,max_distance,
                                        max_closest,outfile,
                                        xls=xls,pad_output=options.pad_output)
             print "\tDone"
@@ -303,7 +303,7 @@ def main():
             outfile = output_basename+"_TranscriptsToPeakEdges.txt"
             print "Running AnalyseNearestTranscriptsToPeakEdges (TSS/TES)"
             print "\tWriting output to %s" % outfile
-            AnalyseNearestTranscriptsToPeakEdges(chip_seq,features,
+            AnalyseNearestTranscriptsToPeakEdges(peaks,features,
                                                  promoter_region,
                                                  max_closest,
                                                  max_edge_distance,
@@ -320,7 +320,7 @@ def main():
             outfile = output_basename+"_TSSToPeakEdges.txt"
             print "Running AnalyseNearestTranscriptsToPeakEdges (TSS only)"
             print "\tWriting output to %s" % outfile
-            AnalyseNearestTranscriptsToPeakEdges(chip_seq,features,
+            AnalyseNearestTranscriptsToPeakEdges(peaks,features,
                                                  promoter_region,
                                                  max_closest,
                                                  max_edge_distance,
@@ -334,12 +334,12 @@ def main():
 
     # RNA-seq-based analysese
     if do_rna_analyses:
-        if chip_seq.isSummit():
+        if peaks.isSummit():
             # "Nearest peak summits to TSS" analysis
             outfile = output_basename+"_PeaksToTranscripts.txt"
             print "Running AnalyseNearestPeaksToTranscripts"
             print "\tWriting output to %s" % outfile
-            AnalyseNearestPeaksToTranscripts(features,chip_seq,window_width,
+            AnalyseNearestPeaksToTranscripts(features,peaks,window_width,
                                              filename=outfile,
                                              xls=xls)
             print "\tDone"

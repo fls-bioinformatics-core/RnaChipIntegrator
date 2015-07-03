@@ -3,12 +3,12 @@
 #     Copyright (C) University of Manchester 2011-5 Peter Briggs
 
 from common import *
-from rnachipintegrator.ChIPSeq import ChIPSeqData
+from rnachipintegrator.ChIPSeq import PeakSet
 from rnachipintegrator.RNASeq import FeatureSet
 from rnachipintegrator.distances import GetNearestTranscriptToPeak
 import unittest
 
-class TestChIPSeqData(unittest.TestCase):
+class TestPeakSet(unittest.TestCase):
 
     def setUp(self):
         # Create input files for tests
@@ -23,75 +23,74 @@ class TestChIPSeqData(unittest.TestCase):
         delete_test_file('ChIP_peaks-ex5.txt')
 
     def test_reading_in_ChIPseq_data(self):
-        chip_seq = ChIPSeqData('ChIP_peaks-ex1.txt')
-        self.assertEqual(len(chip_seq),5,
+        peaks = PeakSet('ChIP_peaks-ex1.txt')
+        self.assertEqual(len(peaks),5,
                          "Wrong number of lines read from ChIP-seq file")
 
     def test_is_summit_data(self):
-        chip_seq = ChIPSeqData('ChIP_peaks-ex1.txt')
-        self.assertTrue(chip_seq.isSummit(),
-                        "ChIP data are summits")
-        chip_seq = ChIPSeqData('ChIP_peaks-ex5.txt')
-        self.assertFalse(chip_seq.isSummit(),
-                        "ChIP data are not summits")
+        peaks = PeakSet('ChIP_peaks-ex1.txt')
+        self.assertTrue(peaks.isSummit(),"ChIP data are summits")
+        peaks = PeakSet('ChIP_peaks-ex5.txt')
+        self.assertFalse(peaks.isSummit(),"ChIP data are not summits")
 
     def test_filter_on_chromosome(self):
-        chip_chr = ChIPSeqData('ChIP_peaks-ex2.txt')
+        peaks_chr = PeakSet('ChIP_peaks-ex2.txt')
         chromosome = 'chr2L'
-        self.assertEqual(len(chip_chr),10,
+        self.assertEqual(len(peaks_chr),10,
                          "Wrong number of lines from ChIP-seq file")
-        chip_chr = chip_chr.filterByChr(chromosome)
-        self.assertEqual(len(chip_chr), 5,
+        peaks_chr = peaks_chr.filterByChr(chromosome)
+        self.assertEqual(len(peaks_chr), 5,
                          "Wrong number of lines from ChIP-seq after chr filter")
-        for chip_data in chip_chr:
-            self.assertTrue((chip_data.chr == chromosome),
+        for peak in peaks_chr:
+            self.assertTrue((peak.chrom == chromosome),
                             "Wrong chromosome name filtered by chr")
 
     def test_filter_on_peak_position(self):
-        chip_seq = ChIPSeqData('ChIP_peaks-ex1.txt')
+        peaks = PeakSet('ChIP_peaks-ex1.txt')
         lower,upper = 12000000,15000000
-        chip_pos = chip_seq.filterByPosition(upper,lower)
-        self.assertEqual(len(chip_pos),2,
+        peaks_pos = peaks.filterByPosition(upper,lower)
+        self.assertEqual(len(peaks_pos),2,
                          "Wrong number of peaks filtered")
-        for chip_data in chip_pos:
-            self.assertTrue((chip_data.start >= lower and
-                             chip_data.start <= upper),
+        for peak in peaks_pos:
+            print str(peak)
+            self.assertTrue((peak.start >= lower and
+                             peak.start <= upper),
                             "Peak should have been filtered out")
 
     def test_sort_by_distance_from(self):
-        chip_sort = ChIPSeqData('ChIP_peaks-ex1.txt')
+        peaks_sort = PeakSet('ChIP_peaks-ex1.txt')
         position = 12000000
         # Do the sorting
-        chip_sort.sortByDistanceFrom(position)
+        peaks_sort.sortByDistanceFrom(position)
         # Check that each distance is greater than the previous one
-        last_chip_data = None
-        for chip_data in chip_sort:
-            if not last_chip_data:
-                last_chip_data = chip_data
+        last_peak = None
+        for peak in peaks_sort:
+            if not last_peak:
+                last_peak = peak
             else:
-                self.assertTrue((abs(chip_data.start - position) >=
-                                 abs(last_chip_data.start - position)),
+                self.assertTrue((abs(peak.start - position) >=
+                                 abs(last_peak.start - position)),
                                 "Sort by distance failed")
 
     def test_ChIP_peak_inside_region(self):
-        chip_seq = ChIPSeqData('ChIP_peaks-ex1.txt')
+        peaks = PeakSet('ChIP_peaks-ex1.txt')
         lower,upper = 4252000,4254000
-        self.assertTrue(chip_seq[0].insideRegion(upper,lower),
+        self.assertTrue(peaks[0].insideRegion(upper,lower),
                         "ChIP peak should be in region")
-        self.assertTrue(chip_seq[0].insideRegion(lower,upper),
+        self.assertTrue(peaks[0].insideRegion(lower,upper),
                         "ChIP peak should be in region (reversed limits)")
         upper,lower = 4252000,4242000
-        self.assertFalse(chip_seq[0].insideRegion(upper,lower),
+        self.assertFalse(peaks[0].insideRegion(upper,lower),
                          "ChIP peak should not be inside region")
-        self.assertFalse(chip_seq[0].insideRegion(lower,upper),
+        self.assertFalse(peaks[0].insideRegion(lower,upper),
                          "ChIP peak should not be inside region (reversed limits")
 
     def test_handling_quoted_chr(self):
-        chip_seq = ChIPSeqData('ChIP_peaks-ex5.txt')
-        self.assertEqual(len(chip_seq),5,
+        peaks = PeakSet('ChIP_peaks-ex5.txt')
+        self.assertEqual(len(peaks),5,
                          "Wrong number of lines read from ChIP-seq file")
-        chip_chr = chip_seq.filterByChr("chr4")
-        self.assertEqual(len(chip_chr),2,
+        peaks_chr = peaks.filterByChr("chr4")
+        self.assertEqual(len(peaks_chr),2,
                          "Wrong number of ChIP-seq records filtered")
 
 class TestFeatureSetWithChIPSeqData(unittest.TestCase):
@@ -106,16 +105,16 @@ class TestFeatureSetWithChIPSeqData(unittest.TestCase):
         delete_test_file('ChIP_peaks-ex1.txt')
 
     def test_closest_transcript_to_peak(self):
-        rna_seq = FeatureSet('Transcripts-ex1.txt')
-        rna_data1 = rna_seq[1]
-        rna_data2 = rna_seq[2]
-        chip_seq = ChIPSeqData('ChIP_peaks-ex1.txt')
-        chip_peak = chip_seq[0]
-        nearest = GetNearestTranscriptToPeak(rna_data1,rna_data2,chip_peak)
-        # 2nd peak should be closer than first
-        self.assertEqual(nearest,rna_data1,
+        features = FeatureSet('Transcripts-ex1.txt')
+        feature1 = features[1]
+        feature2 = features[2]
+        peaks = PeakSet('ChIP_peaks-ex1.txt')
+        peak = peaks[0]
+        nearest = GetNearestTranscriptToPeak(feature1,feature2,peak)
+        # 2nd feature should be closer than first
+        self.assertEqual(nearest,feature1,
                          "Wrong transcript selected as nearest")
         # test when only one is set
-        nearest = GetNearestTranscriptToPeak(None,rna_data2,chip_peak)
-        self.assertEqual(nearest,rna_data2,
+        nearest = GetNearestTranscriptToPeak(None,feature2,peak)
+        self.assertEqual(nearest,feature2,
                          "Wrong transcript selected as nearest")

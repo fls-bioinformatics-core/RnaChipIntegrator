@@ -12,32 +12,37 @@ Classes for handling ChIP-seq peak data
 """
 
 import logging
+from utils import make_errline
 
-class ChIPSeqData:
-    """Class for storing ChIP-seq data
+class PeakSet:
+    """Class for storing ChIP-seq peaks
 
     ChIP-seq data consists of ChIP peak information, each of which are
-    stored individually in ChIPSeqDataLine objects. This class is a
-    container for a collection of ChIPSeqDataLine objects and provides
-    methods to operate on the collection, by creating subsets by
-    filtering, and sorting the data based on various criteria.
+    stored individually in Peak objects. This class is a container for
+    a collection of Peak objects and provides methods to operate on the
+    collection, by creating subsets by filtering, and sorting the data
+    based on various criteria.
+
     """
     def __init__(self,chipseq_file=None):
-        """Create a new ChIPSeqData instance
+        """Create a new PeakSet instance
         
         Arguments:
           chipseq_file: (optional) the name of an input file to read
             the ChIP-seq data from.
-        """
-        self.data = []
-        if chipseq_file:
-            self.loadDataFromFile(chipseq_file)
 
-    def loadDataFromFile(self,chipseq_file):
-        """Read data from a file and populate the object
+        """
+        self.peaks = []
+        if chipseq_file:
+            self.loadPeaksFromFile(chipseq_file)
+
+    def loadPeaksFromFile(self,chipseq_file):
+        """Read peaks data from a file and populate the object
 
         Arguments:
-          chipseq_file: the name of the input file to read ChIP-seq data from.
+          chipseq_file: the name of the input file to read ChIP-seq
+          data from.
+
         """
         fp = open(chipseq_file,'rU')
         for line in fp:
@@ -69,54 +74,57 @@ class ChIPSeqData:
                 logging.warning("                         %s" % \
                                     ('\t'.join(errline)))
                 continue
-            # Store in a new ChIPSeqDataLine object
-            dataline = ChIPSeqDataLine(items[0],
-                                       items[1],
-                                       items[2])
-            self.data.append(dataline)
+            # Store in a new Peak object
+            peak = Peak(items[0],
+                        items[1],
+                        items[2])
+            self.peaks.append(peak)
         fp.close()
         # Return a reference to this object
         return self
 
-    def addDataLine(self,dataline):
-        """Append a line of data to the ChIPSeqData object
+    def addPeak(self,peak):
+        """Append a Peak to the PeakSet object
 
         Arguments:
-          dataline: a ChIPSeqDataLine instance.
+          peak: a Peak instance.
+
         """
-        self.data.append(dataline)
+        self.peaks.append(peak)
 
     def isSummit(self):
-        """Check whether ChIP data consists of summits only
+        """Check whether peak set consists of summits only
 
         Checks the difference between start and end positions for
-        ChIPSeqDataLines - if all differences are equal to 1 then
+        stored Peak objects - if all differences are equal to 1 then
         returns True, indicating that the peaks are described as
         summits; otherwise returns False.
+
         """
-        for data in self.data:
-            if (data.end - data.start) > 1:
+        for peak in self.peaks:
+            if (peak.end - peak.start) > 1:
                 return False
         return True
 
     def filterByChr(self,matchChr):
         """Return a subset of data filtered by specified chromosome name
 
-        Returns a new ChIPSeqData object containing only the data from
+        Returns a new PeakSet object containing only the data from
         the current object which matches the specified criteria.
+
         """
-        # Make a new (empty) ChIPSeqData object
-        chip_data_subset = ChIPSeqData()
+        # Make a new (empty) PeakSet object
+        peaks_subset = PeakSet()
         # Populate with only the matching data lines
-        for dataline in self.data:
-            if dataline.chr == matchChr:
-                chip_data_subset.addDataLine(dataline)
-        return chip_data_subset
+        for peak in self.peaks:
+            if peak.chrom == matchChr:
+                peaks_subset.addPeak(peak)
+        return peaks_subset
 
     def filterByPosition(self,limit1,limit2,exclude_limits=False):
-        """Return a subset of data filtered by peak position
+        """Return a subset of peaks filtered by position
 
-        Returns a new ChIPSeqData object containing only the data from
+        Returns a new PeakSet object containing only the data from
         the current object where the start positions fall within a
         region defined by upper and lower limits.
 
@@ -127,64 +135,64 @@ class ChIPSeqData:
         that fall exactly on one of the boundaries are counted as
         being within the region; if it is True then these start
         positions will not be considered to lie inside the region.
+
         """
         # Sort out upper and lower limits
         if limit1 > limit2:
             upper,lower = limit1,limit2
         else:
             upper,lower = limit2,limit1
-        # Make a new (empty) ChipSeqData object
-        chip_data_subset = ChIPSeqData()
+        # Make a new (empty) PeakSet object
+        peaks_subset = PeakSet()
         # Populate with only the matching data lines
-        for dataline in self.data:
-            position = dataline.start
+        for peak in self.peaks:
+            position = peak.start
             if exclude_limits:
                 if lower < position and position < upper:
-                    rna_data_subset.addDataLine(dataline)
+                    peaks_subset.addPeak(peak)
             else:
                 if lower <= position and position <= upper:
-                    chip_data_subset.addDataLine(dataline)
-        return chip_data_subset
+                    peaks_subset.addPeak(peak)
+        return peaks_subset
 
     def sortByDistanceFrom(self,position):
-        """Sort the data into order based on distance from a position
+        """Sort the peaks into order based on distance from a position
     
-        Sorts the ChIPSeqDataLines into order of absolute distance of
+        Sorts the Peak objects into order of absolute distance of
         their start to the specified position (closest first).
         
         Note that this operates on the current object.
+
         """
-        self.data = sorted(self.data,
-                           key=lambda record: abs(record.start - position))
+        self.peaks = sorted(self.peaks,
+                            key=lambda record: abs(record.start - position))
         return self
 
     def __getitem__(self,key):
-        return self.data[key]
+        return self.peaks[key]
 
     def __len__(self):
-        return len(self.data)
+        return len(self.peaks)
 
-class ChIPSeqDataLine:
-    """Class for storing a line of ChIP-seq data (ChIP peak)
+class Peak:
+    """Class for storing a (ChIP) peak
 
     Access the data from the line using the object's properties:
 
-      chr
+      chrom
       start
       end
 
-    NB THIS CLASS MAKES THE ASSUMPTION THAT THE CHIP PEAK DATA IS
-    THE SUMMIT..
-
     There are also convenience methods (e.g. insideRegion).
+
     """
-    def __init__(self,chip_chr,start,end):
-        self.chr = chip_chr.strip('"\'')
+    def __init__(self,chrom,start,end):
+        self.chrom = chrom.strip('"\'')
         self.start = int(start)
         self.end = int(end)
 
     def __repr__(self):
-        return "%s\t%s\t%s" % (self.chr,
+        return "%s\t%s\t%s" % (self.chrom,
                                self.start,
                                self.end)
 
@@ -201,7 +209,9 @@ class ChIPSeqDataLine:
         By default if the start position lies exactly on one of the
         limits then it is also counted as being within the region;
         if exclude_limits is set to True then the limits are not
-        considered part of the region."""
+        considered part of the region.
+        
+        """
         if limit1 > limit2:
             upper,lower = limit1,limit2
         else:

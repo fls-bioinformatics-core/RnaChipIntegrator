@@ -25,10 +25,10 @@ and a utility function to write results to a tab-delimited file.
 import os
 import logging
 from distances import regions_overlap
-from ChIPSeq import ChIPSeqData
+from ChIPSeq import PeakSet
 from utils import truncate_text
 try:
-    import rnachipintegrator.Spreadsheet as Spreadsheet
+    import Spreadsheet
 except ImportError:
     pass
 
@@ -66,21 +66,21 @@ class AnalysisResult:
         # List of fields
         self.fields = []
 
-    def addResult(self,chip_data,feature_data,**args):
+    def addResult(self,peak_data,feature_data,**args):
         """Add a result to the AnalysisResult instance.
 
         A result associates a ChIP peak with a transcript/feature,
 
         Arguments:
-          chip_data: a ChIPSeqDataLine
-          feature_data: a Feature
+          peak_data: a Peak object
+          feature_data: a Feature object
           
         In addition this method will accept arbitrary named arguments
         which can be supplementary data associated with the result.
 
         """
         # Create a new dictionary
-        result = {'chip_seq': chip_data,
+        result = {'peak': peak_data,
                   'feature': feature_data }
         # Add the arbitrary items
         for arg in args:
@@ -101,6 +101,7 @@ class AnalysisResult:
           filename: name of the file to write to
           header: list of items from each result line to be written
           pad: (optional) string to use for padding empty fields
+
         """
         fp = open(filename,'w')
         # Write header line
@@ -180,7 +181,7 @@ class AnalysisResult:
 # Analysis functions
 #######################################################################
 
-def AnalyseClosestTranscriptsToPeaksInEachDirection(chip_seq,features):
+def AnalyseClosestTranscriptsToPeaksInEachDirection(peaks,features):
     """Get closest up- and down-stream transcripts for + and - strands to ChIP peak"
     """
     print "Analysis #1a: ChIP-seq perspective"
@@ -188,53 +189,53 @@ def AnalyseClosestTranscriptsToPeaksInEachDirection(chip_seq,features):
     print "on both + and - strands"
     print ""
     results = []
-    for chip_data in chip_seq:
-        print "\tMatching to ChIP peak: %s" % chip_data
+    for peak in peaks:
+        print "\tMatching to ChIP peak: %s" % peak
         # Initialise the hits
         print "\t%d total matches in RNA-seq data" % \
-            len(features.filterByChr(chip_data.chr))
+            len(features.filterByChr(peak.chrom))
         # Process the subset of features with matching chromosome
         # on the + strand
         closest_upstream_on_plus_strand = None
         closest_downstream_on_plus_strand = None
         print "\t%d matches on + strand" % \
-            len(features.filterByChr(chip_data.chr).filterByStrand('+'))
-        for feature in features.filterByChr(chip_data.chr).filterByStrand('+'):
+            len(features.filterByChr(peak.chrom).filterByStrand('+'))
+        for feature in features.filterByChr(peak.chrom).filterByStrand('+'):
             # Get the distance from the ChIP peak
-            distance = feature.getTSS() - chip_data.start
+            distance = feature.getTSS() - peak.start
             # Check if this is closer than anything seen previously
             # for each case
             if distance >= 0:
                 # Upstream (i.e. +ve distance)
                 closest_upstream_on_plus_strand = \
                     GetNearestTranscriptToPeak(closest_upstream_on_plus_strand,\
-                                               feature,chip_data)
+                                               feature,peak)
             else:
                 # Downstream (i.e. -ve distance)
                 closest_downstream_on_plus_strand = \
                     GetNearestTranscriptToPeak(closest_downstream_on_plus_strand,\
-                                               feature,chip_data)
+                                               feature,peak)
         # Process the subset of RNA-seq data with matching chromosome
         # on the - strand
         closest_upstream_on_minus_strand = None
         closest_downstream_on_minus_strand = None
         print "\t%d matches on - strand" % \
-            len(features.filterByChr(chip_data.chr).filterByStrand('-'))
-        for feature in features.filterByChr(chip_data.chr).filterByStrand('-'):
+            len(features.filterByChr(peak.chrom).filterByStrand('-'))
+        for feature in features.filterByChr(peak.chrom).filterByStrand('-'):
             # Get the distance from the ChIP peak
-            distance = feature.getTSS() - chip_data.start
+            distance = feature.getTSS() - peak.start
             # Check if this is closer than anything seen previously
             # for each case
             if distance >= 0:
                 # Upstream (i.e. +ve distance)
                 closest_upstream_on_minus_strand =  \
                     GetNearestTranscriptToPeak(closest_upstream_on_minus_strand,
-                                               feature,chip_data)
+                                               feature,peak)
             else:
                 # Downstream (i.e. -ve distance)
                 closest_downstream_on_minus_strand = \
                     GetNearestTranscriptToPeak(closest_downstream_on_minus_strand,
-                                              feature,chip_data)
+                                              feature,peak)
         # Store the data about the hits to output later
         nearest_positions = {
             "upstream +": closest_upstream_on_plus_strand,
@@ -249,16 +250,16 @@ def AnalyseClosestTranscriptsToPeaksInEachDirection(chip_seq,features):
                 print "*** No hit for %s ***" % hit
                 continue
             # Derive the distances
-            distance_to_TSS = feature.getTSS() - chip_data.start
-            distance_to_TES = feature.getTES() - chip_data.start
+            distance_to_TSS = feature.getTSS() - peak.start
+            distance_to_TES = feature.getTES() - peak.start
             # ChIP peak is in the gene?
-            if feature.containsPosition(chip_data.start):
+            if feature.containsPosition(peak.start):
                 in_the_gene = "YES"
             else:
                 in_the_gene = "NO"
             # Add to results list
-            results.append([chip_data.chr,
-                            chip_data.start,
+            results.append([peak.chrom,
+                            peak.start,
                             feature.id,
                             distance_to_TSS,
                             distance_to_TES,
@@ -270,14 +271,14 @@ def AnalyseClosestTranscriptsToPeaksInEachDirection(chip_seq,features):
                       "strand","in_the_gene"])
     output_results("RNA-seq_to_ChIP-seq.txt",results)
 
-def AnalyseNearestTSSToSummits(chip_seq,features,max_distance,
+def AnalyseNearestTSSToSummits(peaks,features,max_distance,
                                max_closest=4,
                                filename=None,
                                xls=None,
                                pad_output=False):
     """Find nearest features to a set of ChIP peaks
 
-    Given a set of ChIP peaks in a ChIPSeqData object, and a set of
+    Given a set of ChIP peaks in a PeakSet object, and a set of
     gene transcripts in a FeatureSet object, this analysis aims to
     match genes to peaks.
 
@@ -293,7 +294,7 @@ def AnalyseNearestTSSToSummits(chip_seq,features,max_distance,
         which lie between the ChIP peak and the TSS of the hit
 
     Arguments:
-      chip_seq: ChIP peaks in ChIPSeqData object
+      chip_seq: ChIP peaks in PeakSet object
       features: RNA-seq gene transcripts in FeatureSet object
       max_distance: cutoff distance for reporting nearest genes
         to ChIP peaks (in units of bases)
@@ -314,7 +315,7 @@ def AnalyseNearestTSSToSummits(chip_seq,features,max_distance,
     logging.debug("Starting AnalyseNearestTranscriptsToPeaks:")
 
     # Check that we have summit data for ChIP peaks
-    if not chip_seq.isSummit():
+    if not peaks.isSummit():
         logging.warning("The supplied ChIP data only defines regions")
         logging.warning("This analysis is intended to work with summit data")
 
@@ -328,37 +329,37 @@ def AnalyseNearestTSSToSummits(chip_seq,features,max_distance,
 
     # Run the analysis on the significant RNA-seq transcripts
     results = AnalysisResult()
-    for chip_data in chip_seq:
-        logging.debug("\t%s" % chip_data)
+    for peak in peaks:
+        logging.debug("\t%s" % peak)
         features_chr = significant_features.\
-            filterByChr(chip_data.chr).\
-            filterByTSS(chip_data.start-max_distance,\
-                            chip_data.start+max_distance).\
-                            sortByDistanceFrom(chip_data.start)
-        features_chr_full = features.filterByChr(chip_data.chr)
+            filterByChr(peak.chrom).\
+            filterByTSS(peak.start-max_distance,\
+                            peak.start+max_distance).\
+                            sortByDistanceFrom(peak.start)
+        features_chr_full = features.filterByChr(peak.chrom)
         closest = features_chr[:max_closest]
         i = 0
         for feature in closest:
             logging.debug("\t\t%s\t%d" % (feature,
-                                          (feature.getTSS()-chip_data.start)))
+                                          (feature.getTSS()-peak.start)))
             # Get the transcripts from the full list which
             # lie between the transcript TSS and the ChIP peak
             # These can be on either strand
-            transcripts = features_chr_full.filterByTSS(chip_data.start,
+            transcripts = features_chr_full.filterByTSS(peak.start,
                                                         feature.getTSS(),
                                                         exclude_limits=True)
             # Put them into distance order from the peak
-            transcripts.sortByDistanceFrom(chip_data.start)
+            transcripts.sortByDistanceFrom(peak.start)
             # Make a list of just the ids
             transcript_ids = []
             for transcript in transcripts:
                 transcript_ids.append(transcript.id)
                 logging.debug("\t\t\t%s" % transcript.id)
             # Derive the distances
-            distance_to_TSS = feature.getTSS() - chip_data.start
-            distance_to_TES = feature.getTES() - chip_data.start
+            distance_to_TSS = feature.getTSS() - peak.start
+            distance_to_TES = feature.getTES() - peak.start
             # ChIP peak is in the gene?
-            if feature.containsPosition(chip_data.start):
+            if feature.containsPosition(peak.start):
                 in_the_gene = "YES"
             else:
                 in_the_gene = "NO"
@@ -366,9 +367,9 @@ def AnalyseNearestTSSToSummits(chip_seq,features,max_distance,
             i += 1
             nearest = "%d of %d" % (i,len(closest))
             # Add to the analysis result
-            results.addResult(chip_data,feature,
-                              chr=chip_data.chr,
-                              start=chip_data.start,
+            results.addResult(peak,feature,
+                              chr=peak.chrom,
+                              start=peak.start,
                               geneID=feature.id,
                               nearest=nearest,
                               TSS=feature.getTSS(),
@@ -382,15 +383,15 @@ def AnalyseNearestTSSToSummits(chip_seq,features,max_distance,
         n_hits = len(closest)
         if n_hits == 0:
             # Report peaks with no significant genes in the cut-off region
-            results.addResult(chip_data,None,
-                              chr=chip_data.chr,
-                              start=chip_data.start)
+            results.addResult(peak,None,
+                              chr=peak.chrom,
+                              start=peak.start)
             n_hits = 1
             logging.debug("\t\tNo transcripts found")
         if pad_output:
             # Pad with blank lines
             for i in range(n_hits,max_closest):
-                results.addResult(chip_data,None)
+                results.addResult(peak,None)
         logging.debug("")
     # Write the results to file
     if filename:
@@ -411,11 +412,11 @@ def AnalyseNearestTSSToSummits(chip_seq,features,max_distance,
     # Return results object
     return results
 
-def AnalyseNearestPeaksToTranscripts(features,chip_seq,window_width,
+def AnalyseNearestPeaksToTranscripts(features,peaks,window_width,
                                      filename=None,xls=None):
     """Find nearest ChIP peaks to RNA-seq gene transcripts/features
 
-    Given a set of ChIP peaks in a ChIPSeqData object, and a set of
+    Given a set of ChIP peaks in a PeakSet object, and a set of
     gene transcripts in a FeatureSet object, this analysis aims to
     match peaks to genes.
 
@@ -430,7 +431,7 @@ def AnalyseNearestPeaksToTranscripts(features,chip_seq,window_width,
 
     Arguments:
       features: RNA-seq gene transcripts in FeatureSet object
-      chip_seq: ChIP peaks in ChIPSeqData object
+      chip_seq: ChIP peaks in PeakSet object
       window_width: cutoff distance for reporting nearest ChIP peaks
         to RNA-seq gene TSS positions (in units of bases)
       filename: (optional) if not None then specifies the file
@@ -440,7 +441,7 @@ def AnalyseNearestPeaksToTranscripts(features,chip_seq,window_width,
     """
     logging.debug("Starting AnalyseNearestPeaksToTranscripts:")
     # Check that we have summit data for ChIP peaks
-    if not chip_seq.isSummit():
+    if not peaks.isSummit():
         logging.warning("The supplied ChIP data only defines regions")
         logging.warning("This analysis is intended to work with summit data")
     # Get flag status of feature data
@@ -458,12 +459,12 @@ def AnalyseNearestPeaksToTranscripts(features,chip_seq,window_width,
         # Only do this for the significant (i.e. flagged) genes, unless
         # the data is not flagged
         if not features_is_flagged or feature.flag == 1:
-            chip_peaks = chip_seq.\
+            filtered_peaks = peaks.\
                 filterByChr(feature.chrom).filterByPosition(window[0],window[1])
-            chip_peaks.sortByDistanceFrom(feature.getTSS())
+            filtered_peaks.sortByDistanceFrom(feature.getTSS())
         else:
             # No hits - empty result object
-            chip_peaks = ChIPSeqData()
+            filtered_peaks = PeakSet()
             logging.debug("\t\tNo peaks found")
         # Store results
         result = { 'geneID': feature.id,
@@ -472,21 +473,21 @@ def AnalyseNearestPeaksToTranscripts(features,chip_seq,window_width,
                    'end': feature.end,
                    'strand': feature.strand,
                    'differentially_expressed': feature.flag,
-                   'number_of_peaks': len(chip_peaks) }
-        for i in range(len(chip_peaks)):
-            chip_data = chip_peaks[i]
+                   'number_of_peaks': len(filtered_peaks) }
+        for i in range(len(filtered_peaks)):
+            peak = filtered_peaks[i]
             # Derive the distance
-            distance = feature.getTSS() - chip_data.start
+            distance = feature.getTSS() - peak.start
             # Add to results for output
-            result['chr_ChIP_'+str(i+1)] = chip_data.chr
-            result['summit_'+str(i+1)] = chip_data.start
+            result['chr_ChIP_'+str(i+1)] = peak.chrom
+            result['summit_'+str(i+1)] = peak.start
             result['distance_'+str(i+1)] = distance
-            logging.debug("\t\t%s (%d)" % (chip_data,distance))
+            logging.debug("\t\t%s (%d)" % (peak,distance))
         logging.debug("")
         # Add line to results to be written to the output file
-        results.addResult(chip_peaks,feature,**result)
+        results.addResult(filtered_peaks,feature,**result)
         # Keep track of the maximum number of peaks for output
-        max_peaks = max(len(chip_peaks),max_peaks)
+        max_peaks = max(len(filtered_peaks),max_peaks)
     # Construct header line for output
     if filename or xls:
         header = ["geneID","chr_RNA","start","end","strand",
@@ -503,7 +504,7 @@ def AnalyseNearestPeaksToTranscripts(features,chip_seq,window_width,
     # Finished
     return results
 
-def AnalyseNearestTranscriptsToPeakEdges(chip_seq,features,
+def AnalyseNearestTranscriptsToPeakEdges(peaks,features,
                                          promoter_region=(10000,2500),
                                          max_closest=4,
                                          max_distance=0,
@@ -513,7 +514,7 @@ def AnalyseNearestTranscriptsToPeakEdges(chip_seq,features,
                                          pad_output=False):
     """Find nearest RNA transcripts to a set of ChIP peaks based on edges
 
-    Given a set of ChIP peaks in a ChIPSeqData object, and a set of
+    Given a set of ChIP peaks in a PeakSet object, and a set of
     gene transcripts in a FeatureSet object, this analysis aims to
     match genes to peaks.
 
@@ -530,7 +531,7 @@ def AnalyseNearestTranscriptsToPeakEdges(chip_seq,features,
     --- Report whether the peak overlaps the promoter region
 
     Arguments:
-      chip_seq: ChIP peaks in ChIPSeqData object
+      peaks: ChIP peaks in PeakSet object
       features: RNA-seq gene transcripts in FeatureSet object
       promoter_region: (optional) a tuple (leading,trailing) which
         specifies the promoter region by the "leading" (upstream) and
@@ -554,7 +555,7 @@ def AnalyseNearestTranscriptsToPeakEdges(chip_seq,features,
     """
     logging.debug("Starting AnalyseNearestTranscriptsToPeakEdges:")
     # Check that we have region data for ChIP peaks
-    if chip_seq.isSummit():
+    if peaks.isSummit():
         logging.warning("The supplied ChIP data only defines summits")
         logging.warning("This analysis is intended to work with regions")
     # Create subset of "significant" i.e. flagged RNA-seq data
@@ -572,37 +573,37 @@ def AnalyseNearestTranscriptsToPeakEdges(chip_seq,features,
         logging.debug("Use only TSS in analysis (TSS_only = %s)" % TSS_only)
     results = AnalysisResult()
     # Loop over all peaks
-    for chip_peak in chip_seq:
-        logging.debug("\t%s" % chip_peak)
+    for peak in peaks:
+        logging.debug("\t%s" % peak)
         # Sort transcripts into order of the nearest TSS or TES to
         # the edge of the peak/binding region
         # Note that this method does not discriminate between situations
         # where the transcript lies partially or wholly within the
         # binding region
-        features_chr = significant_features.filterByChr(chip_peak.chr)
+        features_chr = significant_features.filterByChr(peak.chrom)
         if not TSS_only:
-            features_chr = features_chr.sortByClosestEdgeTo(chip_peak.start,
-                                                            chip_peak.end)
+            features_chr = features_chr.sortByClosestEdgeTo(peak.start,
+                                                            peak.end)
         else:
-            features_chr = features_chr.sortByClosestTSSTo(chip_peak.start,
-                                                           chip_peak.end)
+            features_chr = features_chr.sortByClosestTSSTo(peak.start,
+                                                           peak.end)
         # Get the closest peaks (filter by distance and max number)
         closest = []
         for feature in features_chr:
             # Get closest edge distances
-            distance = feature.getClosestEdgeDistanceTo(chip_peak.start,
-                                                        chip_peak.end)
+            distance = feature.getClosestEdgeDistanceTo(peak.start,
+                                                        peak.end)
             # Apply distance cutoff
             if max_distance > 0 and distance > max_distance:
                 # Break out of the loop
                 logging.debug("Exceeded maximum distance, stopping")
                 break
             distance_to_TSS = feature.getClosestTSSDistanceTo(\
-                chip_peak.start,chip_peak.end)
+                peak.start,peak.end)
             distance_to_TES = feature.getClosestTESDistanceTo(\
-                chip_peak.start,chip_peak.end)
+                peak.start,peak.end)
             # Determine if transcript and peak overlap
-            binding_region = (chip_peak.start,chip_peak.end)
+            binding_region = (peak.start,peak.end)
             if regions_overlap(binding_region,(feature.getTSS(),
                                                feature.getTES())):
                 overlap_transcript = 1
@@ -615,10 +616,10 @@ def AnalyseNearestTranscriptsToPeakEdges(chip_seq,features,
             else:
                 overlap_promoter = 0
             # Add to results
-            results.addResult(chip_peak,feature,
-                              chr=chip_peak.chr,
-                              start=chip_peak.start,
-                              end=chip_peak.end,
+            results.addResult(peak,feature,
+                              chr=peak.chrom,
+                              start=peak.start,
+                              end=peak.end,
                               geneID=feature.id,
                               TSS=feature.getTSS(),
                               TES=feature.getTES(),
@@ -646,10 +647,10 @@ def AnalyseNearestTranscriptsToPeakEdges(chip_seq,features,
         # Pad with blank lines, if requested
         if pad_output:
             for i in range(n_hits,max_closest):
-                results.addResult(chip_peak,None,
-                                  chr=chip_peak.chr,
-                                  start=chip_peak.start,
-                                  end=chip_peak.end)
+                results.addResult(peak,None,
+                                  chr=peak.chrom,
+                                  start=peak.start,
+                                  end=peak.end)
         logging.debug("")
     # Construct header line and summary results for output
     if filename or xls:
@@ -662,13 +663,13 @@ def AnalyseNearestTranscriptsToPeakEdges(chip_seq,features,
         # Summary results: one gene per ChIP peak (i.e. top hit for
         # each peak)
         summary_results = AnalysisResult()
-        last_chip_peak = None
+        last_peak = None
         for result in results:
-            if result['chip_seq'] != last_chip_peak and result['feature'] is not None:
-                summary_results.addResult(result['chip_seq'],
+            if result['peak'] != last_peak and result['feature'] is not None:
+                summary_results.addResult(result['peak'],
                                           result['feature'],
                                           **result)
-                last_chip_peak = result['chip_seq']
+                last_peak = result['peak']
             else:
                 pass
     # Write to output file
