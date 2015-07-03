@@ -13,18 +13,20 @@ Classes for handling RNA-seq transcript/feature data.
 
 import logging
 from distances import closestDistanceToRegion
+from utils import make_errline
 
-class RNASeqData:
-    """Class for storing RNA-seq data
+class FeatureSet:
+    """Class for storing a set of RNA-seq 'features'
 
-    RNA-seq data consists of genes/transcripts/isomers, which are
+    RNA-seq features consists of genes/transcripts/isomers, which are
     stored individually in RNASeqDataLine objects. This class is a
-    container for a collection of RNASeqDataLine objects and provides
+    container for a collection of Feature objects and provides
     methods to operate on the collection, by creating subsets by
-    filtering, and sorting the data based on various criteria.
+    filtering, and sorting the features based on various criteria.
+
     """
     def __init__(self,rnaseq_file=None):
-        """Create a new RNASeqData instance
+        """Create a new FeatureSet instance
 
         Raises an exception if there are errors in the input file data
         (non-numeric fields for start/end positions, end positions
@@ -32,17 +34,18 @@ class RNASeqData:
         
         Arguments:
           rnaseq_file: (optional) the name of an input file to read
-            the RNA-seq data from.
+            the RNA-seq features from.
         """
-        self.data = []
+        self.features = []
         if rnaseq_file:
-            self.loadDataFromFile(rnaseq_file)
+            self.loadFeaturesFromFile(rnaseq_file)
 
-    def loadDataFromFile(self,rnaseq_file):
-        """Read data from a file and populate the object
+    def loadFeaturesFromFile(self,rnaseq_file):
+        """Read features from a file and populate the object
 
         Arguments:
-          rnaseq_file: the name of the input file to read RNA-seq data from.
+          rnaseq_file: the name of the input file to read RNA-seq features from.
+
         """
         # Local flags etc
         line_index = 0
@@ -94,12 +97,12 @@ class RNASeqData:
                 # This is a critical error: update flag but continue reading
                 critical_error = True
                 continue
-            # Store in a new RNASeqDataLine object
-            dataline = RNASeqDataLine(items[0],
-                                      items[1],
-                                      items[2],
-                                      items[3],
-                                      items[4])
+            # Store in a new Feature object
+            feature = Feature(items[0],
+                              items[1],
+                              items[2],
+                              items[3],
+                              items[4])
             # Additional flag
             if len(items) >= 6:
                 # Is column 6 a flag?
@@ -110,10 +113,10 @@ class RNASeqData:
                 except ValueError:
                     flag_value = None
                 # Store value
-                dataline.flag = flag_value
+                feature.flag = flag_value
 
             # Store data
-            self.data.append(dataline)
+            self.features.append(feature)
         fp.close()
         # Deal with postponed critical errors
         if critical_error:
@@ -121,64 +124,68 @@ class RNASeqData:
         # Return a reference to this object
         return self
 
-    def addDataLine(self,dataline):
-        """Append a line of data to the RNASeqData object
+    def addFeature(self,feature):
+        """Append a feature to the FeatureSet object
 
         Arguments:
-          dataline: an RNASeqDataLine instance.
+          feature: a Feature instance.
+
         """
-        self.data.append(dataline)
+        self.features.append(feature)
 
     def filterByChr(self,matchChr):
-        """Return a subset of data filtered by specified chromosome name
+        """Return a subset of features filtered by specified chromosome name
 
-        Returns a new RNASeqData object containing only the data from
+        Returns a new FeatureSet object containing only the data from
         the current object which matches the specified criteria.
+
         """
-        # Make a new (empty) RNASeqData object
-        rna_data_subset = RNASeqData()
-        # Populate with only the matching data lines
-        for dataline in self.data:
-            if dataline.chr == matchChr:
-                rna_data_subset.addDataLine(dataline)
-        return rna_data_subset
+        # Make a new (empty) FeatureSet object
+        feature_subset = FeatureSet()
+        # Populate with only the matching features
+        for feature in self.features:
+            if feature.chrom == matchChr:
+                feature_subset.addFeature(feature)
+        return feature_subset
 
     def filterByStrand(self,matchStrand):
-        """Return a subset of data filtered by specified strand
+        """Return a subset of features filtered by specified strand
 
-        Returns a new RNASeqData object containing only the data from
+        Returns a new FeatureSet object containing only the data from
         the current object which matches the specified criteria.
+
         """
-        # Make a new (empty) RNASeqData object
-        rna_data_subset = RNASeqData()
-        # Populate with only the matching data lines
-        for dataline in self.data:
-            if dataline.strand == matchStrand:
-                rna_data_subset.addDataLine(dataline)
-        return rna_data_subset
+        # Make a new (empty) FeatureSet object
+        feature_subset = FeatureSet()
+        # Populate with only the matching features
+        for feature in self.features:
+            if feature.strand == matchStrand:
+                feature_subset.addFeature(feature)
+        return feature_subset
 
     def filterByFlag(self,matchFlag):
-        """Return a subset of data filtered by flag value
+        """Return a subset of features filtered by flag value
 
-        Returns a new RNASeqData object containing only the data from
+        Returns a new FeatureSet object containing only the features from
         the current object which matches the specified criteria.
 
         Note that if there is no flag (the "isFlagged()" function returns
         False) then an empty set will be returned.
+
         """
         # Make a new (empty) RNASeqData object
-        rna_data_subset = RNASeqData()
-        # Populate with only the matching data lines
-        for dataline in self.data:
-            if dataline.flag == matchFlag:
-                rna_data_subset.addDataLine(dataline)
-        return rna_data_subset
+        feature_subset = FeatureSet()
+        # Populate with only the matching features
+        for feature in self.features:
+            if feature.flag == matchFlag:
+                feature_subset.addFeature(feature)
+        return feature_subset
 
     def filterByTSS(self,limit1,limit2,exclude_limits=False):
-        """Return a subset of data filtered by TSS position
+        """Return a subset of features filtered by TSS position
 
-        Returns a new RNASeqData object containing only the data from
-        the current object where the TSS positions fall within a
+        Returns a new FeatureSet object containing only the features
+        from the current object where the TSS positions fall within a
         region defined by upper and lower limits.
 
         limits can be supplied in either order (i.e. highest/lowest
@@ -188,103 +195,112 @@ class RNASeqData:
         that fall exactly on one of the boundaries are counted as
         being within the region; if it is True then these TSS
         positions will not be considered to lie inside the region.
+
         """
         # Sort out upper and lower limits
         if limit1 > limit2:
             upper,lower = limit1,limit2
         else:
             upper,lower = limit2,limit1
-        # Make a new (empty) RNASeqData object
-        rna_data_subset = RNASeqData()
-        # Populate with only the matching data lines
-        for dataline in self.data:
-            TSS = dataline.getTSS()
+        # Make a new (empty) FeatureSet object
+        feature_subset = FeatureSet()
+        # Populate with only the matching features
+        for feature in self.features:
+            TSS = feature.getTSS()
             if exclude_limits:
                 if lower < TSS and TSS < upper:
-                    rna_data_subset.addDataLine(dataline)
+                    feature_subset.addFeature(feature)
             else:
                 if lower <= TSS and TSS <= upper:
-                    rna_data_subset.addDataLine(dataline)
-        return rna_data_subset
+                    feature_subset.addFeature(feature)
+        return feature_subset
 
     def sortByDistanceFrom(self,position):
-        """Sort the data into order based on distance from a position
+        """Sort the features into order based on distance from a position
     
-        Sorts the RNASeqDataLines into order of absolute distance of
+        Sorts the features into order of absolute distance of
         their TSS to the specified position (closest first).
         
         Note that this operates on the current object.
+
         """
-        self.data = sorted(self.data,
-                           key=lambda record: abs(record.getTSS()-position))
+        self.features = sorted(self.features,
+                               key=lambda record:
+                               abs(record.getTSS()-position))
         return self
 
     def sortByClosestEdgeTo(self,position1,position2=None):
-        """Sort the data into order based on closest edge (TSS or TES)
+        """Sort the features into order based on closest edge (TSS or TES)
 
-        Sorts the RNASeqDataLines into order of smallest absolute distance
+        Sorts the features into order of smallest absolute distance
         to the specified position (closest first), considering both TSS
         and TES, using the getClosestEdgeDistanceTo method of the
-        RNASeqDataLine class.
+        Feature class.
         
-        Note that this operates on the current object."""
-        self.data = sorted(self.data,
-                           key=lambda record: 
-                           record.getClosestEdgeDistanceTo(position1,
-                                                           position2))
+        Note that this operates on the current object.
+
+        """
+        self.features = sorted(self.features,
+                               key=lambda record: 
+                               record.getClosestEdgeDistanceTo(position1,
+                                                               position2))
         return self
 
     def sortByClosestTSSTo(self,position1,position2=None):
-        """Sort the data into order based on closest edge to TSS
+        """Sort the features into order based on closest edge to TSS
 
-        Sorts the RNASeqDataLines into order of smallest absolute distance
+        Sorts the features into order of smallest absolute distance
         to the specified position (closest first) to the TSS position,
-        using the getClosestTSSDistanceTo method of the RNASeqDataLine class.
+        using the getClosestTSSDistanceTo method of the Feature class.
         
-        Note that this operates on the current object."""
-        self.data = sorted(self.data,
-                           key=lambda record:
+        Note that this operates on the current object.
+
+        """
+        self.features = sorted(self.features,
+                               key=lambda record:
                                record.getClosestTSSDistanceTo(position1,
                                                               position2))
         return self
 
     def isFlagged(self):
-        """Check whether RNA-seq data includes flags
+        """Check whether feature data includes flags
 
-        Checks whether all the RNA-seq records also have a valid flag
+        Checks whether all the Feature records also have a valid flag
         associated with them - if yes then returns True (indicating the
         dataset as a whole is flagged), otherwise returns False.
+
         """
         # Check all data and look for any None flags
-        for data in self.data:
-            if data.flag is None:
+        for feature in self.features:
+            if feature.flag is None:
                 return False
         # All flags valid
         return True
 
     def __getitem__(self,key):
-        return self.data[key]
+        return self.features[key]
 
     def __len__(self):
-        return len(self.data)
+        return len(self.features)
 
-class RNASeqDataLine:
-    """Class for storing a line of RNA-seq data (gene/transcript/isomer)
+class Feature:
+    """Class for storing an RNA-seq 'feature' (gene/transcript/isomer)
 
-    Access the data from the line using the object's properties:
+    Access the data for the feature using the object's properties:
 
       id
-      chr
+      chrom
       start
       end
       strand
 
     There are also convenience methods (getTSS, getTES, getPromoterRegion)
     and methods for calculating various distances.
+
     """
-    def __init__(self,rna_id,rna_chr,start,end,strand):
+    def __init__(self,rna_id,chrom,start,end,strand):
         self.id = rna_id
-        self.chr = rna_chr
+        self.chrom = chrom
         self.start = int(start)
         self.end = int(end)
         self.strand = strand
@@ -292,7 +308,7 @@ class RNASeqDataLine:
 
     def __repr__(self):
         items = [self.id,
-                 self.chr,
+                 self.chrom,
                  str(self.start),
                  str(self.end),
                  self.strand]
@@ -305,6 +321,7 @@ class RNASeqDataLine:
 
         TTS (transcription start site) is the start position for a +ve 
         strand, or end for a -ve strand.
+
         """
         if self.strand == '+':
             return self.start
@@ -318,6 +335,7 @@ class RNASeqDataLine:
 
         TES (transcription end site) is the start position for a +ve
         strand, or end for a -ve strand.
+
         """
         if self.strand == '+':
             return self.end
@@ -331,6 +349,7 @@ class RNASeqDataLine:
 
         Returns True if coordinate lies within start and end, False
         otherwise.
+
         """
         return (self.start <= coordinate and coordinate <= self.end)
 
@@ -347,6 +366,7 @@ class RNASeqDataLine:
         By default there is no special treatment when the TSS lies inside
         the region specified by two positions; to return zero distance in
         these cases, set the 'zero_inside_region' argument to True.
+
         """
         return closestDistanceToRegion(self.getTSS(),
                                        position1,position2,
@@ -365,6 +385,7 @@ class RNASeqDataLine:
         By default there is no special treatment when the TES lies inside
         the region specified by two positions; to return zero distance in
         these cases, set the 'zero_inside_region' argument to True.
+
         """
         return closestDistanceToRegion(self.getTES(),
                                        position1,position2,
@@ -389,6 +410,7 @@ class RNASeqDataLine:
         or TES lie inside the region specified by two positions; to
         set this to zero, set the 'zero_inside_region' argument to
         True.
+
         """
         return min(self.getClosestTSSDistanceTo(position1,
                                                 position2,
@@ -407,6 +429,7 @@ class RNASeqDataLine:
 
         Returns a tuple containing the start and end coordinates
         defining the promoter region.
+
         """
         if self.strand == '+':
             return (self.getTSS() - to_TSS,

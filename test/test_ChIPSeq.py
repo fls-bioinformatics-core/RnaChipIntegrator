@@ -4,7 +4,7 @@
 
 from common import *
 from rnachipintegrator.ChIPSeq import ChIPSeqData
-from rnachipintegrator.RNASeq import RNASeqData
+from rnachipintegrator.RNASeq import FeatureSet
 from rnachipintegrator.distances import GetNearestTranscriptToPeak
 import unittest
 
@@ -94,7 +94,7 @@ class TestChIPSeqData(unittest.TestCase):
         self.assertEqual(len(chip_chr),2,
                          "Wrong number of ChIP-seq records filtered")
 
-class TestRNASeqDataWithChIPSeqData(unittest.TestCase):
+class TestFeatureSetWithChIPSeqData(unittest.TestCase):
     def setUp(self):
         # Create input files for tests
         create_test_file('Transcripts-ex1.txt',transcripts_ex1)
@@ -106,7 +106,7 @@ class TestRNASeqDataWithChIPSeqData(unittest.TestCase):
         delete_test_file('ChIP_peaks-ex1.txt')
 
     def test_closest_transcript_to_peak(self):
-        rna_seq = RNASeqData('Transcripts-ex1.txt')
+        rna_seq = FeatureSet('Transcripts-ex1.txt')
         rna_data1 = rna_seq[1]
         rna_data2 = rna_seq[2]
         chip_seq = ChIPSeqData('ChIP_peaks-ex1.txt')

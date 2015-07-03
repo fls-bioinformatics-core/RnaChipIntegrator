@@ -7,7 +7,7 @@ from rnachipintegrator.analysis import AnalyseNearestTSSToSummits
 from rnachipintegrator.analysis import AnalyseNearestTranscriptsToPeakEdges
 from rnachipintegrator.analysis import AnalyseNearestPeaksToTranscripts
 from rnachipintegrator.ChIPSeq import ChIPSeqData
-from rnachipintegrator.RNASeq import RNASeqData
+from rnachipintegrator.RNASeq import FeatureSet
 import unittest
 
 ########################################################################
@@ -30,12 +30,12 @@ class TestAnalyseNearestTSSToSummits(unittest.TestCase):
 
     def test_AnalyseNearestTSSToSummits(self):
         # Initialise data
-        rna_seq = RNASeqData('Transcripts-ex3.txt')
+        features = FeatureSet('Transcripts-ex3.txt')
         chip_seq = ChIPSeqData('ChIP_peaks-ex3.txt')
         max_distance = 130000
         # Run the analysis
         results = AnalyseNearestTSSToSummits(chip_seq,
-                                             rna_seq,
+                                             features,
                                              max_distance)
         # Verify the results are as expected
         self.assertEqual(len(results),
@@ -77,18 +77,20 @@ class TestAnalyseNearestTranscriptsToPeakEdges(unittest.TestCase):
 
     def test_AnalyseNearestTranscriptsToPeakEdges(self):
         # Initialise data
-        rna_seq = RNASeqData('Transcripts-ex3.txt')
+        features = FeatureSet('Transcripts-ex3.txt')
         chip_seq = ChIPSeqData('ChIP_peaks_binding_region-ex3.txt')
         promoter_region = (10000,2500)
         max_closest=4
         # Remove the flag from the gene data
-        self.assertTrue(rna_seq.isFlagged(),"initial gene data should be flagged")
-        for data in rna_seq:
-            data.flag = None
-        self.assertFalse(rna_seq.isFlagged(),"failed to remove flag on gene data")
+        self.assertTrue(features.isFlagged(),
+                        "initial gene data should be flagged")
+        for feature in features:
+            feature.flag = None
+        self.assertFalse(features.isFlagged(),
+                         "failed to remove flag on gene data")
         # Run the analysis
         results = AnalyseNearestTranscriptsToPeakEdges(chip_seq,
-                                                       rna_seq,
+                                                       features,
                                                        promoter_region,
                                                        max_closest)
         # Verify the results are as expected
@@ -111,15 +113,15 @@ class TestAnalyseNearestTranscriptsToPeakEdges(unittest.TestCase):
 
     def test_AnalyseNearestTranscriptsToPeakEdges_with_diff_expression(self):
         # Initialise data
-        rna_seq = RNASeqData('Transcripts-ex3.txt')
+        features = FeatureSet('Transcripts-ex3.txt')
         chip_seq = ChIPSeqData('ChIP_peaks_binding_region-ex3.txt')
         promoter_region = (10000,2500)
         max_closest=4
         # Check the differential expression flag on the gene data
-        self.assertTrue(rna_seq.isFlagged(),"gene data should be flagged")
+        self.assertTrue(features.isFlagged(),"gene data should be flagged")
         # Run the analysis
         results = AnalyseNearestTranscriptsToPeakEdges(chip_seq,
-                                                       rna_seq,
+                                                       features,
                                                        promoter_region,
                                                        max_closest)
         # Verify the results are as expected
@@ -142,18 +144,20 @@ class TestAnalyseNearestTranscriptsToPeakEdges(unittest.TestCase):
 
     def test_AnalyseNearestTranscriptTSSToPeakEdges(self):
         # Initialise data
-        rna_seq = RNASeqData('Transcripts-ex3.txt')
+        features = FeatureSet('Transcripts-ex3.txt')
         chip_seq = ChIPSeqData('ChIP_peaks_binding_region-ex3.txt')
         promoter_region = (10000,2500)
         max_closest=4
         # Remove the flag from the gene data
-        self.assertTrue(rna_seq.isFlagged(),"initial gene data should be flagged")
-        for data in rna_seq:
-            data.flag = None
-        self.assertFalse(rna_seq.isFlagged(),"failed to remove flag on gene data")
+        self.assertTrue(features.isFlagged(),
+                        "initial gene data should be flagged")
+        for feature in features:
+            feature.flag = None
+        self.assertFalse(features.isFlagged(),
+                         "failed to remove flag on gene data")
         # Run the analysis
         results = AnalyseNearestTranscriptsToPeakEdges(chip_seq,
-                                                       rna_seq,
+                                                       features,
                                                        promoter_region,
                                                        max_closest,
                                                        TSS_only=True)
@@ -177,15 +181,15 @@ class TestAnalyseNearestTranscriptsToPeakEdges(unittest.TestCase):
 
     def test_AnalyseNearestTranscriptTSSToPeakEdges_with_diff_expression(self):
         # Initialise data
-        rna_seq = RNASeqData('Transcripts-ex3.txt')
+        features = FeatureSet('Transcripts-ex3.txt')
         chip_seq = ChIPSeqData('ChIP_peaks_binding_region-ex3.txt')
         promoter_region = (10000,2500)
         max_closest=4
         # Check the differential expression flag on the gene data
-        self.assertTrue(rna_seq.isFlagged(),"gene data should be flagged")
+        self.assertTrue(features.isFlagged(),"gene data should be flagged")
         # Run the analysis
         results = AnalyseNearestTranscriptsToPeakEdges(chip_seq,
-                                                       rna_seq,
+                                                       features,
                                                        promoter_region,
                                                        max_closest,
                                                        TSS_only=True)
@@ -227,11 +231,11 @@ class TestAnalyseNearestPeaksToTranscripts(unittest.TestCase):
 
     def test_AnalyseNearestTranscriptsToPeaks(self):
         # Initialise data
-        rna_seq = RNASeqData('Transcripts-ex4.txt')
+        features = FeatureSet('Transcripts-ex4.txt')
         chip_seq = ChIPSeqData('ChIP_peaks-ex4.txt')
         window_width = 20000
         # Run the analysis
-        results = AnalyseNearestPeaksToTranscripts(rna_seq,
+        results = AnalyseNearestPeaksToTranscripts(features,
                                                    chip_seq,
                                                    window_width)
         # Verify the results are as expected

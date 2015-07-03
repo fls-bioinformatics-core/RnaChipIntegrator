@@ -3,20 +3,24 @@
 #     Copyright (C) University of Manchester 2011-5 Peter Briggs
 
 from common import *
-from rnachipintegrator.RNASeq import RNASeqDataLine
-from rnachipintegrator.RNASeq import RNASeqData
+from rnachipintegrator.RNASeq import Feature
+from rnachipintegrator.RNASeq import FeatureSet
 import unittest
 
-class TestRNASeqDataLine(unittest.TestCase):
+class TestFeature(unittest.TestCase):
 
     def setUp(self):
-        # Setup RNASeqDataLine objects to be used in the tests
+        # Set up Feature objects to be used in the tests
         # Forward strand example
         self.rna_data = \
-            RNASeqDataLine('CG9130-RB','chr3L','1252012','1255989','+')
+            Feature('CG9130-RB','chr3L','1252012','1255989','+')
         # Reverse strand example
         self.rna_data_2 = \
-            RNASeqDataLine('CG13051-RA','chr3L','16257914','16258166','-')
+            Feature('CG13051-RA','chr3L','16257914','16258166','-')
+
+    def test_properties(self):
+        self.assertEqual(self.rna_data.chrom,'chr3L')
+        self.assertEqual(self.rna_data_2.chrom,'chr3L')
 
     def test_contains_position(self):
         position = 1253000
@@ -98,7 +102,7 @@ class TestRNASeqDataLine(unittest.TestCase):
                           self.rna_data_2.getTSS()-trailing),
                          "Incorrect promoter region for - strand example")
 
-class TestRNASeqData(unittest.TestCase):
+class TestFeatureSet(unittest.TestCase):
 
     def setUp(self):
         # Create input files for tests
@@ -112,23 +116,23 @@ class TestRNASeqData(unittest.TestCase):
         delete_test_file('Transcripts-ex2.txt')
 
     def test_reading_in_RNAseq_data(self):
-        rna_seq = RNASeqData('Transcripts-ex1.txt')
+        rna_seq = FeatureSet('Transcripts-ex1.txt')
         self.assertEqual(len(rna_seq),10,
                          "Wrong number of lines from RNA-seq file")
         self.assertTrue(rna_seq.isFlagged(),
                         "Data should be flagged")
 
     def test_filter_on_chromosome(self):
-        rna_seq = RNASeqData('Transcripts-ex1.txt')
+        rna_seq = FeatureSet('Transcripts-ex1.txt')
         rna_chr = rna_seq.filterByChr('chr3LHet')
         self.assertEqual(len(rna_chr),1,
                          "Wrong number of chromosomes")
         for rna_data in rna_chr:
-            self.assertEqual(rna_data.chr,'chr3LHet',
+            self.assertEqual(rna_data.chrom,'chr3LHet',
                              "Wrong chromosome filtered")
 
     def test_filter_on_strand(self):
-        rna_seq = RNASeqData('Transcripts-ex1.txt')
+        rna_seq = FeatureSet('Transcripts-ex1.txt')
         rna_plus = rna_seq.filterByStrand('+')
         self.assertEqual(len(rna_plus),5,
                          "Wrong number of + strands")
@@ -137,13 +141,13 @@ class TestRNASeqData(unittest.TestCase):
                          "Wrong number of - strands")
 
     def test_filter_on_flag(self):
-        rna_seq = RNASeqData('Transcripts-ex1.txt')
+        rna_seq = FeatureSet('Transcripts-ex1.txt')
         rna_flagged = rna_seq.filterByFlag(1)
         self.assertEqual(len(rna_flagged),4,
                          "Wrong number of flagged data lines")
 
     def test_getTSS(self):
-        rna_seq = RNASeqData('Transcripts-ex1.txt')
+        rna_seq = FeatureSet('Transcripts-ex1.txt')
         rna_plus = rna_seq.filterByStrand('+')
         for rna_data in rna_plus:
             self.assertTrue((rna_data.strand == '+' and
@@ -156,7 +160,7 @@ class TestRNASeqData(unittest.TestCase):
                             "Incorrect TSS on - strand")
 
     def test_filter_on_TSS(self):
-        rna_seq = RNASeqData('Transcripts-ex1.txt')
+        rna_seq = FeatureSet('Transcripts-ex1.txt')
         lower,upper = 5000000,10000000
         rna_tss = rna_seq.filterByTSS(upper,lower)
         self.assertEqual(len(rna_tss),3,
@@ -167,7 +171,7 @@ class TestRNASeqData(unittest.TestCase):
                             "Transcript outside range")
 
     def test_sort_by_distance(self):
-        rna_sort = RNASeqData('Transcripts-ex1.txt')
+        rna_sort = FeatureSet('Transcripts-ex1.txt')
         position = 4250000
         # Do sort on distance
         # Sort is done in place, so assignment is not required
@@ -187,7 +191,7 @@ class TestRNASeqData(unittest.TestCase):
                              "Sort by distance failed")
 
     def test_sort_by_closest_distance_to_edge(self):
-        rna_sort = RNASeqData('Transcripts-ex1.txt')
+        rna_sort = FeatureSet('Transcripts-ex1.txt')
         position = 4250000
         # Do sort
         # Sort is done in place, so assignment is not required
@@ -209,7 +213,7 @@ class TestRNASeqData(unittest.TestCase):
                                 "Sort by closest distance to edge failed")
 
     def test_sort_by_closest_TSS_to_edge(self):
-        rna_sort = RNASeqData('Transcripts-ex1.txt')
+        rna_sort = FeatureSet('Transcripts-ex1.txt')
         position = (16000000,17500000)
         # Do sort
         # Sort is done in place, so assignment is not required
@@ -232,7 +236,7 @@ class TestRNASeqData(unittest.TestCase):
         
 
     def test_reading_bad_file_scientific_notation(self):
-        self.assertRaises(Exception,RNASeqData,'Transcripts-ex2.txt')
+        self.assertRaises(Exception,FeatureSet,'Transcripts-ex2.txt')
 
     def test_reading_bad_file_end_lower_than_start(self):
-        self.assertRaises(Exception,RNASeqData,'Transcripts-ex2a.txt')
+        self.assertRaises(Exception,FeatureSet,'Transcripts-ex2a.txt')
