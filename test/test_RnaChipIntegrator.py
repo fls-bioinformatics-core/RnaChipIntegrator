@@ -1,5 +1,5 @@
 #     test_RnaChipIntegrator.py: unit tests for RnaChipIntegrator.py
-#     Copyright (C) University of Manchester 2011-4 Peter Briggs
+#     Copyright (C) University of Manchester 2011-5 Peter Briggs
 #
 ########################################################################
 #
@@ -8,7 +8,6 @@
 #########################################################################
 
 import unittest, os
-from RnaChipIntegrator import *
 
 ########################################################################
 #
@@ -229,6 +228,8 @@ CG18024-RA	chr2L	8825625	8829671	+	1	3	chr2L	8825470	155	chr2L	8832523	-6898	chr
 # TestRNASeqDataLine
 #
 #########################################################################
+from rnachipintegrator.RNASeq import RNASeqDataLine
+
 class TestRNASeqDataLine(unittest.TestCase):
 
     def setUp(self):
@@ -325,6 +326,8 @@ class TestRNASeqDataLine(unittest.TestCase):
 # TestRNASeqDataLine
 #
 #########################################################################
+from rnachipintegrator.RNASeq import RNASeqData
+
 class TestRNASeqData(unittest.TestCase):
 
     def setUp(self):
@@ -469,6 +472,8 @@ class TestRNASeqData(unittest.TestCase):
 # TestChIPSeqData
 #
 #########################################################################
+from rnachipintegrator.ChIPSeq import ChIPSeqData
+
 class TestChIPSeqData(unittest.TestCase):
 
     def setUp(self):
@@ -560,6 +565,7 @@ class TestChIPSeqData(unittest.TestCase):
 # TestRNASeqDataWithChIPSeqData
 #
 #########################################################################
+from rnachipintegrator.distances import GetNearestTranscriptToPeak
 class TestRNASeqDataWithChIPSeqData(unittest.TestCase):
 
     def setUp(self):
@@ -592,6 +598,7 @@ class TestRNASeqDataWithChIPSeqData(unittest.TestCase):
 # TestAnalyseNearestTSSToSummits
 #
 #########################################################################
+from rnachipintegrator.analysis import AnalyseNearestTSSToSummits
 class TestAnalyseNearestTSSToSummits(unittest.TestCase):
 
     def setUp(self):
@@ -637,6 +644,8 @@ class TestAnalyseNearestTSSToSummits(unittest.TestCase):
 # TestAnalyseNearestTranscriptsToPeakEdges
 #
 #########################################################################
+from rnachipintegrator.analysis import AnalyseNearestTranscriptsToPeakEdges
+
 class TestAnalyseNearestTranscriptsToPeakEdges(unittest.TestCase):
 
     def setUp(self):
@@ -787,6 +796,8 @@ class TestAnalyseNearestTranscriptsToPeakEdges(unittest.TestCase):
 # TestAnalyseNearestPeaksToTranscripts
 #
 #########################################################################
+from rnachipintegrator.analysis import AnalyseNearestPeaksToTranscripts
+
 class TestAnalyseNearestPeaksToTranscripts(unittest.TestCase):
 
     def setUp(self):
@@ -836,6 +847,8 @@ class TestAnalyseNearestPeaksToTranscripts(unittest.TestCase):
 # TestRegionsOverlap
 #
 #########################################################################
+from rnachipintegrator.distances import regions_overlap
+
 class TestRegionsOverlap(unittest.TestCase):
     
     def test_regions_dont_overlap(self):
@@ -874,6 +887,7 @@ class TestRegionsOverlap(unittest.TestCase):
 # TestClosestDistanceToRegion
 #
 #########################################################################
+from rnachipintegrator.distances import closestDistanceToRegion
 class TestClosestDistanceToRegion(unittest.TestCase):
 
     def test_get_distance_to_point(self):
@@ -922,6 +936,8 @@ class TestClosestDistanceToRegion(unittest.TestCase):
 #
 #########################################################################
 
+from nose.tools import nottest
+@nottest
 def create_test_file(name,data):
     # Writes data to a file to be used in testing
     fp = open(name,'w')
@@ -929,6 +945,7 @@ def create_test_file(name,data):
         fp.write(line+'\n')
     fp.close()
 
+@nottest
 def delete_test_file(name):
     # Deletes named test file
     if os.path.exists(name):
