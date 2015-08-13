@@ -53,8 +53,8 @@ import logging
 logging.getLogger().setLevel(logging.ERROR)
 logging.basicConfig(format='%(levelname)s: %(message)s')
 
-from rnachipintegrator.RNASeq import FeatureSet
-from rnachipintegrator.ChIPSeq import PeakSet
+from rnachipintegrator.Features import FeatureSet
+from rnachipintegrator.Peaks import PeakSet
 from rnachipintegrator.analysis import AnalyseNearestTranscriptsToPeakEdges
 from rnachipintegrator.analysis import AnalyseNearestTSSToSummits
 from rnachipintegrator.analysis import AnalyseNearestPeaksToTranscripts

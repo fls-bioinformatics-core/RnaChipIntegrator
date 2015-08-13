@@ -27,8 +27,8 @@ import sys
 import os
 import optparse
 import time,datetime
-from rnachipintegrator.RNASeq import FeatureSet
-from rnachipintegrator.ChIPSeq import PeakSet
+from rnachipintegrator.Features import FeatureSet
+from rnachipintegrator.Peaks import PeakSet
 import rnachipintegrator.analysis_redux as analysis
 import rnachipintegrator.output as output
 

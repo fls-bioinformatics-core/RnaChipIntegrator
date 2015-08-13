@@ -1,10 +1,10 @@
 #
-#     test_RNASeq.py: unit tests for RNASeq module
+#     test_Features.py: unit tests for Features module
 #     Copyright (C) University of Manchester 2011-5 Peter Briggs
 
 from common import *
-from rnachipintegrator.RNASeq import Feature
-from rnachipintegrator.RNASeq import FeatureSet
+from rnachipintegrator.Features import Feature
+from rnachipintegrator.Features import FeatureSet
 import unittest
 
 class TestFeature(unittest.TestCase):

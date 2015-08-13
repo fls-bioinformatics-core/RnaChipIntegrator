@@ -6,8 +6,8 @@ from common import *
 from rnachipintegrator.analysis import AnalyseNearestTSSToSummits
 from rnachipintegrator.analysis import AnalyseNearestTranscriptsToPeakEdges
 from rnachipintegrator.analysis import AnalyseNearestPeaksToTranscripts
-from rnachipintegrator.ChIPSeq import PeakSet
-from rnachipintegrator.RNASeq import FeatureSet
+from rnachipintegrator.Peaks import PeakSet
+from rnachipintegrator.Features import FeatureSet
 import unittest
 
 ########################################################################

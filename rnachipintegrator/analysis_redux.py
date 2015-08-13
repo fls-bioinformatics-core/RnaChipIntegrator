@@ -7,14 +7,14 @@
 """
 analysis_redux.py
 
-Reimplementation of analysis functions
+Reimplementation of analysis functions.
 
 """
 import os
 import logging
 import distances
-from RNASeq import FeatureSet
-from ChIPSeq import PeakSet
+from Features import FeatureSet
+from Peaks import PeakSet
 
 #######################################################################
 # Analysis functions

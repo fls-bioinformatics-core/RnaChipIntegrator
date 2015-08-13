@@ -1,10 +1,10 @@
 #
-#     test_ChIPSeq.py: unit tests for ChIPSeq module
+#     test_Peaks.py: unit tests for Peaks module
 #     Copyright (C) University of Manchester 2011-5 Peter Briggs
 
 from common import *
-from rnachipintegrator.ChIPSeq import PeakSet
-from rnachipintegrator.RNASeq import FeatureSet
+from rnachipintegrator.Peaks import PeakSet
+from rnachipintegrator.Features import FeatureSet
 from rnachipintegrator.distances import GetNearestTranscriptToPeak
 import unittest
 

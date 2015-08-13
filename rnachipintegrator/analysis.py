@@ -25,7 +25,7 @@ and a utility function to write results to a tab-delimited file.
 import os
 import logging
 from distances import regions_overlap
-from ChIPSeq import PeakSet
+from Peaks import PeakSet
 from utils import truncate_text
 try:
     import Spreadsheet
