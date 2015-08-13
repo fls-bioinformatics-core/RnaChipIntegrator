@@ -22,6 +22,13 @@ class TestFeature(unittest.TestCase):
         self.assertEqual(self.rna_data.chrom,'chr3L')
         self.assertEqual(self.rna_data_2.chrom,'chr3L')
 
+    def test__eq__(self):
+        self.assertTrue(self.rna_data == Feature('CG9130-RB',
+                                                 'chr3L',
+                                                 '1252012',
+                                                 '1255989','+'))
+        self.assertFalse(self.rna_data == self.rna_data_2)
+
     def test_contains_position(self):
         position = 1253000
         self.assertTrue(self.rna_data.containsPosition(position),

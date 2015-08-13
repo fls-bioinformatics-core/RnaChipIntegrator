@@ -197,6 +197,12 @@ class Peak:
                                self.start,
                                self.end)
 
+    def __eq__(self,other):
+        return \
+            (self.chrom == other.chrom) and \
+            (self.start == other.start) and \
+            (self.end == other.end)
+
     def insideRegion(self,limit1,limit2,exclude_limits=False):
         """Check if the peak is contained within a defined region
 

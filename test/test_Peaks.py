@@ -4,6 +4,7 @@
 
 from common import *
 from rnachipintegrator.Peaks import PeakSet
+from rnachipintegrator.Peaks import Peak
 from rnachipintegrator.Features import FeatureSet
 from rnachipintegrator.distances import GetNearestTranscriptToPeak
 import unittest
@@ -92,6 +93,15 @@ class TestPeakSet(unittest.TestCase):
         peaks_chr = peaks.filterByChr("chr4")
         self.assertEqual(len(peaks_chr),2,
                          "Wrong number of ChIP-seq records filtered")
+
+
+class TestPeak(unittest.TestCase):
+
+    def test__eq__(self):
+        self.assertTrue(Peak('chr2L','66811','66812') == 
+                        Peak('chr2L','66811','66812'))
+        self.assertFalse(Peak('chr2L','66811','66812') == 
+                         Peak('chr2L','249177','605951'))
 
 class TestFeatureSetWithChIPSeqData(unittest.TestCase):
     def setUp(self):

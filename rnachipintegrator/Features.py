@@ -327,6 +327,13 @@ class Feature:
             items.append(str(self.flag))
         return '\t'.join(items)
 
+    def __eq__(self,other):
+        return \
+            (self.id == other.id) and \
+            (self.strand == other.strand) and \
+            (self.start == other.start) and \
+            (self.end == other.end)
+
     def getTSS(self):
         """Return the TSS coordinate
 
