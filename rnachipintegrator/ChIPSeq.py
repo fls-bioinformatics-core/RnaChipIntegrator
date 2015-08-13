@@ -165,7 +165,8 @@ class PeakSet:
 
         """
         self.peaks = sorted(self.peaks,
-                            key=lambda record: abs(record.start - position))
+                            key=lambda record: min(abs(record.start - position),
+                                                   abs(record.end - position)))
         return self
 
     def __getitem__(self,key):
