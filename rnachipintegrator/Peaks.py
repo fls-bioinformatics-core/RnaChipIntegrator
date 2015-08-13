@@ -1,13 +1,13 @@
 #!/bin/env python
 #
-#     ChIPSeq.py: classes for handling ChIP-seq peak data
+#     Peaks.py: classes for handling peak data
 #     Copyright (C) University of Manchester 2011-15 Peter Briggs, Leo Zeef
 #     & Ian Donaldson
 #
 """
-ChIPSeq.py
+Peaks.py
 
-Classes for handling ChIP-seq peak data
+Classes for handling peak data
 
 """
 
@@ -15,7 +15,7 @@ import logging
 from utils import make_errline
 
 class PeakSet:
-    """Class for storing ChIP-seq peaks
+    """Class for storing a set of peaks
 
     ChIP-seq data consists of ChIP peak information, each of which are
     stored individually in Peak objects. This class is a container for
@@ -24,43 +24,43 @@ class PeakSet:
     based on various criteria.
 
     """
-    def __init__(self,chipseq_file=None):
+    def __init__(self,peaks_file=None):
         """Create a new PeakSet instance
         
         Arguments:
-          chipseq_file: (optional) the name of an input file to read
-            the ChIP-seq data from.
+          peaks_file: (optional) the name of an input file to read
+            the peak data from.
 
         """
         self.peaks = []
-        if chipseq_file:
-            self.loadPeaksFromFile(chipseq_file)
+        if peaks_file:
+            self.loadPeaksFromFile(peaks_file)
 
-    def loadPeaksFromFile(self,chipseq_file):
+    def loadPeaksFromFile(self,peaks_file):
         """Read peaks data from a file and populate the object
 
         Arguments:
-          chipseq_file: the name of the input file to read ChIP-seq
+          peaks_file: the name of the input file to read peaks
           data from.
 
         """
-        fp = open(chipseq_file,'rU')
+        fp = open(peaks_file,'rU')
         for line in fp:
             # Skip lines that start with a # symbol
             if line.startswith('#'):
-                logging.debug("ChIP file: skipped line: %s" % line.strip())
+                logging.debug("Peaks file: skipped line: %s" % line.strip())
                 continue
             # Lines are tab-delimited and have at least 3 columns:
             # chr  start  end
             items = line.strip().split('\t')
             if len(items) < 3:
-                logging.warning("ChIP file: skipped line: %s" % line.strip())
+                logging.warning("Peaks file: skipped line: %s" % line.strip())
                 logging.warning("Insufficient number of fields (%d)" % \
                                     len(items))
                 continue
             # Check that items in 2nd and 3rd columns are digits
             if not items[1].isdigit() or not items[2].isdigit():
-                logging.warning("ChIP file: skipped line: %s" % line.strip())
+                logging.warning("Peaks file: skipped line: %s" % line.strip())
                 # Indicate problem field(s)
                 errline = []
                 for i in range(len(items)):
@@ -176,7 +176,7 @@ class PeakSet:
         return len(self.peaks)
 
 class Peak:
-    """Class for storing a (ChIP) peak
+    """Class for storing a peak
 
     Access the data from the line using the object's properties:
 

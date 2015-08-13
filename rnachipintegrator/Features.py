@@ -1,13 +1,13 @@
 #!/bin/env python
 #
-#     RNASeq.py: classes for handling RNA-seq data
+#     Features.py: classes for handling feature data
 #     Copyright (C) University of Manchester 2011-15 Peter Briggs, Leo Zeef
 #     & Ian Donaldson
 #
 """
-RNASeq.py
+Features.py
 
-Classes for handling RNA-seq transcript/feature data.
+Classes for handling feature data.
 
 """
 
@@ -16,16 +16,16 @@ from distances import closestDistanceToRegion
 from utils import make_errline
 
 class FeatureSet:
-    """Class for storing a set of RNA-seq 'features'
+    """Class for storing a set of features
 
-    RNA-seq features consists of genes/transcripts/isomers, which are
-    stored individually in RNASeqDataLine objects. This class is a
+    RNA-seq features consists of genes/transcripts/isomers, which
+    are stored individually in Feature objects. This class is a
     container for a collection of Feature objects and provides
     methods to operate on the collection, by creating subsets by
     filtering, and sorting the features based on various criteria.
 
     """
-    def __init__(self,rnaseq_file=None):
+    def __init__(self,features_file=None):
         """Create a new FeatureSet instance
 
         Raises an exception if there are errors in the input file data
@@ -33,37 +33,37 @@ class FeatureSet:
         occurring before start positions, or illegal strand values).
         
         Arguments:
-          rnaseq_file: (optional) the name of an input file to read
+          features_file: (optional) the name of an input file to read
             the RNA-seq features from.
         """
         self.features = []
-        if rnaseq_file:
-            self.loadFeaturesFromFile(rnaseq_file)
+        if features_file:
+            self.loadFeaturesFromFile(features_file)
 
-    def loadFeaturesFromFile(self,rnaseq_file):
+    def loadFeaturesFromFile(self,features_file):
         """Read features from a file and populate the object
 
         Arguments:
-          rnaseq_file: the name of the input file to read RNA-seq features from.
+          features_file: the name of the input file to read features from.
 
         """
         # Local flags etc
         line_index = 0
         critical_error = False
         # Read in data from file
-        fp = open(rnaseq_file,'rU')
+        fp = open(features_file,'rU')
         for line in fp:
             # Increment index
             line_index += 1
             # Skip lines starting with #
             if line.startswith('#'):
-                logging.debug("RNA file: skipped line: %s" % line.strip())
+                logging.debug("Feature file: skipped line: %s" % line.strip())
                 continue
             # Lines are tab-delimited and have at least 5 columns:
             # ID  chr  start  end  strand
             items = line.strip().split('\t')
             if len(items) < 5:
-                logging.warning("RNA file: skipped line: %s" % line.strip())
+                logging.warning("Feature file: skipped line: %s" % line.strip())
                 logging.warning("Insufficient number of fields (%d)" % \
                                     len(items))
                 continue
@@ -77,11 +77,11 @@ class FeatureSet:
                 # If this is the first line then assume it's a header and ignore
                 if line_index == 1:
                     logging.warning("%s: first line ignored as header: %s" % 
-                                    (rnaseq_file,line.strip()))
+                                    (features_file,line.strip()))
                 else:
                     # Indicate problem field(s)
                     logging.error("%s: critical error line %d: bad values:" %
-                                  (rnaseq_file,line_index))
+                                  (features_file,line_index))
                     logging.error("%s" % line.strip())
                     logging.error("%s" % make_errline(line.strip(),problem_fields))
                     # This is a critical error: update flag
@@ -91,7 +91,7 @@ class FeatureSet:
             elif int(items[2]) >= int(items[3]):
                 # Start position is same or higher than end
                 logging.error("%s: critical error line %d: 'end' comes before 'start':" %
-                              (rnaseq_file,line_index))
+                              (features_file,line_index))
                 logging.error("%s" % line.strip())
                 logging.error("%s" % make_errline(line.strip(),(2,3)))
                 # This is a critical error: update flag but continue reading
@@ -120,7 +120,7 @@ class FeatureSet:
         fp.close()
         # Deal with postponed critical errors
         if critical_error:
-            raise Exception, "critical error(s) in '%s'" % rnaseq_file
+            raise Exception, "critical error(s) in '%s'" % features_file
         # Return a reference to this object
         return self
 
@@ -284,7 +284,7 @@ class FeatureSet:
         return len(self.features)
 
 class Feature:
-    """Class for storing an RNA-seq 'feature' (gene/transcript/isomer)
+    """Class for storing an 'feature' (gene/transcript/isomer)
 
     Access the data for the feature using the object's properties:
 
@@ -300,8 +300,8 @@ class Feature:
     and methods for calculating various distances.
 
     """
-    def __init__(self,rna_id,chrom,start,end,strand):
-        self.id = rna_id
+    def __init__(self,feature_id,chrom,start,end,strand):
+        self.id = feature_id
         self.chrom = chrom
         self.start = int(start)
         self.end = int(end)
