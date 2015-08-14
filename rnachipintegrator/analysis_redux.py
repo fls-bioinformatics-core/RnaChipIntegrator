@@ -28,7 +28,8 @@ from Peaks import PeakSet
 
 def find_nearest_features(peaks,features,distance=None,
                           max_closest=None,tss_only=False,
-                          only_differentially_expressed=False):
+                          only_differentially_expressed=False,
+                          pad=False):
     """
     Locate nearest features for each peak
 
@@ -43,6 +44,8 @@ def find_nearest_features(peaks,features,distance=None,
         both the TSS and TES)
       only_differentially_expressed (bool): only consider
         features that are flagged as differentially expressed
+      pad (bool): add extra 'None' items to output
+        FeatureSet so that it contains max_closest results
 
     Yields:
       tuple: Peak object and a FeatureSet object with the
@@ -77,12 +80,17 @@ def find_nearest_features(peaks,features,distance=None,
         # Reduce to maximum number of features
         if max_closest is not None:
             feature_list = feature_list[:max_closest]
+        # Pad with null results
+        if pad:
+            while len(feature_list) < max_closest:
+                feature_list.append(None)
         # Return result
         yield (peak,feature_list)
 
 def find_nearest_peaks(features,peaks,distance=None,
                        max_closest=None,
-                       only_differentially_expressed=False):
+                       only_differentially_expressed=False,
+                       pad=False):
     """
     Locate nearest peaks for each feature
 
@@ -94,6 +102,8 @@ def find_nearest_peaks(features,peaks,distance=None,
         to find per feature
       only_differentially_expressed (bool): only consider
         features that are flagged as differentially expressed
+      pad (bool): add extra 'None' items to output
+        FeatureSet so that it contains max_closest results
 
     Yields:
       tuple: Feature object and a PeakSet object with the
@@ -125,6 +135,10 @@ def find_nearest_peaks(features,peaks,distance=None,
         # Reduce to maximum number of peaks
         if max_closest is not None:
             peak_list = peak_list[:max_closest]
+        # Pad with null results
+        if pad:
+            while len(peak_list) < max_closest:
+                peak_list.append(None)
         # Return results
         yield (feature,peak_list)
 

@@ -81,7 +81,8 @@ class AnalysisReporter:
     - features_inbetween
 
     """
-    def __init__(self,mode,fields,promoter_region=None):
+    def __init__(self,mode,fields,promoter_region=None,
+                 null_placeholder='.'):
         """
         Create new AnalysisReporter instance
 
@@ -89,11 +90,14 @@ class AnalysisReporter:
           promoter_region (tuple): promoter region extent (optional)
           mode (int): either SINGLE_LINE or MULTI_LINE
           fields (list): list of fields to output
+          null_placeholder (str): placeholder to use in output for
+            fields which evaluate to 'null'
 
         """
         self._fields = fields
         self._mode = mode
         self._promoter_region = promoter_region
+        self._placeholder = null_placeholder
         self._context_peak = None
         self._context_feature = None
 
@@ -216,6 +220,27 @@ class AnalysisReporter:
         """
         Return the value for the specified attribute
 
+        Wraps '_value_for' method, and returns the null
+        placeholder value in the event of an AttributeError
+        being raised.
+
+        Arguments:
+          attr (string): attribute name
+
+        Returns:
+          Value of the field for the current peak/feature
+          pair
+
+        """
+        try:
+            return self._value_for(attr)
+        except AttributeError:
+            return self._placeholder
+
+    def _value_for(self,attr):
+        """
+        Return the value for the specified attribute
+
         Given the name of a field/attribute (see above for
         a list and definition of each), return the value
         for the current peak/feature pair (which should have
@@ -228,6 +253,11 @@ class AnalysisReporter:
         Returns:
           Value of the field for the current peak/feature
           pair
+
+        Raises:
+          AttributeError: if valid ``attr`` cannot be derived
+          KeyError: if ``attr`` is not a recognised attribute
+            name
         
         """
         peak = self._context_peak

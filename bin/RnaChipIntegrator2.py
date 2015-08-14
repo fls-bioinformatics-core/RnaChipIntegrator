@@ -117,14 +117,13 @@ if __name__ == '__main__':
     max_closest = options.max_closest
     if max_closest <= 0:
         max_closest = None
-    if options.pad_output:
-        raise NotImplementedError("--pad not implemented")
 
     # Reporting formats
     if options.compact:
         mode = output.SINGLE_LINE
         peak_fields = ('chr','start','end','list(feature.id)')
         feature_fields = ('feature.id','list(chr,start,end,dist_closest)')
+        placeholder = '.'
     else:
         mode = output.MULTI_LINE
         peak_fields = ('chr','start','end',
@@ -141,6 +140,7 @@ if __name__ == '__main__':
                           'feature.strand',
                           'peak.chr','peak.start','peak.end','order',
                           'dist_closest','dist_TSS','dist_TES')
+        placeholder = '---'
 
     # Report settings
     print "Input features file: %s" % feature_file
@@ -200,13 +200,15 @@ if __name__ == '__main__':
     outfile = basename+"_features_per_peak.txt"
     fp = open(outfile,'w')
     reporter = output.AnalysisReporter(mode,peak_fields,
-                                       promoter_region=promoter)
+                                       promoter_region=promoter,
+                                       null_placeholder=placeholder)
     fp.write("#%s\n" % reporter.make_header(max_hits=max_closest))
     for peak,nearest_features in analysis.find_nearest_features(
             peaks,features,tss_only=options.tss_only,
             distance=max_distance,
             max_closest=max_closest,
-            only_differentially_expressed=use_differential_expression):
+            only_differentially_expressed=use_differential_expression,
+            pad=options.pad_output):
         for line in reporter.report_nearest_features(peak,nearest_features):
             fp.write("%s\n" % line)
     fp.close()
@@ -216,13 +218,15 @@ if __name__ == '__main__':
     print "**** Nearest peaks to features ****"
     outfile = basename+"_peaks_per_feature.txt"
     fp = open(outfile,'w')
-    reporter = output.AnalysisReporter(mode,feature_fields)
+    reporter = output.AnalysisReporter(mode,feature_fields,
+                                       null_placeholder=placeholder)
     fp.write("#%s\n" % reporter.make_header(max_hits=max_closest))
     for feature,nearest_peaks in analysis.find_nearest_peaks(
             features,peaks,
             distance=max_distance,
             max_closest=max_closest,
-            only_differentially_expressed=use_differential_expression):
+            only_differentially_expressed=use_differential_expression,
+            pad=options.pad_output):
         for line in reporter.report_nearest_peaks(feature,nearest_peaks):
             fp.write("%s\n" % line)
     fp.close()
