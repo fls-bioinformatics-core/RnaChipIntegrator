@@ -20,6 +20,10 @@ import rnachipintegrator
 setup(
     name = "RnaChipIntegrator",
     version = rnachipintegrator.get_version(),
+    description = "Integrate genomic features with expression data",
+    long_description = """Utility for integrating sets of genomic features (e.g. canonical genes, CpG islands) with expression data
+""",
+    url = 'https://github.com/fls-bioinformatics-core/RnaChipIntegrator',
     maintainer = 'Peter Briggs',
     maintainer_email = 'peter.briggs@manchester.ac.uk',
     packages = ['rnachipintegrator'],
@@ -40,5 +44,7 @@ setup(
                     ['doc/MANUAL.markdown',
                      'doc/rnachipintegrator_nearestEdgetoPeak.png',
                      'doc/rnachipintegrator_nearestTSStoSummit.png',
-                     'doc/rnachipintegrator_nearestTSStoPeak.png']) ]
+                     'doc/rnachipintegrator_nearestTSStoPeak.png']) ],
+    include_package_data=True,
+    zip_safe = False
 )
