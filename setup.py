@@ -21,14 +21,15 @@ setup(
     name = "RnaChipIntegrator",
     version = rnachipintegrator.get_version(),
     description = "Integrate genomic features with expression data",
-    long_description = """Utility for integrating sets of genomic features (e.g. canonical genes, CpG islands) with expression data
+    long_description = """
+Utility for integrating sets of genomic features (e.g. canonical genes,
+CpG islands) with expression data.
 """,
     url = 'https://github.com/fls-bioinformatics-core/RnaChipIntegrator',
     maintainer = 'Peter Briggs',
     maintainer_email = 'peter.briggs@manchester.ac.uk',
     packages = ['rnachipintegrator'],
     license = 'Artistic License',
-    py_modules = ['RnaChipIntegrator','Spreadsheet'],
     install_requires = ['xlwt >= 0.7.2',
                         'xlrd >= 0.7.1',
                         'xlutils >= 1.4.1'],
