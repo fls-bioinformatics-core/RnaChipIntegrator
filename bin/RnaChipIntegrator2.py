@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
-#     RnaChipIntegrator.py: analyse RNA-seq and ChIP-seq data
-#     Copyright (C) University of Manchester 2011-14 Peter Briggs, Leo Zeef
+#     RnaChipIntegrator.py: analyse genomic features with peak data
+#     Copyright (C) University of Manchester 2011-15 Peter Briggs, Leo Zeef
 #     & Ian Donaldson
 #
 #     This code is free software; you can redistribute it and/or modify it
@@ -17,6 +17,8 @@
 """
 RnaChipIntegrator.py
 
+Analyse genomic features with peak data.
+
 """
 
 #######################################################################
@@ -31,6 +33,9 @@ from rnachipintegrator.Features import FeatureSet
 from rnachipintegrator.Peaks import PeakSet
 import rnachipintegrator.analysis_redux as analysis
 import rnachipintegrator.output as output
+import logging
+logging.getLogger().setLevel(logging.WARNING)
+logging.basicConfig(format='%(levelname)s: %(message)s')
 
 import rnachipintegrator
 __version__ = rnachipintegrator.get_version()
