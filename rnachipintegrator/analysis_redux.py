@@ -84,6 +84,9 @@ def find_nearest_features(peaks,features,distance=None,
         if pad:
             while len(feature_list) < max_closest:
                 feature_list.append(None)
+        elif not feature_list:
+            # Return at least one (null) result
+            feature_list.append(None)
         # Return result
         yield (peak,feature_list)
 
@@ -139,6 +142,9 @@ def find_nearest_peaks(features,peaks,distance=None,
         if pad:
             while len(peak_list) < max_closest:
                 peak_list.append(None)
+        elif not peak_list:
+            # Return at least one (null) result
+            peak_list.append(None)
         # Return results
         yield (feature,peak_list)
 
