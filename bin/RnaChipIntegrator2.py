@@ -76,35 +76,25 @@ if __name__ == '__main__':
                  "output with blanks to ensure that MAX_CLOSEST hits "
                  "are still reported")
     options,args = p.parse_args()
+
+    # Input files
     if len(args) != 2:
         p.error("need to supply 2 files (features and peaks)")
     feature_file,peak_file = args
 
-    # Report settings
-    print "Input features file: %s" % feature_file
-    print "Input peaks file   : %s" % peak_file
-
-    # Read in data
-    try:
-        features = FeatureSet(feature_file)
-    except Exception, ex:
-        logging.critical("Failed to read in feature data: %s" % ex)
-        print "Please fix errors in input file before running again"
-        sys.exit(1)
-    peaks = PeakSet(peak_file)
-    if peaks.isSummit():
-        print "Peak data are summits"
+    # Report version and authors
+    p.print_version()
+    print "Find nearest peaks to genomic features (and vice versa)"
+    print
+    print "University of Manchester"
+    print "Faculty of Life Sciences"
+    print "Bioinformatics Core Facility"
+    print "Authors: Ian Donaldson, Leo Zeef and Peter Briggs"
+    print
 
     # Promoter region
     promoter = (abs(int(options.promoter_region.split(',')[0])),
                 abs(int(options.promoter_region.split(',')[1])))
-
-    # Differential expression handling
-    use_differential_expression = False
-    if features.isFlagged():
-        print "Feature data include differential expression flag"
-        if not options.no_differential_expression:
-            use_differential_expression = True
 
     # Reporting options
     max_distance = options.max_distance
@@ -133,6 +123,48 @@ if __name__ == '__main__':
                        'overlap_feature',
                        'overlap_promoter')
         feature_fields = ('feature.id','chr','start','end','order')
+
+    # Report settings
+    print "Input features file: %s" % feature_file
+    print "Input peaks file   : %s" % peak_file
+    print
+
+    # Read in feature data
+    try:
+        features = FeatureSet(feature_file)
+    except Exception, ex:
+        logging.critical("Failed to read in feature data: %s" % ex)
+        print "Please fix errors in input file before running again"
+        sys.exit(1)
+    if not len(features):
+        logging.error("No feature data read in")
+        sys.exit(1)
+    print "%d feature records read in" % len(features)
+
+    # Differential expression handling
+    use_differential_expression = False
+    if features.isFlagged():
+        print "\tFeature data include differential expression flag"
+        print "\t%d features flagged as differentially expressed" % \
+            len(features.filterByFlag(1))
+        if not options.no_differential_expression:
+            print
+            print "*** Only differentially expressed features will used"
+            print "*** Rerun with --no-DE to analyse all features "
+            use_differential_expression = True
+    print
+
+    # Read in peak data
+    peaks = PeakSet(peak_file)
+    if not len(peaks):
+        logging.error("No peak data read in")
+        sys.exit(1)
+    print "%d peak records read in" % len(peaks)
+    if peaks.isSummit():
+        print "\tPeak data are summits"
+    else:
+        print "\tPeak data are regions"
+    print
 
     # Do the analyses
     print "**** Nearest features to peaks (TSS only) ****"
