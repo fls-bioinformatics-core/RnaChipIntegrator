@@ -196,10 +196,9 @@ if __name__ == '__main__':
     print "**** Nearest features to peaks ****"
     outfile = basename+"_features_per_peak.txt"
     fp = open(outfile,'w')
-    if mode == output.MULTI_LINE:
-        fp.write('#%s\n' % '\t'.join(feature_fields))
     reporter = output.AnalysisReporter(mode,peak_fields,
                                        promoter_region=promoter)
+    fp.write("#%s\n" % reporter.make_header(max_hits=max_closest))
     for peak,nearest_features in analysis.find_nearest_features(
             peaks,features,tss_only=options.tss_only,
             distance=max_distance,
@@ -214,9 +213,8 @@ if __name__ == '__main__':
     print "**** Nearest peaks to features ****"
     outfile = basename+"_peaks_per_feature.txt"
     fp = open(outfile,'w')
-    if mode == output.MULTI_LINE:
-        fp.write('#%s\n' % '\t'.join(peak_fields))
     reporter = output.AnalysisReporter(mode,feature_fields)
+    fp.write("#%s\n" % reporter.make_header(max_hits=max_closest))
     for feature,nearest_peaks in analysis.find_nearest_peaks(
             features,peaks,
             distance=max_distance,

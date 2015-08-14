@@ -286,3 +286,33 @@ class AnalysisReporter:
             raise NotImplementedError("'features_inbetween' not implemented")
         else:
             raise KeyError("Unrecognised report field: '%s'" % attr)
+
+    def make_header(self,max_hits):
+        """
+        Create a 'header' line for output
+
+        Builds a header line which can be incorporated into
+        an output file, based on the fields that are being
+        reported.
+        
+        Arguments:
+          max_hits (int): number of repeats to include for
+            '*_list' based fields.
+
+        Returns:
+          str: tab-delimited header line
+
+        """
+        if self._mode == MULTI_LINE:
+            return '\t'.join(self._fields)
+        elif self._mode == SINGLE_LINE:
+            header_fields = []
+            for f in self._fields:
+                try:
+                    subfields = f[:-1].split('(')[1].split(',')
+                    for i in range(1,max_hits+1):
+                        for s in subfields:
+                            header_fields.append("%s_%d" % (s,i))
+                except IndexError:
+                    header_fields.append(f)
+            return '\t'.join(header_fields)
