@@ -114,14 +114,12 @@ if __name__ == '__main__':
         max_closest = None
     if options.pad_output:
         raise NotImplementedError("--pad not implemented")
-    if options.xls_output:
-        raise NotImplementedError("--xls not implemented")
 
     # Reporting formats
     if options.compact:
         mode = output.SINGLE_LINE
-        peak_fields = ('chr','start','end','feature_list(feature.id)')
-        feature_fields = ('feature.id','peak_list(chr,start,end,dist_closest)')
+        peak_fields = ('chr','start','end','list(feature.id)')
+        feature_fields = ('feature.id','list(chr,start,end,dist_closest)')
     else:
         mode = output.MULTI_LINE
         peak_fields = ('chr','start','end',
@@ -225,6 +223,16 @@ if __name__ == '__main__':
     fp.close()
     print "Results written to %s" % outfile
     print
+
+    # Make XLS file
+    if options.xls_output:
+        print "**** Writing XLS file ****"
+        xls = output.XLS()
+        xls.add_result_sheet('Features',basename+"_features_per_peak.txt")
+        xls.add_result_sheet('Peaks',basename+"_peaks_per_feature.txt")
+        xls.write(basename+'.xls')
+        print "Wrote %s" % basename+'.xls'
+        print
 
     # Finished
     print "Done"

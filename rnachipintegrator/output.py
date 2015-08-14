@@ -13,6 +13,7 @@ Functions for outputing analysis results
 import distances
 from analysis_redux import distance_closest_edge
 from analysis_redux import distance_tss,distance_tes
+import Spreadsheet
 
 #######################################################################
 # Constants
@@ -67,18 +68,16 @@ class AnalysisReporter:
 
     For single-line output these additional fields are available:
 
-    - number_of_peaks
-    - peak_list(...): output all peaks
-    - number_of_features
-    - feature_list(...): output all features
+    - number_of_results
+    - list(...): output all results (peaks or features, as
+      appropriate)
 
-    For the '*_list' options, the paranthese should enclose a list
+    For the 'list' options, the paranthese should enclose a list
     of fields to output for each peak or feature in the list e.g.
-    'peak_list(chr,start,dist_closest)' or 'feature_list(feature.id)'.
+    'list(chr,start,dist_closest)' or 'list(feature.id)'.
 
     The following fields have not been implemented:
 
-    - 
     - features_inbetween
 
     """
@@ -117,9 +116,9 @@ class AnalysisReporter:
             # Report everything on a single line
             line = []
             for field in self._fields:
-                if field == 'number_of_features':
+                if field == 'number_of_results':
                     value = nresults
-                elif field.startswith('feature_list('):
+                elif field.startswith('list('):
                     # Extract the subfields
                     subfields = field[:-1].split('(')[1].split(',')
                     # Report list of features
@@ -175,9 +174,9 @@ class AnalysisReporter:
             # Report everything on a single line
             line = []
             for field in self._fields:
-                if field == 'number_of_peaks':
+                if field == 'number_of_results':
                     value = nresults
-                elif field.startswith('peak_list('):
+                elif field.startswith('list('):
                     # Extract the subfields
                     subfields = field[:-1].split('(')[1].split(',')
                     # Report peaks
@@ -316,3 +315,57 @@ class AnalysisReporter:
                 except IndexError:
                     header_fields.append(f)
             return '\t'.join(header_fields)
+
+
+class XLS:
+    """
+    Class to assemble XLS output file
+
+    Utility class to help build an XLS file from existing
+    output TSV files.
+
+    Example usage:
+
+    >>> xls = XLS()
+    >>> xls.add_result_sheet('results','results.tsv')
+    >>> xls.write('results.xls')
+
+    """
+    def __init__(self):
+        """
+        Create a new XLS instance
+
+        """
+        self._xls = Spreadsheet.Workbook()
+        self._char_limit = Spreadsheet.MAX_LEN_WORKSHEET_CELL_VALUE
+        self._line_limit = Spreadsheet.MAX_NUMBER_ROWS_PER_WORKSHEET
+
+    def add_result_sheet(self,title,tsv_file):
+        """
+        Add a sheet populated from a file
+
+        Creates a new sheet in the spreadsheet with the
+        supplied title and populates using the contents
+        of a tab-delimited file.
+
+        Arguments:
+          title (str): a title for the sheet
+          tsv_file (str): path to a tab-delimited file
+
+        """
+        ws = self._xls.addSheet(title)
+        with open(tsv_file,'r') as fp:
+            for i,line in enumerate(fp):
+                if i == self._line_limit:
+                    raise Exception("Too many rows for spreadsheet")
+                ws.addText(line.rstrip('\n'))
+
+    def write(self,xls_file):
+        """
+        Write XLS to a file
+
+        Arguments:
+          xls_file (str): name or path of output file
+
+        """
+        self._xls.save(xls_file)
