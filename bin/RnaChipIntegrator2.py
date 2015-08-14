@@ -53,7 +53,7 @@ if __name__ == '__main__':
                  type='int',default=max_distance,
                  help="Maximum distance allowed between peaks and "
                  "features before being omitted from the analysis "
-                 "(default %d bp; set to zero for no cutoff)" %
+                 "(default %dbp; set to zero for no cutoff)" %
                  max_distance)
     p.add_option('--number',action='store',dest='max_closest',
                  type='int',default=max_closest,
@@ -63,18 +63,26 @@ if __name__ == '__main__':
     p.add_option('--promoter_region',action="store",dest="promoter_region",
                  default="%d,%d" % promoter_region,
                  help="Define promoter region with respect to feature TSS "
-                 "in the form UPSTREAM,DOWNSTREAM (default -%d to %d bp of "
+                 "in the form UPSTREAM,DOWNSTREAM (default -%d to %dbp of "
                  "TSS)" %  promoter_region)
-    p.add_option('--compact',action='store_true',dest='compact',default=False,
-                 help="Output minimal information in a compact format")
+    p.add_option('--tss-only',action='store_true',dest="tss_only",
+                 default=False,
+                 help="Take distances to features from the TSS only "
+                 "(default is to take distances from TSS or TES)")
     p.add_option('--no-DE',action='store_true',
                  dest='no_differential_expression',default=False,
                  help="Ignore differential expression flags (even if "
                  "present in input)")
+    p.add_option('--name',action='store',dest='name',default=None,
+                 help="Set basename for output files")
+    p.add_option('--compact',action='store_true',dest='compact',default=False,
+                 help="Output minimal information in a compact format")
     p.add_option('--pad',action="store_true",dest="pad_output",
                  help="Where less than MAX_CLOSEST hits are found, pad "
                  "output with blanks to ensure that MAX_CLOSEST hits "
                  "are still reported")
+    p.add_option('--xls',action="store_true",dest="xls_output",
+                 help="Output XLS spreadsheet with results")
     options,args = p.parse_args()
 
     # Input files
@@ -84,6 +92,7 @@ if __name__ == '__main__':
 
     # Report version and authors
     p.print_version()
+    print
     print "Find nearest peaks to genomic features (and vice versa)"
     print
     print "University of Manchester"
@@ -105,6 +114,8 @@ if __name__ == '__main__':
         max_closest = None
     if options.pad_output:
         raise NotImplementedError("--pad not implemented")
+    if options.xls_output:
+        raise NotImplementedError("--xls not implemented")
 
     # Reporting formats
     if options.compact:
@@ -122,11 +133,20 @@ if __name__ == '__main__':
                        'in_the_gene',
                        'overlap_feature',
                        'overlap_promoter')
-        feature_fields = ('feature.id','chr','start','end','order')
+        feature_fields = ('feature.id',
+                          'feature.chr','feature.start','feature.end',
+                          'feature.strand',
+                          'peak.chr','peak.start','peak.end','order',
+                          'dist_closest','dist_TSS','dist_TES')
 
     # Report settings
     print "Input features file: %s" % feature_file
     print "Input peaks file   : %s" % peak_file
+    print
+    print "Maximum cutoff distance: %d (bp)" % max_distance
+    print "Maximum no. of hits    : %d" % max_closest
+    print "Promoter region        : -%d to %d (bp from TSS)" % \
+        promoter_region
     print
 
     # Read in feature data
@@ -166,30 +186,36 @@ if __name__ == '__main__':
         print "\tPeak data are regions"
     print
 
-    # Do the analyses
-    print "**** Nearest features to peaks (TSS only) ****"
-    reporter = output.AnalysisReporter(mode,peak_fields,
-                                       promoter_region=promoter)
-    for peak,nearest_features in analysis.find_nearest_features(
-            peaks,features,tss_only=True,
-            distance=max_distance,
-            max_closest=max_closest,
-            only_differentially_expressed=use_differential_expression):
-        for line in reporter.report_nearest_features(peak,nearest_features):
-            print line
+    # Set up output files
+    if options.name is not None:
+        basename = options.name
+    else:
+        basename = os.path.splitext(os.path.basename(feature_file))[0]
 
-    print "**** Nearest features to peaks (TSS/TES) ****"
+    # Do the analyses
+    print "**** Nearest features to peaks ****"
+    outfile = basename+"_features_per_peak.txt"
+    fp = open(outfile,'w')
+    if mode == output.MULTI_LINE:
+        fp.write('#%s\n' % '\t'.join(feature_fields))
     reporter = output.AnalysisReporter(mode,peak_fields,
                                        promoter_region=promoter)
     for peak,nearest_features in analysis.find_nearest_features(
-            peaks,features,tss_only=False,
+            peaks,features,tss_only=options.tss_only,
             distance=max_distance,
             max_closest=max_closest,
             only_differentially_expressed=use_differential_expression):
         for line in reporter.report_nearest_features(peak,nearest_features):
-            print line
+            fp.write("%s\n" % line)
+    fp.close()
+    print "Results written to %s" % outfile
+    print
 
     print "**** Nearest peaks to features ****"
+    outfile = basename+"_peaks_per_feature.txt"
+    fp = open(outfile,'w')
+    if mode == output.MULTI_LINE:
+        fp.write('#%s\n' % '\t'.join(peak_fields))
     reporter = output.AnalysisReporter(mode,feature_fields)
     for feature,nearest_peaks in analysis.find_nearest_peaks(
             features,peaks,
@@ -197,4 +223,10 @@ if __name__ == '__main__':
             max_closest=max_closest,
             only_differentially_expressed=use_differential_expression):
         for line in reporter.report_nearest_peaks(feature,nearest_peaks):
-            print line
+            fp.write("%s\n" % line)
+    fp.close()
+    print "Results written to %s" % outfile
+    print
+
+    # Finished
+    print "Done"
