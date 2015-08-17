@@ -169,8 +169,20 @@ class PeakSet:
                                                    abs(record.end - position)))
         return self
 
+    def __iter__(self):
+        return iter(self.peaks)
+
     def __getitem__(self,key):
-        return self.peaks[key]
+        try:
+            start = key.start
+            stop = key.stop
+            step = key.step
+            slice_ = PeakSet()
+            for peak in self.peaks[start:stop:step]:
+                slice_.addPeak(peak)
+            return slice_
+        except AttributeError:
+            return self.peaks[key]
 
     def __len__(self):
         return len(self.peaks)

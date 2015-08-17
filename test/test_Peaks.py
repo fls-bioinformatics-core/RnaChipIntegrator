@@ -94,6 +94,18 @@ class TestPeakSet(unittest.TestCase):
         self.assertEqual(len(peaks_chr),2,
                          "Wrong number of ChIP-seq records filtered")
 
+    def test_get_item(self):
+        peaks = PeakSet('ChIP_peaks-ex1.txt')
+        peak = peaks[2]
+        self.assertEqual(peak,Peak('chr3L','12139192','12139193'))
+
+    def test_get_slice(self):
+        peaks = PeakSet('ChIP_peaks-ex1.txt')
+        peaks_slice = peaks[1:3]
+        self.assertTrue(isinstance(peaks_slice,PeakSet))
+        self.assertEqual(len(peaks_slice),2)
+        self.assertEqual(peaks[1],peaks_slice[0])
+        self.assertEqual(peaks[2],peaks_slice[1])
 
 class TestPeak(unittest.TestCase):
 
