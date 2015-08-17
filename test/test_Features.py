@@ -247,3 +247,20 @@ class TestFeatureSet(unittest.TestCase):
 
     def test_reading_bad_file_end_lower_than_start(self):
         self.assertRaises(Exception,FeatureSet,'Transcripts-ex2a.txt')
+
+    def test_get_item(self):
+        features = FeatureSet('Transcripts-ex1.txt')
+        feature = features[2]
+        self.assertEqual(feature,Feature('CG32847-RB',
+                                         'chr3L',
+                                         '15114722',
+                                         '15115217',
+                                         '+'))
+
+    def test_get_slice(self):
+        features = FeatureSet('Transcripts-ex1.txt')
+        features_slice = features[1:3]
+        self.assertTrue(isinstance(features_slice,FeatureSet))
+        self.assertEqual(len(features_slice),2)
+        self.assertEqual(features[1],features_slice[0])
+        self.assertEqual(features[2],features_slice[1])

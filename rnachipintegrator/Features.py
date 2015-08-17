@@ -277,8 +277,20 @@ class FeatureSet:
         # All flags valid
         return True
 
+    def __iter__(self):
+        return iter(self.features)
+
     def __getitem__(self,key):
-        return self.features[key]
+        try:
+            start = key.start
+            stop = key.stop
+            step = key.step
+            slice_ = FeatureSet()
+            for feature in self.features[start:stop:step]:
+                slice_.addFeature(feature)
+            return slice_
+        except AttributeError:
+            return self.features[key]
 
     def __len__(self):
         return len(self.features)
