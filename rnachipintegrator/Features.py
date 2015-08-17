@@ -295,6 +295,22 @@ class FeatureSet:
     def __len__(self):
         return len(self.features)
 
+    def __eq__(self,other):
+        if len(self) != len(other):
+            return False
+        for f1,f2 in zip(self,other):
+            if f1 != f2:
+                return False
+        return True
+
+    def __ne__(self,other):
+        if len(self) != len(other):
+            return True
+        for f1,f2 in zip(self,other):
+            if f1 != f2:
+                return True
+        return False
+
 class Feature:
     """Class for storing an 'feature' (gene/transcript/isomer)
 
@@ -345,6 +361,13 @@ class Feature:
             (self.strand == other.strand) and \
             (self.start == other.start) and \
             (self.end == other.end)
+
+    def __ne__(self,other):
+        return \
+            (self.id != other.id) or \
+            (self.strand != other.strand) or \
+            (self.start != other.start) or \
+            (self.end != other.end)
 
     def getTSS(self):
         """Return the TSS coordinate

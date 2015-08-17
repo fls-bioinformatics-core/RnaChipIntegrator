@@ -23,11 +23,11 @@ class TestFeature(unittest.TestCase):
         self.assertEqual(self.rna_data_2.chrom,'chr3L')
 
     def test__eq__(self):
-        self.assertTrue(self.rna_data == Feature('CG9130-RB',
-                                                 'chr3L',
-                                                 '1252012',
-                                                 '1255989','+'))
-        self.assertFalse(self.rna_data == self.rna_data_2)
+        self.assertEqual(self.rna_data,Feature('CG9130-RB',
+                                               'chr3L',
+                                               '1252012',
+                                               '1255989','+'))
+        self.assertNotEqual(self.rna_data,self.rna_data_2)
 
     def test_contains_position(self):
         position = 1253000
@@ -264,3 +264,23 @@ class TestFeatureSet(unittest.TestCase):
         self.assertEqual(len(features_slice),2)
         self.assertEqual(features[1],features_slice[0])
         self.assertEqual(features[2],features_slice[1])
+
+    def test__eq__(self):
+        # Check equality of FeatureSets
+        feature_set1 = FeatureSet()
+        feature_set2 = FeatureSet()
+        # Empty feature sets
+        self.assertEqual(feature_set1,feature_set2)
+        # Populate
+        feature_set1.addFeature(Feature('CG1000','chr1','1','2','+'))
+        feature_set2.addFeature(Feature('CG1000','chr1','1','2','+'))
+        self.assertEqual(feature_set1,feature_set2)
+        # Add second
+        feature_set1.addFeature(Feature('CG2000','chr1','1','2','+'))
+        self.assertNotEqual(feature_set1,feature_set2)
+        feature_set2.addFeature(Feature('CG2000','chr1','1','2','+'))
+        self.assertEqual(feature_set1,feature_set2)
+        # Add third
+        feature_set1.addFeature(Feature('CG2001','chr2',3,4,'-'))
+        feature_set2.addFeature(Feature('CG2002','chr2',3,5,'+'))
+        self.assertNotEqual(feature_set1,feature_set2)
