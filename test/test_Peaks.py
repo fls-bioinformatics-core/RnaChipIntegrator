@@ -110,10 +110,10 @@ class TestPeakSet(unittest.TestCase):
 class TestPeak(unittest.TestCase):
 
     def test__eq__(self):
-        self.assertTrue(Peak('chr2L','66811','66812') == 
-                        Peak('chr2L','66811','66812'))
-        self.assertFalse(Peak('chr2L','66811','66812') == 
-                         Peak('chr2L','249177','605951'))
+        self.assertEqual(Peak('chr2L','66811','66812'),
+                         Peak('chr2L','66811','66812'))
+        self.assertNotEqual(Peak('chr2L','66811','66812'),
+                            Peak('chr2L','249177','605951'))
 
 class TestFeatureSetWithChIPSeqData(unittest.TestCase):
     def setUp(self):
