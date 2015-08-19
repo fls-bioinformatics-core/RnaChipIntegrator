@@ -146,7 +146,7 @@ class AnalysisReporter:
                 i += 1
                 line = []
                 for field in self._fields:
-                    if field == 'order':
+                    if field == 'order' and feature is not None:
                         value = '%d of %d' % (i,nresults)
                     else:
                         value = self.value_for(field)
@@ -205,7 +205,7 @@ class AnalysisReporter:
                 self._context_peak = peak
                 # Assemble line from fields
                 for field in self._fields:
-                    if field == 'order':
+                    if field == 'order' and peak is not None:
                         value = '%d of %d' % (i,nresults)
                     else:
                         value = self.value_for(field)
@@ -234,7 +234,7 @@ class AnalysisReporter:
         """
         try:
             return self._value_for(attr)
-        except AttributeError:
+        except (AttributeError,KeyError):
             return self._placeholder
 
     def _value_for(self,attr):
