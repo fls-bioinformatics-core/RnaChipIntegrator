@@ -222,7 +222,7 @@ if __name__ == '__main__':
                                        null_placeholder=placeholder)
     fp.write("#%s\n" % reporter.make_header(max_hits=max_closest))
     for feature,nearest_peaks in analysis.find_nearest_peaks(
-            features,peaks,
+            features,peaks,tss_only=options.tss_only,
             distance=max_distance,
             max_closest=max_closest,
             only_differentially_expressed=use_differential_expression,
