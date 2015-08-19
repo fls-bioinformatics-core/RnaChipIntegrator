@@ -187,6 +187,22 @@ class PeakSet:
     def __len__(self):
         return len(self.peaks)
 
+    def __eq__(self,other):
+        if len(self) != len(other):
+            return False
+        for p1,p2 in zip(self,other):
+            if p1 != p2:
+                return False
+        return True
+
+    def __ne__(self,other):
+        if len(self) != len(other):
+            return True
+        for p1,p2 in zip(self,other):
+            if p1 != p2:
+                return True
+        return False
+
 class Peak:
     """Class for storing a peak
 
@@ -214,6 +230,12 @@ class Peak:
             (self.chrom == other.chrom) and \
             (self.start == other.start) and \
             (self.end == other.end)
+
+    def __ne__(self,other):
+        return \
+            (self.chrom != other.chrom) or \
+            (self.start != other.start) or \
+            (self.end != other.end)
 
     def insideRegion(self,limit1,limit2,exclude_limits=False):
         """Check if the peak is contained within a defined region

@@ -107,6 +107,26 @@ class TestPeakSet(unittest.TestCase):
         self.assertEqual(peaks[1],peaks_slice[0])
         self.assertEqual(peaks[2],peaks_slice[1])
 
+    def test__eq__(self):
+        # Test equality of PeakSets
+        peak_set1 = PeakSet()
+        peak_set2 = PeakSet()
+        # Empty feature sets
+        self.assertEqual(peak_set1,peak_set2)
+        # Populate
+        peak_set1.addPeak(Peak('chr2L','66811','66812'))
+        peak_set2.addPeak(Peak('chr2L','66811','66812'))
+        self.assertEqual(peak_set1,peak_set2)
+        # Add second
+        peak_set1.addPeak(Peak('chr2L','249177','605951'))
+        self.assertNotEqual(peak_set1,peak_set2)
+        peak_set2.addPeak(Peak('chr2L','249177','605951'))
+        self.assertEqual(peak_set1,peak_set2)
+        # Add third
+        peak_set1.addPeak(Peak('chr2L','605650','605850'))
+        peak_set2.addPeak(Peak('chr2L','605850','606050'))
+        self.assertNotEqual(peak_set1,peak_set2)
+
 class TestPeak(unittest.TestCase):
 
     def test__eq__(self):
