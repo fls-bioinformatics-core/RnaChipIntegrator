@@ -11,6 +11,7 @@ Functions for outputing analysis results
 
 """
 import distances
+from Peaks import Peak
 from analysis_redux import distance_closest_edge
 from analysis_redux import distance_tss,distance_tes
 import Spreadsheet
@@ -101,21 +102,36 @@ class AnalysisReporter:
         self._context_peak = None
         self._context_feature = None
 
-    def report_nearest_features(self,peak,features):
+    def report_nearest(self,reference,results):
         """
-        Return details of nearest features for a peak
+        Return details of nearest objects to a reference
+
+        This is a generic reporting method which can handle
+        either nearest features to a reference peak (in which
+        case ``reference`` should be a Peak and ``results``
+        the corresponding FeatureSet), or nearest peaks to a
+        reference Feature (when ``reference`` is a Feature and
+        ``results`` is a PeakSet).
         
         Arguments:
-          peak (Peak): peak of interest
-          features (FeatureSet): list of nearest features
+          reference (Object): reference object (i.e.
+            Peak or Feature of interest)
+          results (Object): list of corresponding results
+            i.e. FeatureSet (for reference Peak) or
+            PeakSet (reference Feature)
 
         Yields:
           string: line(s) of text reporting the results
 
         """
         # Initialise and set the context
-        self._context_peak = peak
-        nresults = len(features)
+        if isinstance(reference,Peak):
+            self._context_peak = reference
+            is_features = True
+        else:
+            self._context_feature = reference
+            is_features = False
+        nresults = len(results)
         if self._mode == SINGLE_LINE:
             # Report everything on a single line
             line = []
@@ -127,8 +143,11 @@ class AnalysisReporter:
                     subfields = field[:-1].split('(')[1].split(',')
                     # Report list of features
                     value = []
-                    for feature in features:
-                        self._context_feature = feature
+                    for result in results:
+                        if is_features:
+                            self._context_feature = result
+                        else:
+                             self._context_peak = result
                         for subfield in subfields:
                             value.append(self.value_for(subfield))
                     value = '\t'.join([str(x) for x in value])
@@ -141,12 +160,15 @@ class AnalysisReporter:
         elif self._mode == MULTI_LINE:
             # Report each result pair on a new line
             i = 0
-            for feature in features:
-                self._context_feature = feature
+            for result in results:
+                if is_features:
+                    self._context_feature = result
+                else:
+                    self._context_peak = result
                 i += 1
                 line = []
                 for field in self._fields:
-                    if field == 'order' and feature is not None:
+                    if field == 'order' and result is not None:
                         value = '%d of %d' % (i,nresults)
                     else:
                         value = self.value_for(field)
@@ -157,64 +179,39 @@ class AnalysisReporter:
         self._context_peak = None
         self._context_feature = None
 
+    def report_nearest_features(self,peak,features):
+        """
+        Return details of nearest features for a peak
+
+        This is a wrapper for ``report_nearest``.
+
+        Arguments:
+          peak (Peak): peak of interest
+          features (FeatureSet): list of nearest features
+
+        Yields:
+          string: line(s) of text reporting the results
+
+        """
+        for line in self.report_nearest(peak,features):
+            yield line
+
     def report_nearest_peaks(self,feature,peaks):
         """
         Return details of nearest peaks for a feature
+
+        This is a wrapper for ``report_nearest``.
         
         Arguments:
           feature (Feature): feature of interest
           peaks (PeakSet): list of nearest peaks
-          mode (int): either SINGLE_LINE or MULTI_LINE
-          fields (list): list of fields to output
 
         Returns:
           string: block of text reporting the results
 
         """
-        # Initialise and set the context
-        self._context_feature = feature
-        nresults = len(peaks)
-        if self._mode == SINGLE_LINE:
-            # Report everything on a single line
-            line = []
-            for field in self._fields:
-                if field == 'number_of_results':
-                    value = nresults
-                elif field.startswith('list('):
-                    # Extract the subfields
-                    subfields = field[:-1].split('(')[1].split(',')
-                    # Report peaks
-                    value = []
-                    for peak in peaks:
-                        self._context_peak = peak
-                        for subfield in subfields:
-                            value.append(self.value_for(subfield))
-                    value = '\t'.join([str(x) for x in value])
-                else:
-                    # All other fields
-                    value = self.value_for(field)
-                line.append(str(value))
-            # Return (yield) the line
-            yield '\t'.join(line)
-        elif self._mode == MULTI_LINE:
-            # Report each result pair on a new line
-            i = 0
-            for peak in peaks:
-                line = []
-                i += 1
-                self._context_peak = peak
-                # Assemble line from fields
-                for field in self._fields:
-                    if field == 'order' and peak is not None:
-                        value = '%d of %d' % (i,nresults)
-                    else:
-                        value = self.value_for(field)
-                    line.append(str(value))
-                # Return (yield) the line
-                yield '\t'.join(line)
-        # Reset the context
-        self._context_peak = None
-        self._context_feature = None
+        for line in self.report_nearest(feature,peaks):
+            yield line
 
     def value_for(self,attr):
         """
