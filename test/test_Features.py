@@ -122,6 +122,22 @@ class TestFeatureSet(unittest.TestCase):
         delete_test_file('Transcripts-ex1.txt')
         delete_test_file('Transcripts-ex2.txt')
 
+    def test_populate_from_list_of_features(self):
+        features = FeatureSet(
+            features_list=(
+                Feature('CG31973','chr2L',25402,59243,'-'),
+                Feature('CG2674-RC','chr2L',107926,114433,'+'),
+                Feature('CG2674-RE','chr2L',106903,114433,'+'),
+                Feature('CG2674-RA','chr2L',107760,114433,'+')))
+        self.assertEqual(features[0],
+                         Feature('CG31973','chr2L',25402,59243,'-'))
+        self.assertEqual(features[1],
+                         Feature('CG2674-RC','chr2L',107926,114433,'+'))
+        self.assertEqual(features[2],
+                         Feature('CG2674-RE','chr2L',106903,114433,'+'))
+        self.assertEqual(features[3],
+                         Feature('CG2674-RA','chr2L',107760,114433,'+'))
+
     def test_reading_in_RNAseq_data(self):
         rna_seq = FeatureSet('Transcripts-ex1.txt')
         self.assertEqual(len(rna_seq),10,

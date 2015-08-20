@@ -28,6 +28,16 @@ class TestPeakSet(unittest.TestCase):
         self.assertEqual(len(peaks),5,
                          "Wrong number of lines read from ChIP-seq file")
 
+    def test_populate_from_list_of_peaks(self):
+        peaks = PeakSet(
+            peaks_list=(
+                Peak('chr2L',66711,66911),
+                Peak('chr2L',605850,606050),
+                Peak('chr3L',2258089,2258289)))
+        self.assertEqual(peaks[0],Peak('chr2L',66711,66911))
+        self.assertEqual(peaks[1],Peak('chr2L',605850,606050))
+        self.assertEqual(peaks[2],Peak('chr3L',2258089,2258289))
+
     def test_is_summit_data(self):
         peaks = PeakSet('ChIP_peaks-ex1.txt')
         self.assertTrue(peaks.isSummit(),"ChIP data are summits")

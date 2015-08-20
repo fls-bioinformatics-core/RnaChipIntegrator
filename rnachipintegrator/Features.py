@@ -25,7 +25,7 @@ class FeatureSet:
     filtering, and sorting the features based on various criteria.
 
     """
-    def __init__(self,features_file=None):
+    def __init__(self,features_file=None,features_list=None):
         """Create a new FeatureSet instance
 
         Raises an exception if there are errors in the input file data
@@ -33,12 +33,18 @@ class FeatureSet:
         occurring before start positions, or illegal strand values).
         
         Arguments:
-          features_file: (optional) the name of an input file to read
-            the RNA-seq features from.
+          features_file (str): (optional) the name of an input
+            file to read the feature data from
+          features_list (list): (optional) list of Feature objects
+            to populate the FeatureSet with
+
         """
         self.features = []
         if features_file:
             self.loadFeaturesFromFile(features_file)
+        elif features_list:
+            for feature in features_list:
+                self.addFeature(feature)
 
     def loadFeaturesFromFile(self,features_file):
         """Read features from a file and populate the object

@@ -24,17 +24,22 @@ class PeakSet:
     based on various criteria.
 
     """
-    def __init__(self,peaks_file=None):
+    def __init__(self,peaks_file=None,peaks_list=None):
         """Create a new PeakSet instance
         
         Arguments:
-          peaks_file: (optional) the name of an input file to read
-            the peak data from.
+          peaks_file (str): (optional) the name of an input file
+            to read the peak data from
+          peaks_list (list): (optional) list of Peak objects to
+            populate the PeakSet with
 
         """
         self.peaks = []
         if peaks_file:
             self.loadPeaksFromFile(peaks_file)
+        elif peaks_list:
+            for peak in peaks_list:
+                self.addPeak(peak)
 
     def loadPeaksFromFile(self,peaks_file):
         """Read peaks data from a file and populate the object
