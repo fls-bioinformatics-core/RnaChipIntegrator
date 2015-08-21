@@ -14,7 +14,6 @@ import distances
 from Peaks import Peak
 from analysis_redux import distance_closest_edge
 from analysis_redux import distance_tss,distance_tes
-import Spreadsheet
 
 #######################################################################
 # Constants
