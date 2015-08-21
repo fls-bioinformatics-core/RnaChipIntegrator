@@ -74,10 +74,10 @@ if __name__ == '__main__':
                  default=False,
                  help="Take distances to features from the TSS only "
                  "(default is to take distances from TSS or TES)")
-    p.add_option('--no-DE',action='store_true',
-                 dest='no_differential_expression',default=False,
-                 help="Ignore differential expression flags (even if "
-                 "present in input)")
+    p.add_option('--only-DE',action='store_true',
+                 dest='only_diff_expressed',default=False,
+                 help="Only use features flagged as differentially expressed "
+                 "in analyses (input feature data must include DE flags)")
     p.add_option('--name',action='store',dest='name',default=None,
                  help="Set basename for output files")
     p.add_option('--compact',action='store_true',dest='compact',default=False,
@@ -172,16 +172,19 @@ if __name__ == '__main__':
     print "%d feature records read in" % len(features)
 
     # Differential expression handling
-    use_differential_expression = False
+    use_differentially_expressed = False
     if features.isFlagged():
         print "\tFeature data include differential expression flag"
         print "\t%d features flagged as differentially expressed" % \
             len(features.filterByFlag(1))
-        if not options.no_differential_expression:
+        if options.only_diff_expressed:
             print
-            print "*** Only differentially expressed features will used"
-            print "*** Rerun with --no-DE to analyse all features "
-            use_differential_expression = True
+            print "*** Only differentially expressed features will used ***"
+            use_differentially_expressed = True
+    elif options.only_diff_expressed:
+        logging.error("--only-DE flag needs input features flagged as "
+                      "differentially expressed")
+        sys.exit(1)
     print
 
     # Read in peak data
@@ -218,7 +221,7 @@ if __name__ == '__main__':
                                            summary=summary)
     for peak,nearest_features in analysis.find_nearest_features(
             peaks,features,tss_only=options.tss_only,distance=max_distance,
-            only_differentially_expressed=use_differential_expression):
+            only_differentially_expressed=use_differentially_expressed):
         reporter.write_nearest_features(peak,nearest_features)
     reporter.close()
     print "Results written to %s" % outfile
@@ -240,7 +243,7 @@ if __name__ == '__main__':
                                            summary=summary)
     for feature,nearest_peaks in analysis.find_nearest_peaks(
             features,peaks,tss_only=options.tss_only,distance=max_distance,
-            only_differentially_expressed=use_differential_expression):
+            only_differentially_expressed=use_differentially_expressed):
         reporter.write_nearest_peaks(feature,nearest_peaks)
     reporter.close()
     print "Results written to %s" % outfile
