@@ -70,10 +70,12 @@ if __name__ == '__main__':
                  help="Define promoter region with respect to feature TSS "
                  "in the form UPSTREAM,DOWNSTREAM (default -%d to %dbp of "
                  "TSS)" %  promoter_region)
-    p.add_option('--tss-only',action='store_true',dest="tss_only",
-                 default=False,
-                 help="Take distances to features from the TSS only "
-                 "(default is to take distances from TSS or TES)")
+    p.add_option('--edge',action='store',dest="edge",type="choice",
+                 choices=('tss','both'),default='tss',
+                 help="Feature edges to consider when calculating distances "
+                 "between features and peaks, either: 'tss' (default: only "
+                 "use TSS) or 'both' (use whichever of TSS or TES gives "
+                 "shortest distance)")
     p.add_option('--only-DE',action='store_true',
                  dest='only_diff_expressed',default=False,
                  help="Only use features flagged as differentially expressed "
@@ -121,6 +123,12 @@ if __name__ == '__main__':
     if max_closest <= 0:
         max_closest = None
 
+    # Feature edge to use
+    if options.edge == 'tss':
+        tss_only = True
+    else:
+        tss_only = False
+
     # Reporting formats
     if options.compact:
         mode = output.SINGLE_LINE
@@ -157,6 +165,11 @@ if __name__ == '__main__':
     print "Maximum no. of hits    : %d" % max_closest
     print "Promoter region        : -%d to %d (bp from TSS)" % \
         promoter_region
+    print
+    if tss_only:
+        print "Distances will be calculated from feature TSS only"
+    else:
+        print "Distances will be calculated from nearest of feature TSS or TES"
     print
 
     # Read in feature data
@@ -220,7 +233,7 @@ if __name__ == '__main__':
                                            outfile=outfile,
                                            summary=summary)
     for peak,nearest_features in analysis.find_nearest_features(
-            peaks,features,tss_only=options.tss_only,distance=max_distance,
+            peaks,features,tss_only=tss_only,distance=max_distance,
             only_differentially_expressed=use_differentially_expressed):
         reporter.write_nearest_features(peak,nearest_features)
     reporter.close()
@@ -242,7 +255,7 @@ if __name__ == '__main__':
                                            outfile=outfile,
                                            summary=summary)
     for feature,nearest_peaks in analysis.find_nearest_peaks(
-            features,peaks,tss_only=options.tss_only,distance=max_distance,
+            features,peaks,tss_only=tss_only,distance=max_distance,
             only_differentially_expressed=use_differentially_expressed):
         reporter.write_nearest_peaks(feature,nearest_peaks)
     reporter.close()
