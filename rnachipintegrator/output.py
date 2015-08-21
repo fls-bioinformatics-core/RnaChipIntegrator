@@ -83,22 +83,29 @@ class AnalysisReporter:
 
     """
     def __init__(self,mode,fields,promoter_region=None,
+                 max_hits=None,pad=False,
                  null_placeholder='.'):
         """
         Create new AnalysisReporter instance
 
         Arguments:
-          promoter_region (tuple): promoter region extent (optional)
           mode (int): either SINGLE_LINE or MULTI_LINE
           fields (list): list of fields to output
+          promoter_region (tuple): promoter region extent (optional)
+          max_hits (int): optional maximum number of hits to
+            report for each set of results
           null_placeholder (str): placeholder to use in output for
             fields which evaluate to 'null'
+          pad (bool): add extra 'None' items to output hits to
+            pad out to max_closest results
 
         """
         self._fields = fields
         self._mode = mode
         self._promoter_region = promoter_region
         self._placeholder = null_placeholder
+        self._max_hits = max_hits
+        self._pad = pad
         self._context_peak = None
         self._context_feature = None
 
@@ -131,7 +138,20 @@ class AnalysisReporter:
         else:
             self._context_feature = reference
             is_features = False
+        # Reduce to maximum number of hits
+        if self._max_hits is not None:
+            results = results[:self._max_hits]
+        else:
+            results = results[:]
         nresults = len(results)
+        # Pad with null results
+        if self._pad:
+            while len(results) < self._max_hits:
+                if is_features:
+                    results.addFeature(None)
+                else:
+                    results.addPeak(None)
+        # Write the results
         if self._mode == SINGLE_LINE:
             # Report everything on a single line
             line = []
@@ -313,17 +333,13 @@ class AnalysisReporter:
         else:
             raise KeyError("Unrecognised report field: '%s'" % attr)
 
-    def make_header(self,max_hits):
+    def make_header(self):
         """
         Create a 'header' line for output
 
         Builds a header line which can be incorporated into
         an output file, based on the fields that are being
         reported.
-        
-        Arguments:
-          max_hits (int): number of repeats to include for
-            '*_list' based fields.
 
         Returns:
           str: tab-delimited header line
@@ -335,14 +351,108 @@ class AnalysisReporter:
             header_fields = []
             for f in self._fields:
                 try:
+                    # Handle fields in a list(...)
                     subfields = f[:-1].split('(')[1].split(',')
-                    for i in range(1,max_hits+1):
+                    if self._max_hits is None:
+                        continue
+                    for i in range(1,self._max_hits+1):
                         for s in subfields:
                             header_fields.append("%s_%d" % (s,i))
                 except IndexError:
+                    # Not a list
                     header_fields.append(f)
             return '\t'.join(header_fields)
 
+class AnalysisReportWriter(AnalysisReporter):
+    """
+    Write analysis results to file
+
+    Wrapper for AnalysisReporter that writes the results to
+    a file; optionally it can also write 'summary' files
+    (only top result is reported).
+
+    """
+    def __init__(self,mode,fields,promoter_region=None,
+                 null_placeholder='.',max_hits=None,pad=None,
+                 outfile=None,summary=None):
+        """
+        Create new AnalysisReportWriter instance
+
+        Arguments:
+          mode (int): either SINGLE_LINE or MULTI_LINE
+          fields (list): list of fields to output
+          promoter_region (tuple): promoter region extent (optional)
+          null_placeholder (str): placeholder to use in output for
+            fields which evaluate to 'null'
+          max_hits (int): optional maximum number of hits to
+            report for each set of results
+          pad (bool): add extra 'None' items to output hits to
+            pad out to max_closest results
+          outfile (str): name of output file to write results to
+          summary (str): optional, name of file to write summary
+            results to
+
+        """
+        AnalysisReporter.__init__(self,mode,fields,
+                                  promoter_region=promoter_region,
+                                  null_placeholder=null_placeholder,
+                                  pad=pad,max_hits=max_hits)
+        if outfile is not None:
+            # Open output file and write header
+            self._fp = open(outfile,'w')
+            self._fp.write("#%s\n" % self.make_header())
+        else:
+            self._fp = None
+        if summary is not None:
+            # Open summary file and write header
+            self._summary = open(summary,'w')
+            self._summary.write("#%s\n" % self.make_header())
+        else:
+            self._summary = None
+
+    def write_nearest_features(self,peak,features):
+        """
+        Write a set of features to the output file(s)
+
+        Arguments:
+          peak (Peak): peak of interest
+          features (FeatureSet): list of nearest features
+
+        """
+        lines = list(self.report_nearest_features(peak,features))
+        if self._fp is not None:
+            self._fp.write("%s\n" % '\n'.join(lines))
+        if self._summary is not None:
+            self._summary.write("%s\n" % lines[0])
+
+    def write_nearest_peaks(self,feature,peaks):
+        """
+        Write a set of peaks to the output file(s)
+
+        Arguments:
+          feature (Feature): feature of interest
+          peaks (PeakSet): list of nearest peaks
+
+        """
+        lines = list(self.report_nearest_peaks(feature,peaks))
+        if self._fp is not None:
+            self._fp.write("%s\n" % '\n'.join(lines))
+        if self._summary is not None:
+            self._summary.write("%s\n" % lines[0])
+
+    def close(self):
+        """
+        Close the files associated with the writer
+
+        """
+        try:
+            self._fp.close()
+        except AttributeError:
+            pass
+        try:
+            self._summary.close()
+        except AttributeError:
+            pass
 
 class XLS:
     """

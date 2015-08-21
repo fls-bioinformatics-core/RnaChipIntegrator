@@ -26,10 +26,8 @@ from Peaks import PeakSet
 #   distances from an arbitrary zero, and then calculating distances
 #   between things with reference to that?
 
-def find_nearest_features(peaks,features,distance=None,
-                          max_closest=None,tss_only=False,
-                          only_differentially_expressed=False,
-                          pad=False):
+def find_nearest_features(peaks,features,distance=None,tss_only=False,
+                          only_differentially_expressed=False):
     """
     Locate nearest features for each peak
 
@@ -77,23 +75,14 @@ def find_nearest_features(peaks,features,distance=None,
                         break
                 closest.addFeature(feature)
             feature_list = closest
-        # Reduce to maximum number of features
-        if max_closest is not None:
-            feature_list = feature_list[:max_closest]
-        # Pad with null results
-        if pad:
-            while len(feature_list) < max_closest:
-                feature_list.addFeature(None)
-        elif not feature_list:
-            # Return at least one (null) result
+        # Return at least one (null) result
+        if not feature_list:
             feature_list.addFeature(None)
         # Return result
         yield (peak,feature_list)
 
-def find_nearest_peaks(features,peaks,distance=None,
-                       max_closest=None,tss_only=False,
-                       only_differentially_expressed=False,
-                       pad=False):
+def find_nearest_peaks(features,peaks,distance=None,tss_only=False,
+                       only_differentially_expressed=False):
     """
     Locate nearest peaks for each feature
 
@@ -101,15 +90,11 @@ def find_nearest_peaks(features,peaks,distance=None,
       features (FeatureList): list of features
       peaks (PeakList): list of peaks
       distance (int): optional cut-off distance to apply
-      max_closest (int): optional maximum number of peaks
-        to find per feature
       tss_only (bool): only consider distances from the
         feature TSS (default is to consider distances from
         both the TSS and TES)
       only_differentially_expressed (bool): only consider
         features that are flagged as differentially expressed
-      pad (bool): add extra 'None' items to output
-        FeatureSet so that it contains max_closest results
 
     Yields:
       tuple: Feature object and a PeakSet object with the
@@ -139,15 +124,8 @@ def find_nearest_peaks(features,peaks,distance=None,
                     break
                 closest.addPeak(peak)
             peak_list = closest
-        # Reduce to maximum number of peaks
-        if max_closest is not None:
-            peak_list = peak_list[:max_closest]
-        # Pad with null results
-        if pad:
-            while len(peak_list) < max_closest:
-                peak_list.addPeak(None)
-        elif not peak_list:
-            # Return at least one (null) result
+        # Return at least one (null) result
+        if not peak_list:
             peak_list.addPeak(None)
         # Return results
         yield (feature,peak_list)
