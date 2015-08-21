@@ -144,12 +144,8 @@ if __name__ == '__main__':
     else:
         mode = output.MULTI_LINE
         peak_fields = ('chr','start','end',
-                       'feature.id',
-                       'order','TSS','TES',
-                       'dist_closest',
-                       'dist_TSS','dist_TES',
-                       'strand',
-                       'in_the_gene',
+                       'feature.id','strand','TSS','TES',
+                       'dist_closest','dist_TSS','dist_TES',
                        'overlap_feature',
                        'overlap_promoter')
         feature_fields = ('feature.id',
