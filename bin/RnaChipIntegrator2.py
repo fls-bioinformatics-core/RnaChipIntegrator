@@ -82,6 +82,9 @@ if __name__ == '__main__':
                  help="Set basename for output files")
     p.add_option('--compact',action='store_true',dest='compact',default=False,
                  help="Output minimal information in a compact format")
+    p.add_option('--summary',action='store_true',dest='summary',default=False,
+                 help="Output 'summary' for each analysis, consisting of "
+                 "only the top hit for each peak or feature")
     p.add_option('--pad',action="store_true",dest="pad_output",
                  help="Where less than MAX_CLOSEST hits are found, pad "
                  "output with blanks to ensure that MAX_CLOSEST hits "
@@ -124,6 +127,10 @@ if __name__ == '__main__':
         peak_fields = ('chr','start','end','list(feature.id)')
         feature_fields = ('feature.id','list(chr,start,end,dist_closest)')
         placeholder = '.'
+        if options.summary:
+            options.summary = False
+            print "*** --summary not compatible with --compact, ignored ***"
+            print
     else:
         mode = output.MULTI_LINE
         peak_fields = ('chr','start','end',
@@ -198,33 +205,47 @@ if __name__ == '__main__':
     # Do the analyses
     print "**** Nearest features to peaks ****"
     outfile = basename+"_features_per_peak.txt"
+    if options.summary:
+        summary = basename+"_features_per_peak_summary.txt"
+    else:
+        summary = None
     reporter = output.AnalysisReportWriter(mode,peak_fields,
                                            promoter_region=promoter,
                                            null_placeholder=placeholder,
                                            max_hits=max_closest,
                                            pad=options.pad_output,
-                                           outfile=outfile)
+                                           outfile=outfile,
+                                           summary=summary)
     for peak,nearest_features in analysis.find_nearest_features(
             peaks,features,tss_only=options.tss_only,distance=max_distance,
             only_differentially_expressed=use_differential_expression):
         reporter.write_nearest_features(peak,nearest_features)
     reporter.close()
     print "Results written to %s" % outfile
+    if summary:
+        print "Summary written to %s" % summary
     print
 
     print "**** Nearest peaks to features ****"
     outfile = basename+"_peaks_per_feature.txt"
+    if options.summary:
+        summary = basename+"_peaks_per_feature_summary.txt"
+    else:
+        summary = None
     reporter = output.AnalysisReportWriter(mode,feature_fields,
                                            null_placeholder=placeholder,
                                            max_hits=max_closest,
                                            pad=options.pad_output,
-                                           outfile=outfile)
+                                           outfile=outfile,
+                                           summary=summary)
     for feature,nearest_peaks in analysis.find_nearest_peaks(
             features,peaks,tss_only=options.tss_only,distance=max_distance,
             only_differentially_expressed=use_differential_expression):
         reporter.write_nearest_peaks(feature,nearest_peaks)
     reporter.close()
     print "Results written to %s" % outfile
+    if summary:
+        print "Summary written to %s" % summary
     print
 
     # Make XLS file
@@ -232,7 +253,13 @@ if __name__ == '__main__':
         print "**** Writing XLS file ****"
         xls = output.XLS()
         xls.add_result_sheet('Features',basename+"_features_per_peak.txt")
+        if options.summary:
+            xls.add_result_sheet('Features (summary)',
+                                 basename+"_features_per_peak_summary.txt")
         xls.add_result_sheet('Peaks',basename+"_peaks_per_feature.txt")
+        if options.summary:
+            xls.add_result_sheet('Peaks (summary)',
+                                 basename+"_peaks_per_feature_summary.txt")
         xls.write(basename+'.xls')
         print "Wrote %s" % basename+'.xls'
         print
