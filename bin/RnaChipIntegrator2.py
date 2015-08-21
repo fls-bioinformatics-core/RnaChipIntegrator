@@ -33,6 +33,7 @@ from rnachipintegrator.Features import FeatureSet
 from rnachipintegrator.Peaks import PeakSet
 import rnachipintegrator.analysis_redux as analysis
 import rnachipintegrator.output as output
+import rnachipintegrator.xls_output as xls_output
 import logging
 logging.getLogger().setLevel(logging.WARNING)
 logging.basicConfig(format='%(levelname)s: %(message)s')
@@ -86,7 +87,8 @@ if __name__ == '__main__':
                  help="Output minimal information in a compact format")
     p.add_option('--summary',action='store_true',dest='summary',default=False,
                  help="Output 'summary' for each analysis, consisting of "
-                 "only the top hit for each peak or feature")
+                 "only the top hit for each peak or feature (cannot be used "
+                 "with --compact)")
     p.add_option('--pad',action="store_true",dest="pad_output",
                  help="Where less than MAX_CLOSEST hits are found, pad "
                  "output with blanks to ensure that MAX_CLOSEST hits "
@@ -137,8 +139,8 @@ if __name__ == '__main__':
         placeholder = '.'
         if options.summary:
             options.summary = False
-            print "*** --summary not compatible with --compact, ignored ***"
-            print
+            logging.error("--summary option not compatible with --compact")
+            sys.exit(1)
     else:
         mode = output.MULTI_LINE
         peak_fields = ('chr','start','end',
@@ -267,7 +269,7 @@ if __name__ == '__main__':
     # Make XLS file
     if options.xls_output:
         print "**** Writing XLS file ****"
-        xls = output.XLS()
+        xls = xls_output.XLS()
         xls.add_result_sheet('Features',basename+"_features_per_peak.txt")
         if options.summary:
             xls.add_result_sheet('Features (summary)',
