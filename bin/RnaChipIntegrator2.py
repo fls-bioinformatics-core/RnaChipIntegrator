@@ -265,12 +265,31 @@ if __name__ == '__main__':
     # Make XLS file
     if options.xls_output:
         print "**** Writing XLS file ****"
-        xls = xls_output.XLS()
+        xls = xls_output.XLS(p.get_version())
+        # Write the settings
+        xls.append_to_notes("Input features file\t%s" % feature_file)
+        xls.append_to_notes("Input peaks file\t%s" % peak_file)
+        xls.append_to_notes("Maximum cutoff distance (bp)\t%d" % max_distance)
+        xls.append_to_notes("Maximum no. of hits to report\t%d" % max_closest)
+        xls.append_to_notes("Promoter region (bp from TSS)\t-%d to %d" %
+                            promoter_region)
+        if tss_only:
+            xls.append_to_notes("Distances calculated from\tTSS only")
+        else:
+            xls.append_to_notes("Distances calculated from\tTSS or TES")
+        if use_differentially_expressed:
+            xls.append_to_notes("Only use differentially expressed features\t"
+                                "Yes")
+        else:
+            xls.append_to_notes("Only use differentially expressed features\t"
+                                "No")
+        # Add features to peaks
         xls.add_result_sheet('Features',basename+"_features_per_peak.txt")
         if options.summary:
             xls.add_result_sheet('Features (summary)',
                                  basename+"_features_per_peak_summary.txt")
         xls.add_result_sheet('Peaks',basename+"_peaks_per_feature.txt")
+        # Add peaks to features
         if options.summary:
             xls.add_result_sheet('Peaks (summary)',
                                  basename+"_peaks_per_feature_summary.txt")

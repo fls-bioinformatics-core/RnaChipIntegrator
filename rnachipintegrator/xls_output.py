@@ -10,7 +10,9 @@ xls_output.py
 Functions for outputting analysis results
 
 """
+import datetime
 import Spreadsheet
+import xls_notes
 
 class XLS:
     """
@@ -26,14 +28,32 @@ class XLS:
     >>> xls.write('results.xls')
 
     """
-    def __init__(self):
+    def __init__(self,program_version):
         """
         Create a new XLS instance
+
+        Arguments:
+          program_version (str): name and version of the program
+            that is writing the spreadsheet
 
         """
         self._xls = Spreadsheet.Workbook()
         self._char_limit = Spreadsheet.MAX_LEN_WORKSHEET_CELL_VALUE
         self._line_limit = Spreadsheet.MAX_NUMBER_ROWS_PER_WORKSHEET
+        self._notes = self._xls.addSheet("Notes")
+        self._notes.addText(xls_notes.preamble % (program_version,
+                                                  datetime.date.today()))
+
+    def append_to_notes(self,text):
+        """
+        Append arbitrary text to the 'notes' page
+
+        Arguments:
+          text (str): text that will be added to the
+            end of the notes.
+
+        """
+        self._notes.addText(text)
 
     def add_result_sheet(self,title,tsv_file):
         """

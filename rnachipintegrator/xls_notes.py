@@ -3,16 +3,31 @@
 #######################################################################
 
 preamble = \
-"""<style font=bold bgcolor=gray25>%s: integrated analyses of RNA-Seq and ChIP-Seq data</style>
+"""<style font=bold bgcolor=gray25>%s</style>
 
-The following analyses have been performed and are reported in this spreadsheet.
-"""
+Find nearest peaks to genomic features (and vice versa)
+
+Bioinformatics Core Facility, Faculty of Life Sciences, University of Manchester
+http://fls-bioinformatics-core.github.com/RnaChipIntegrator/
+Run on %s
+
+The following analyses have been performed and are reported in this spreadsheet:
+
+Features: nearest features for each peak
+Peaks: nearest peaks for each feature
+
+<style font=bold bgcolor=gray25>Settings</style>"""
 
 credits = \
 """<style font=bold bgcolor=gray25>Credits</style>
 Produced by %s on %s
 Bioinformatics Core Facility, Faculty of Life Sciences, University of Manchester 
 http://fls-bioinformatics-core.github.com/RnaChipIntegrator/
+"""
+
+features_to_peaks = \
+"""<style font=bold bgcolor=gray25>TSS to Summits</style>
+
 """
 
 nearest_TSS_to_summits = \
