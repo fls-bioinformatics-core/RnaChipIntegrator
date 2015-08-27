@@ -7,12 +7,29 @@
 """
 xls_output.py
 
-Functions for outputting analysis results
+Functions for outputting analysis results to XLS spreadsheet
 
 """
 import datetime
 import Spreadsheet
-import xls_notes
+import output
+
+NOTES = dict()
+NOTES['preamble'] = """<style font=bold bgcolor=gray25>%s</style>
+
+Find nearest peaks to genomic features (and vice versa)
+
+Bioinformatics Core Facility, Faculty of Life Sciences, University of Manchester
+http://fls-bioinformatics-core.github.com/RnaChipIntegrator/
+Run on %s
+
+<style font=bold bgcolor=gray25>Settings</style>"""
+NOTES['features_to_peaks'] = """
+<style font=bold bgcolor=gray25>'Features': nearest features to each peak</style>
+Column\tDescription"""
+NOTES['peaks_to_features'] = """
+<style font=bold bgcolor=gray25>'Peaks': nearest peaks to each feature</style>
+Column\tDescription"""
 
 class XLS:
     """
@@ -41,8 +58,8 @@ class XLS:
         self._char_limit = Spreadsheet.MAX_LEN_WORKSHEET_CELL_VALUE
         self._line_limit = Spreadsheet.MAX_NUMBER_ROWS_PER_WORKSHEET
         self._notes = self._xls.addSheet("Notes")
-        self._notes.addText(xls_notes.preamble % (program_version,
-                                                  datetime.date.today()))
+        self._notes.addText(NOTES['preamble'] % (program_version,
+                                                 datetime.date.today()))
 
     def append_to_notes(self,text):
         """
@@ -54,6 +71,43 @@ class XLS:
 
         """
         self._notes.addText(text)
+
+    def write_features_to_peaks(self,fields):
+        """
+        Write details of the 'Features' results to XLS notes
+
+        Arguments:
+          fields (list): list of fields in the output
+
+        """
+        self.append_to_notes(NOTES['features_to_peaks'])
+        self.append_to_notes(self._field_descriptions(fields))
+
+    def write_peaks_to_features(self,fields):
+        """
+        Write details of the 'Peaks' results to XLS notes
+
+        Arguments:
+          fields (list): list of fields in the output
+
+        """
+        self.append_to_notes(NOTES['peaks_to_features'])
+        self.append_to_notes(self._field_descriptions(fields))
+
+    def _field_descriptions(self,fields):
+        """
+        Generate field (column) descriptions for XLS notes
+
+        Arguments:
+          fields (list): list of fields to describe
+
+        Returns:
+          string: text with one field name/description pair
+            (separated by a tab) per line
+
+        """
+        return '\n'.join(['\t'.join(x) for x in
+                          output.describe_fields(fields)])
 
     def add_result_sheet(self,title,tsv_file):
         """

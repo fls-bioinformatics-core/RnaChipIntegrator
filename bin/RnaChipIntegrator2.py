@@ -284,12 +284,14 @@ if __name__ == '__main__':
             xls.append_to_notes("Only use differentially expressed features\t"
                                 "No")
         # Add features to peaks
+        xls.write_features_to_peaks(peak_fields)
         xls.add_result_sheet('Features',basename+"_features_per_peak.txt")
         if options.summary:
             xls.add_result_sheet('Features (summary)',
                                  basename+"_features_per_peak_summary.txt")
-        xls.add_result_sheet('Peaks',basename+"_peaks_per_feature.txt")
         # Add peaks to features
+        xls.write_peaks_to_features(feature_fields)
+        xls.add_result_sheet('Peaks',basename+"_peaks_per_feature.txt")
         if options.summary:
             xls.add_result_sheet('Peaks (summary)',
                                  basename+"_peaks_per_feature_summary.txt")
