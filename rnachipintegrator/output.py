@@ -21,6 +21,34 @@ from analysis_redux import distance_tss,distance_tes
 
 MULTI_LINE=0
 SINGLE_LINE=1
+FIELDS = {
+    'chr': "chromosome",
+    'start': "peak start position",
+    'end': "peak end position",
+    'id': "feature ID",
+    'strand': "feature strand direction",
+    'TSS': "feature TSS position",
+    'TES': "feature TES position",
+    'peak.chr': "chromosome of the peak",
+    'peak.start': "peak start position",
+    'peak.end': "peak end position",
+    'feature.id': "feature ID",
+    'feature.chr': "chromosome of the feature",
+    'feature.start': "feature start position",
+    'feature.end': "feature end position",
+    'feature.TSS': "feature TSS position",
+    'feature.TES': "feature TES position",
+    'feature.strand': "feature strand direction",
+    'dist_closest': "closest distance between peak and feature",
+    'dist_TSS': "distance between peak and feature TSS",
+    'dist_TES': "distance between peak and feature TES",
+    'overlap_feature': "1 if peak overlaps the feature, 0 if not",
+    'overlap_promoter': "1 if peak overlaps the promoter region, 0 if not",
+    'in_the_gene': "'YES' if peak overlaps the feaure, 'NO' if not",
+    'differentially_expressed': "1 if feature is differentially expressed, 0 if not",
+    'order': "the 'order' of the feature/peak pair (e.g. '1 of 4')",
+    'number_of_results': "number of hits being reported",
+}
 
 #######################################################################
 # Classes
@@ -331,6 +359,43 @@ class AnalysisReporter:
             raise NotImplementedError("'features_inbetween' not implemented")
         else:
             raise KeyError("Unrecognised report field: '%s'" % attr)
+
+    def describe_fields(self):
+        """
+        Return list of field descriptions
+
+        Creates a list consisting of (FIELD,DESC) tuples
+        where FIELD is the name of the field and DESC is
+        its corresponding description text.
+
+        For example if the supplied fields were:
+
+        "chr,start,id,dist_closest"
+
+        then the resulting desciption list would look like:
+
+        [('chr','Chromosome'),
+         ('start','Peak start position'),
+         ('id','Feature ID'),
+         ('dist_closest','Closest distance between peak and feature')]
+
+        Returns:
+          list: list of (field,description) tuples.
+
+        """
+        descriptions = []
+        for attr in self._fields:
+            try:
+                descriptions.append(("%s" % attr,
+                                     "%s" % FIELDS[attr]))
+            except KeyError:
+                if attr.startswith('list('):
+                    descriptions.append(('For each hit:',))
+                    sub_attrs = attr[:-1].split('(')[1].split(',')
+                    for sub_attr in sub_attrs:
+                        descriptions.append(("%s_#" % sub_attr,
+                                             "%s" % FIELDS[sub_attr]))
+        return descriptions
 
     def make_header(self):
         """

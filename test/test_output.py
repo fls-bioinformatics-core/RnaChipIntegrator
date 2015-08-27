@@ -325,6 +325,92 @@ class TestAnalysisReporterNearestPeaks(unittest.TestCase):
                 expected):
             self.assertEqual(line,expected_line)
 
+class TestAnalysisReporterDescribeFields(unittest.TestCase):
+
+    def test_describe_unqualified_fields(self):
+        ap = AnalysisReporter(output.MULTI_LINE,
+                              fields=('chr','start','end','id',
+                                      'strand','TSS','TES',
+                                      'differentially_expressed'))
+        desc = ap.describe_fields()
+        self.assertEqual(desc[0],('chr',output.FIELDS['chr']))
+        self.assertEqual(desc[1],('start',output.FIELDS['start']))
+        self.assertEqual(desc[2],('end',output.FIELDS['end']))
+        self.assertEqual(desc[3],('id',output.FIELDS['id']))
+        self.assertEqual(desc[4],('strand',output.FIELDS['strand']))
+        self.assertEqual(desc[5],('TSS',output.FIELDS['TSS']))
+        self.assertEqual(desc[6],('TES',output.FIELDS['TES']))
+
+    def test_describe_peak_fields(self):
+        ap = AnalysisReporter(output.MULTI_LINE,
+                              fields=('peak.chr','peak.start','peak.end'))
+        desc = ap.describe_fields()
+        self.assertEqual(desc[0],('peak.chr',output.FIELDS['peak.chr']))
+        self.assertEqual(desc[1],('peak.start',output.FIELDS['peak.start']))
+        self.assertEqual(desc[2],('peak.end',output.FIELDS['peak.end']))
+
+    def test_describe_feature_fields(self):
+        ap = AnalysisReporter(output.MULTI_LINE,
+                              fields=('feature.chr','feature.id',
+                                      'feature.start','feature.end',
+                                      'feature.strand',
+                                      'feature.TSS','feature.TES'))
+        desc = ap.describe_fields()
+        self.assertEqual(desc[0],('feature.chr',output.FIELDS['feature.chr']))
+        self.assertEqual(desc[1],('feature.id',output.FIELDS['feature.id']))
+        self.assertEqual(desc[2],('feature.start',
+                                  output.FIELDS['feature.start']))
+        self.assertEqual(desc[3],('feature.end',output.FIELDS['feature.end']))
+        self.assertEqual(desc[4],('feature.strand',
+                                  output.FIELDS['feature.strand']))
+        self.assertEqual(desc[5],('feature.TSS',output.FIELDS['feature.TSS']))
+        self.assertEqual(desc[6],('feature.TES',output.FIELDS['feature.TES']))
+
+    def test_describe_derived_fields(self):
+        ap = AnalysisReporter(output.MULTI_LINE,
+                              fields=('dist_closest',
+                                      'dist_TSS','dist_TES',
+                                      'overlap_feature',
+                                      'overlap_promoter',
+                                      'in_the_gene',
+                                      'order','number_of_results'))
+        desc = ap.describe_fields()
+        self.assertEqual(desc[0],('dist_closest',
+                                  output.FIELDS['dist_closest']))
+        self.assertEqual(desc[1],('dist_TSS',output.FIELDS['dist_TSS']))
+        self.assertEqual(desc[2],('dist_TES',output.FIELDS['dist_TES']))
+        self.assertEqual(desc[3],('overlap_feature',
+                                  output.FIELDS['overlap_feature']))
+        self.assertEqual(desc[4],('overlap_promoter',
+                                  output.FIELDS['overlap_promoter']))
+        self.assertEqual(desc[5],('in_the_gene',output.FIELDS['in_the_gene']))
+        self.assertEqual(desc[6],('order',output.FIELDS['order']))
+        self.assertEqual(desc[7],('number_of_results',
+                                  output.FIELDS['number_of_results']))
+
+    def test_describe_listed_fields_for_peaks(self):
+        ap = AnalysisReporter(output.SINGLE_LINE,
+                              fields=('id','list(chr,start,end,dist_TSS)'))
+        desc = ap.describe_fields()
+        self.assertEqual(desc[0],('id',output.FIELDS['id']))
+        self.assertEqual(desc[1],(('For each hit:',)))
+        self.assertEqual(desc[2],('chr_#',output.FIELDS['chr']))
+        self.assertEqual(desc[3],('start_#',output.FIELDS['start']))
+        self.assertEqual(desc[4],('end_#',output.FIELDS['end']))
+        self.assertEqual(desc[5],('dist_TSS_#',output.FIELDS['dist_TSS']))
+
+    def test_describe_listed_fields_for_features(self):
+        ap = AnalysisReporter(output.SINGLE_LINE,
+                              fields=('chr','start',
+                                      'list(id,TSS,strand)'))
+        desc = ap.describe_fields()
+        self.assertEqual(desc[0],('chr',output.FIELDS['chr']))
+        self.assertEqual(desc[1],('start',output.FIELDS['start']))
+        self.assertEqual(desc[2],(('For each hit:',)))
+        self.assertEqual(desc[3],('id_#',output.FIELDS['id']))
+        self.assertEqual(desc[4],('TSS_#',output.FIELDS['TSS']))
+        self.assertEqual(desc[5],('strand_#',output.FIELDS['strand']))
+
 import tempfile
 class TestAnalysisReportWriter(unittest.TestCase):
 
