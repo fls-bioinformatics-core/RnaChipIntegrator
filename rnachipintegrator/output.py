@@ -360,43 +360,6 @@ class AnalysisReporter:
         else:
             raise KeyError("Unrecognised report field: '%s'" % attr)
 
-    def describe_fields(self):
-        """
-        Return list of field descriptions
-
-        Creates a list consisting of (FIELD,DESC) tuples
-        where FIELD is the name of the field and DESC is
-        its corresponding description text.
-
-        For example if the supplied fields were:
-
-        "chr,start,id,dist_closest"
-
-        then the resulting desciption list would look like:
-
-        [('chr','Chromosome'),
-         ('start','Peak start position'),
-         ('id','Feature ID'),
-         ('dist_closest','Closest distance between peak and feature')]
-
-        Returns:
-          list: list of (field,description) tuples.
-
-        """
-        descriptions = []
-        for attr in self._fields:
-            try:
-                descriptions.append(("%s" % attr,
-                                     "%s" % FIELDS[attr]))
-            except KeyError:
-                if attr.startswith('list('):
-                    descriptions.append(('For each hit:',))
-                    sub_attrs = attr[:-1].split('(')[1].split(',')
-                    for sub_attr in sub_attrs:
-                        descriptions.append(("%s_#" % sub_attr,
-                                             "%s" % FIELDS[sub_attr]))
-        return descriptions
-
     def make_header(self):
         """
         Create a 'header' line for output
@@ -517,3 +480,43 @@ class AnalysisReportWriter(AnalysisReporter):
             self._summary.close()
         except AttributeError:
             pass
+
+def describe_fields(fields):
+    """
+    Return list of field descriptions
+
+    Creates a list consisting of (FIELD,DESC) tuples
+    where FIELD is the name of the field and DESC is
+    its corresponding description text.
+
+    For example if the supplied fields were:
+
+    "chr,start,id,dist_closest"
+
+    then the resulting desciption list would look like:
+
+    [('chr','Chromosome'),
+     ('start','Peak start position'),
+     ('id','Feature ID'),
+     ('dist_closest','Closest distance between peak and feature')]
+
+    Arguments:
+      fields (list): list of fields
+
+    Returns:
+      list: list of (field,description) tuples.
+
+    """
+    descriptions = []
+    for attr in fields:
+        try:
+            descriptions.append(("%s" % attr,
+                                 "%s" % FIELDS[attr]))
+        except KeyError:
+            if attr.startswith('list('):
+                descriptions.append(('For each hit:',))
+                sub_attrs = attr[:-1].split('(')[1].split(',')
+                for sub_attr in sub_attrs:
+                    descriptions.append(("%s_#" % sub_attr,
+                                         "%s" % FIELDS[sub_attr]))
+    return descriptions
