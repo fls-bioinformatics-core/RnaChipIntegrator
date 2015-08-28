@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
-#     RnaChipIntegrator.py: analyse RNA-seq and ChIP-seq data
-#     Copyright (C) University of Manchester 2011-14 Peter Briggs, Leo Zeef
+#     RnaChipIntegrator.py: analyse genomic features with peak data
+#     Copyright (C) University of Manchester 2011-15 Peter Briggs, Leo Zeef
 #     & Ian Donaldson
 #
 #     This code is free software; you can redistribute it and/or modify it
@@ -14,52 +14,29 @@
 #
 #########################################################################
 
-"""RnaChipIntegrator.py
+"""
+RnaChipIntegrator.py
 
-Utility for integrated analyses of RNA-seq and ChIP-seq data.
+Analyse genomic features with peak data.
 
-Usage: RnaChipIntegrator.py [OPTIONS] <rna-data> <chip-data>
-
-The RNA-seq data file should have at least 5 columns of data for each
-gene or transcript:
-
-# ID  chr  start  end  strand
-
-Optionally there can be a 6th column, indicating whether the gene was
-differentially expressed (= 1) or not (= 0).
-
-The ChIP-seq data file should have 3 columns of data for each ChIP peak:
-
-# chr  start  end
-
-The data can be either peak summits (in which case 'end' - 'start' = 1),
-or peak regions (with 'start' and 'end' indicating the extent).
-
-The program performs analyses to locate the nearest peaks to each
-transcript and vice versa using various criteria to define "nearest".
 """
 
 #######################################################################
-# Import modules that this module depends on
+# Imports
 #######################################################################
 
 import sys
 import os
 import optparse
 import time,datetime
-
-# Set default logging level and output
-import logging
-logging.getLogger().setLevel(logging.ERROR)
-logging.basicConfig(format='%(levelname)s: %(message)s')
-
 from rnachipintegrator.Features import FeatureSet
 from rnachipintegrator.Peaks import PeakSet
-from rnachipintegrator.analysis import AnalyseNearestTranscriptsToPeakEdges
-from rnachipintegrator.analysis import AnalyseNearestTSSToSummits
-from rnachipintegrator.analysis import AnalyseNearestPeaksToTranscripts
-import rnachipintegrator.xls_notes as xls_notes
-import rnachipintegrator.Spreadsheet as Spreadsheet
+import rnachipintegrator.analysis_redux as analysis
+import rnachipintegrator.output as output
+import rnachipintegrator.xls_output as xls_output
+import logging
+logging.getLogger().setLevel(logging.WARNING)
+logging.basicConfig(format='%(levelname)s: %(message)s')
 
 import rnachipintegrator
 __version__ = rnachipintegrator.get_version()
@@ -68,299 +45,259 @@ __version__ = rnachipintegrator.get_version()
 # Main program
 #######################################################################
 
-def main():
-    """Run the RnaChipIntegrator program
-
-    This function should be invoked from __main__ to execute the program in
-    command line mode.
-    """
-    # Initialisations
-    do_chip_analyses = False
-    do_rna_analyses = False
-    xls_out = None
-    max_distance = 130000
-    max_edge_distance = 0
-    window_width = 20000
-    promoter_region = (10000,2500)
+if __name__ == '__main__':
+    
+    # Defaults
+    promoter_region = (1000,100)
+    max_distance = 1000000
     max_closest = 4
-
-    # Set default logging level
-    logging.getLogger().setLevel(logging.INFO)
-    p = optparse.OptionParser(usage="%prog [options] RNA-seq_data ChIP-seq_data",
-                              version="%prog "+__version__,
-                              description=
-                              "Perform analyses of RNA-Seq data (or any set of genomic features "
-                              "or expression data) with ChIP-Seq peaks, reporting nearest peaks "
-                              "to each feature (and vice versa) according to various criteria "
-                              "for calculating distances between them. ChIP-centric analyses "
-                              "report the nearest features to each peak; RNA-seq-centric "
-                              "analyses report the nearest peaks to each feature. "
-                              "Input 'RNA-seq_data' file must contain tab-delimited columns "
-                              "'ID,chr,start,end,strand[,flag]' (flag indicates differential "
-                              "expression, either 1=yes or 0=no). "
-                              "Input 'ChIP-seq_data' file must contain tab-delimited columns "
-                              "'chr,start,stop' defining either summits (start/stop differ by 1 "
-                              "bp) or regions (start/stop extend over several bps). "
-                              "The outputs are: one tab-delimited file from each analysis "
-                              "performed (named after the appropriate input file unless "
-                              "overriden by the --project option), and an XLS spreadsheet with "
-                              "one worksheet per analysis.")
-
-    # General options
-    p.add_option('--chip',action="store_true",dest="do_chip_analyses",
-                     help="Do ChIP-seq-centric analyses")
-    p.add_option('--rna',action="store_true",dest="do_rna_analyses",
-                     help="Do RNA-seq-centric analyses")
-    p.add_option('--project',action="store",dest="basename",
-                     help="Set basename for output files; output from each "+
-                     "analysis method will use this, with the method name appended"+
-                     " (defaults to the input file names)")
-    p.add_option('--no-xls',action="store_false",dest="write_xls_out",default=True,
-                 help="Don't write an XLS file")
-    p.add_option('--debug',action="store_true",dest="debug",
-                     help="Verbose output for debugging")
-
-    # Options for NearestPeaksToTranscripts
-    group = optparse.OptionGroup(p,"NearestPeaksToTranscripts (RNA-seq)",
-                                 description="For each transcript, reports the peaks with summit "+
-                                 "positions that lie within the specified 'window' distance of "+
-                                 "the transcript TSS.")
-    group.add_option('--window',action="store",dest="window_width",
-                     default=window_width,type='int',
-                     help="Maximum distance a peak can be from each transcript TSS "+
-                     "before being omitted from analysis "+
-                     "(default %d bp)" % window_width)
-    p.add_option_group(group)
-
-    # Options for NearestTSSToSummits
-    group = optparse.OptionGroup(p,"NearestTSSToSummits (ChIP-seq)",
-                                 description="For each ChIP peak summit, reports the "+
-                                 "transcripts with TSS positions that lie within the specified "+
-                                 "cut-off distance of the peak summit.")
-    group.add_option('--cutoff',action="store",dest="max_distance",
-                     default=max_distance,type='int',
-                     help="Maximum distance a transcript TSS can be from each peak "+
-                     "before being omitted from the analysis "+
-                     "(default %d bp)" % max_distance)
-    p.add_option_group(group)
-
-    # Options for NearestTranscriptsToPeakEdge/NearestTSSToPeakEdge
-    group = optparse.OptionGroup(p,"NearestTranscriptsToPeakEdge/NearestTSSToPeakEdge (ChIP-seq)",
-                                 description="For each ChIP peak, reports the transcripts that "+
-                                 "lie closest to either 'edge' of the peak region, by "+
-                                 "considering the TSS alone (NearestTSSToPeakEdge) or by "+
-                                 "considering both the TSS and TES positions "+
-                                 "(NearestTranscriptsToPeakEdge).")
-    group.add_option('--edge-cutoff',action="store",dest="max_edge_distance",
-                     default=max_edge_distance,type='int',
-                     help="Maximum distance a transcript edge can be from the peak "+
-                     "edge before being omitted from the analysis. Set to "+
-                     "zero to indicate no cut-off (default %d bp)" % max_edge_distance)
-    group.add_option('--number',action="store",dest="max_closest",
-                     default=max_closest,type='int',
-                     help="Maximum number of transcripts per peak to report from "+
-                     "from the analysis (default %d)" % max_closest)
-    group.add_option('--promoter_region',action="store",dest="promoter_region",
-                     default="%d,%d" % promoter_region,
-                     help="Define promoter region with respect to gene TSS "+
-                     "(default -%d to %d bp of TSS)" %  promoter_region)
-    group.add_option('--pad',action="store_true",dest="pad_output",
-                 help="Where less than MAX_CLOSEST transcripts are found for a peak "
-                 "add additional lines to the output to ensure that MAX_CLOSEST lines "
+    
+    # Parse command line
+    p = optparse.OptionParser(usage="%prog [options] FEATURES PEAKS",
+                              version="%prog "+__version__)
+    p.add_option('--cutoff',action='store',dest='max_distance',
+                 type='int',default=max_distance,
+                 help="Maximum distance allowed between peaks and "
+                 "features before being omitted from the analysis "
+                 "(default %dbp; set to zero for no cutoff)" %
+                 max_distance)
+    p.add_option('--number',action='store',dest='max_closest',
+                 type='int',default=max_closest,
+                 help="Maximum number of hits to report from the analyses "
+                 "(default %d; set to zero to report all hits)" %
+                 max_closest)
+    p.add_option('--promoter_region',action="store",dest="promoter_region",
+                 default="%d,%d" % promoter_region,
+                 help="Define promoter region with respect to feature TSS "
+                 "in the form UPSTREAM,DOWNSTREAM (default -%d to %dbp of "
+                 "TSS)" %  promoter_region)
+    p.add_option('--edge',action='store',dest="edge",type="choice",
+                 choices=('tss','both'),default='tss',
+                 help="Feature edges to consider when calculating distances "
+                 "between features and peaks, either: 'tss' (default: only "
+                 "use TSS) or 'both' (use whichever of TSS or TES gives "
+                 "shortest distance)")
+    p.add_option('--only-DE',action='store_true',
+                 dest='only_diff_expressed',default=False,
+                 help="Only use features flagged as differentially expressed "
+                 "in analyses (input feature data must include DE flags)")
+    p.add_option('--name',action='store',dest='name',default=None,
+                 help="Set basename for output files")
+    p.add_option('--compact',action='store_true',dest='compact',default=False,
+                 help="Output minimal information in a compact format")
+    p.add_option('--summary',action='store_true',dest='summary',default=False,
+                 help="Output 'summary' for each analysis, consisting of "
+                 "only the top hit for each peak or feature (cannot be used "
+                 "with --compact)")
+    p.add_option('--pad',action="store_true",dest="pad_output",
+                 help="Where less than MAX_CLOSEST hits are found, pad "
+                 "output with blanks to ensure that MAX_CLOSEST hits "
                  "are still reported")
-    p.add_option_group(group)
-
-    # Process the command line
-    options,arguments = p.parse_args()
+    p.add_option('--xls',action="store_true",dest="xls_output",
+                 help="Output XLS spreadsheet with results")
+    options,args = p.parse_args()
 
     # Input files
-    if len(arguments) != 2:
-        p.error("incorrect number of arguments")
-    else:
-        rnaseq_file = arguments[0]
-        chipseq_file = arguments[1]
+    if len(args) != 2:
+        p.error("need to supply 2 files (features and peaks)")
+    feature_file,peak_file = args
 
     # Report version and authors
     p.print_version()
+    print
+    print "Find nearest peaks to genomic features (and vice versa)"
+    print
     print "University of Manchester"
     print "Faculty of Life Sciences"
     print "Bioinformatics Core Facility"
     print "Authors: Ian Donaldson, Leo Zeef and Peter Briggs"
     print
 
-    # Sort out analysis settings
-    do_chip_analyses = options.do_chip_analyses
-    do_rna_analyses = options.do_rna_analyses
-    if not (do_chip_analyses or do_rna_analyses):
-        # Neither explicitly requested - do both
-        do_chip_analyses = True
-        do_rna_analyses = True
-
-    # Handle options
-    max_distance = options.max_distance
-    window_width = options.window_width
-    max_edge_distance = options.max_edge_distance
-    max_closest = options.max_closest
-    write_xls_out = options.write_xls_out
-
     # Promoter region
-    promoter_region = (abs(int(options.promoter_region.split(',')[0])),
-                       abs(int(int(options.promoter_region.split(',')[1]))))
+    promoter = (abs(int(options.promoter_region.split(',')[0])),
+                abs(int(options.promoter_region.split(',')[1])))
 
-    # Output basename
-    if options.basename:
-        output_basename = options.basename
+    # Reporting options
+    max_distance = options.max_distance
+    if max_distance <= 0:
+        max_distance = None
+    max_closest = options.max_closest
+    if max_closest <= 0:
+        max_closest = None
+
+    # Feature edge to use
+    if options.edge == 'tss':
+        tss_only = True
     else:
-        output_basename = os.path.basename(os.path.splitext(rnaseq_file)[0]) + \
-            "_vs_" + os.path.basename(os.path.splitext(chipseq_file)[0])
-    if write_xls_out:
-        xls_out = output_basename + ".xls"
+        tss_only = False
 
-    # Debugging output
-    if options.debug: logging.getLogger().setLevel(logging.DEBUG)
+    # Reporting formats
+    if options.compact:
+        mode = output.SINGLE_LINE
+        peak_fields = ('chr','start','end','list(feature.id)')
+        feature_fields = ('feature.id','list(chr,start,end,dist_closest)')
+        placeholder = '.'
+        if options.summary:
+            options.summary = False
+            logging.error("--summary option not compatible with --compact")
+            sys.exit(1)
+    else:
+        mode = output.MULTI_LINE
+        peak_fields = ('chr','start','end',
+                       'feature.id','strand','TSS','TES',
+                       'dist_closest','dist_TSS','dist_TES',
+                       'overlap_feature',
+                       'overlap_promoter')
+        feature_fields = ('feature.id',
+                          'feature.chr','feature.start','feature.end',
+                          'feature.strand',
+                          'peak.chr','peak.start','peak.end','order',
+                          'dist_closest','dist_TSS','dist_TES')
+        placeholder = '---'
 
     # Report settings
-    print "Input transcripts file (RNA-seq) : %s" % rnaseq_file
-    print "Input peaks file (ChIP-seq)      : %s" % chipseq_file
-    if do_chip_analyses:
-        print ""
-        print "ChIP analyses:"
-        print "\tMaximum cutoff distance   : %d (bp)" % max_distance
-        print "\tMaximum edge distance     : %d (bp)" % max_edge_distance
-        print "\tMax no. of closest genes  : %d" % max_closest
-        print "\tPad output if fewer found : %s" % options.pad_output
-        print "\tPromoter region           : -%d to %d (bp from TSS)" % \
-            promoter_region
-    if do_rna_analyses:
-        print ""
-        print "RNA-seq analyses:"
-        print "\tWindow width             : %d (bp)" % window_width
+    print "Input features file: %s" % feature_file
+    print "Input peaks file   : %s" % peak_file
     print
-    print "Basename for output files        : %s" % output_basename
-    if xls_out:
-        print "Outputting results to XLS file   : %s" % xls_out
+    print "Maximum cutoff distance: %d (bp)" % max_distance
+    print "Maximum no. of hits    : %d" % max_closest
+    print "Promoter region        : -%d to %d (bp from TSS)" % \
+        promoter_region
+    print
+    if tss_only:
+        print "Distances will be calculated from feature TSS only"
+    else:
+        print "Distances will be calculated from nearest of feature TSS or TES"
     print
 
-    # Initialise the data objects
+    # Read in feature data
     try:
-        features = FeatureSet(rnaseq_file)
+        features = FeatureSet(feature_file)
     except Exception, ex:
-        logging.critical("Failed to read in RNA-seq data: %s" % ex)
+        logging.critical("Failed to read in feature data: %s" % ex)
         print "Please fix errors in input file before running again"
         sys.exit(1)
-    peaks = PeakSet(chipseq_file)
-
-    # Check we have data
     if not len(features):
-        logging.error("No RNA-seq data read in")
+        logging.error("No feature data read in")
         sys.exit(1)
-    else:
-        print "%d RNA-seq records read in" % len(features)
-        if features.isFlagged():
-            print "RNA-seq data is flagged"
-            print "\t%d gene records flagged as differentially expressed" % \
-                len(features.filterByFlag(matchFlag=1))
-            print "\tOnly these will be used in the analyses"
+    print "%d feature records read in" % len(features)
+
+    # Differential expression handling
+    use_differentially_expressed = False
+    if features.isFlagged():
+        print "\tFeature data include differential expression flag"
+        print "\t%d features flagged as differentially expressed" % \
+            len(features.filterByFlag(1))
+        if options.only_diff_expressed:
+            print
+            print "*** Only differentially expressed features will used ***"
+            use_differentially_expressed = True
+    elif options.only_diff_expressed:
+        logging.error("--only-DE flag needs input features flagged as "
+                      "differentially expressed")
+        sys.exit(1)
+    print
+
+    # Read in peak data
+    peaks = PeakSet(peak_file)
     if not len(peaks):
-        logging.error("No ChIP-seq data read in")
+        logging.error("No peak data read in")
         sys.exit(1)
+    print "%d peak records read in" % len(peaks)
+    if peaks.isSummit():
+        print "\tPeak data are summits"
     else:
-        print "%d ChIP-seq records read in" % len(peaks)
-        print
-        if peaks.isSummit():
-            print "ChIP data appears to be peak summits, the following analyses will be run:"
-            print "\tNearestTSSToSummits"
-            print "\tNearestPeaksToTranscripts"
-        else:
-            print "ChIP data appears to be regions, the following analyses will be run:"
-            print "\tNearestTranscriptsToPeakEdges"
-            print "\tNearestTranscriptsToPeakEdges (TSS only)"
-        print
+        print "\tPeak data are regions"
+    print
 
-    if xls_out:
-        # Create initial XLS document
-        xls = Spreadsheet.Workbook()
-        xls_notes_sheet = xls.addSheet('Notes')
-        xls_notes_sheet.addText(xls_notes.preamble % p.get_version())
+    # Set up output files
+    if options.name is not None:
+        basename = options.name
     else:
-        xls = None
+        basename = os.path.splitext(os.path.basename(feature_file))[0]
 
-    # ChIP-seq-based analyses
-    if do_chip_analyses:
-        if peaks.isSummit():
-            # "Nearest TSS to summit" analysis
-            outfile = output_basename+"_TSSToSummits.txt"
-            print "Running AnalyseNearestTSSToSummits"
-            print "\tWriting output to %s" % outfile
-            AnalyseNearestTSSToSummits(peaks,features,max_distance,
-                                       max_closest,outfile,
-                                       xls=xls,pad_output=options.pad_output)
-            print "\tDone"
-            if xls: xls_notes_sheet.addText(xls_notes.nearest_TSS_to_summits %
-                                            max_distance)
+    # Do the analyses
+    print "**** Nearest features to peaks ****"
+    outfile = basename+"_features_per_peak.txt"
+    if options.summary:
+        summary = basename+"_features_per_peak_summary.txt"
+    else:
+        summary = None
+    reporter = output.AnalysisReportWriter(mode,peak_fields,
+                                           promoter_region=promoter,
+                                           null_placeholder=placeholder,
+                                           max_hits=max_closest,
+                                           pad=options.pad_output,
+                                           outfile=outfile,
+                                           summary=summary)
+    for peak,nearest_features in analysis.find_nearest_features(
+            peaks,features,tss_only=tss_only,distance=max_distance,
+            only_differentially_expressed=use_differentially_expressed):
+        reporter.write_nearest_features(peak,nearest_features)
+    reporter.close()
+    print "Results written to %s" % outfile
+    if summary:
+        print "Summary written to %s" % summary
+    print
+
+    print "**** Nearest peaks to features ****"
+    outfile = basename+"_peaks_per_feature.txt"
+    if options.summary:
+        summary = basename+"_peaks_per_feature_summary.txt"
+    else:
+        summary = None
+    reporter = output.AnalysisReportWriter(mode,feature_fields,
+                                           null_placeholder=placeholder,
+                                           max_hits=max_closest,
+                                           pad=options.pad_output,
+                                           outfile=outfile,
+                                           summary=summary)
+    for feature,nearest_peaks in analysis.find_nearest_peaks(
+            features,peaks,tss_only=tss_only,distance=max_distance,
+            only_differentially_expressed=use_differentially_expressed):
+        reporter.write_nearest_peaks(feature,nearest_peaks)
+    reporter.close()
+    print "Results written to %s" % outfile
+    if summary:
+        print "Summary written to %s" % summary
+    print
+
+    # Make XLS file
+    if options.xls_output:
+        print "**** Writing XLS file ****"
+        xls = xls_output.XLS(p.get_version())
+        # Write the settings
+        xls.append_to_notes("Input features file\t%s" % feature_file)
+        xls.append_to_notes("Input peaks file\t%s" % peak_file)
+        xls.append_to_notes("Maximum cutoff distance (bp)\t%d" % max_distance)
+        xls.append_to_notes("Maximum no. of hits to report\t%d" % max_closest)
+        xls.append_to_notes("Promoter region (bp from TSS)\t-%d to %d" %
+                            promoter_region)
+        if tss_only:
+            xls.append_to_notes("Distances calculated from\tTSS only")
         else:
-            # "Nearest edge to peak region" analysis
-            outfile = output_basename+"_TranscriptsToPeakEdges.txt"
-            print "Running AnalyseNearestTranscriptsToPeakEdges (TSS/TES)"
-            print "\tWriting output to %s" % outfile
-            AnalyseNearestTranscriptsToPeakEdges(peaks,features,
-                                                 promoter_region,
-                                                 max_closest,
-                                                 max_edge_distance,
-                                                 TSS_only=False,
-                                                 filename=outfile,
-                                                 xls=xls,
-                                                 pad_output=options.pad_output)
-            print "\tDone"
-            if xls: xls_notes_sheet.addText(
-                xls_notes.nearest_transcripts_to_peak_edges %
-                (promoter_region,max_closest,max_edge_distance))
-
-            # "Nearest TSS to peak region" analysis
-            outfile = output_basename+"_TSSToPeakEdges.txt"
-            print "Running AnalyseNearestTranscriptsToPeakEdges (TSS only)"
-            print "\tWriting output to %s" % outfile
-            AnalyseNearestTranscriptsToPeakEdges(peaks,features,
-                                                 promoter_region,
-                                                 max_closest,
-                                                 max_edge_distance,
-                                                 TSS_only=True,
-                                                 filename=outfile,
-                                                 xls=xls,
-                                                 pad_output=options.pad_output)
-            print "\tDone"
-            if xls:
-                xls_notes_sheet.addText(xls_notes.nearest_tss_to_peak_edges)
-
-    # RNA-seq-based analysese
-    if do_rna_analyses:
-        if peaks.isSummit():
-            # "Nearest peak summits to TSS" analysis
-            outfile = output_basename+"_PeaksToTranscripts.txt"
-            print "Running AnalyseNearestPeaksToTranscripts"
-            print "\tWriting output to %s" % outfile
-            AnalyseNearestPeaksToTranscripts(features,peaks,window_width,
-                                             filename=outfile,
-                                             xls=xls)
-            print "\tDone"
-            if xls: xls_notes_sheet.addText(
-                xls_notes.nearest_peaks_to_transcripts % window_width)
+            xls.append_to_notes("Distances calculated from\tTSS or TES")
+        if use_differentially_expressed:
+            xls.append_to_notes("Only use differentially expressed features\t"
+                                "Yes")
         else:
-            # No analyses available for ChIP peak regions
-            pass
-
-    # Finish off spreadsheet output
-    if xls:
-        # Add the program version information etc to the spreadsheet
-        xls_notes_sheet.addText(xls_notes.credits % 
-                                (p.get_version(),datetime.date.today()))
-        # Write the XLS file to disk
-        xls.save(xls_out)
+            xls.append_to_notes("Only use differentially expressed features\t"
+                                "No")
+        # Add features to peaks
+        xls.write_features_to_peaks(peak_fields)
+        xls.add_result_sheet('Features',basename+"_features_per_peak.txt")
+        if options.summary:
+            xls.add_result_sheet('Features (summary)',
+                                 basename+"_features_per_peak_summary.txt")
+        # Add peaks to features
+        xls.write_peaks_to_features(feature_fields)
+        xls.add_result_sheet('Peaks',basename+"_peaks_per_feature.txt")
+        if options.summary:
+            xls.add_result_sheet('Peaks (summary)',
+                                 basename+"_peaks_per_feature_summary.txt")
+        xls.write(basename+'.xls')
+        print "Wrote %s" % basename+'.xls'
+        print
 
     # Finished
     print "Done"
-    sys.exit()
-
-if __name__ == "__main__":
-    # Run the program in command line mode
-    main()
