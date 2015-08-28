@@ -7,8 +7,8 @@ Default output
 The default output of the program consists of a pair of tab-delimited
 files:
 
-* ``BASENAME_features_to_peak.txt``
-* ``BASENAME_peaks_to_features.txt``
+* ``BASENAME_features_per_peak.txt``
+* ``BASENAME_peaks_per_feature.txt``
 
 By default the output file ``BASENAME`` is taken from the name of the
 input feature file; use the ``--name`` option to set a custom basename.
@@ -60,8 +60,8 @@ Summary files (``--summary``)
 Using the ``--summary`` option outputs an additional pair of
 tab-delimited files:
 
-* ``BASENAME_features_to_peak_summary.txt``
-* ``BASENAME_peaks_to_features_summary.txt``
+* ``BASENAME_features_per_peak_summary.txt``
+* ``BASENAME_peaks_per_feature_summary.txt``
 
 These will only contain the 'top' (i.e. closest) feature/peak pairs.
 
