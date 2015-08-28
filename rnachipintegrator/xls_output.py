@@ -13,6 +13,7 @@ Functions for outputting analysis results to XLS spreadsheet
 import datetime
 import Spreadsheet
 import output
+import utils
 
 NOTES = dict()
 NOTES['preamble'] = """<style font=bold bgcolor=gray25>%s</style>
@@ -55,6 +56,7 @@ class XLS:
 
         """
         self._xls = Spreadsheet.Workbook()
+        self._title_limit = Spreadsheet.MAX_LEN_WORKSHEET_TITLE
         self._char_limit = Spreadsheet.MAX_LEN_WORKSHEET_CELL_VALUE
         self._line_limit = Spreadsheet.MAX_NUMBER_ROWS_PER_WORKSHEET
         self._notes = self._xls.addSheet("Notes")
@@ -117,17 +119,34 @@ class XLS:
         supplied title and populates using the contents
         of a tab-delimited file.
 
+        If there are more lines than can be written to a
+        single worksheet then creates additional sheets
+        as required.
+
         Arguments:
           title (str): a title for the sheet
           tsv_file (str): path to a tab-delimited file
 
         """
         ws = self._xls.addSheet(title)
+        n = 0
+        # Get header line
         with open(tsv_file,'r') as fp:
-            for i,line in enumerate(fp):
-                if i == self._line_limit:
-                    raise Exception("Too many rows for spreadsheet")
+            header = fp.readline().rstrip('\n')
+        with open(tsv_file,'r') as fp:
+            i = 0
+            for line in fp:
+                if not i%self._line_limit and i:
+                    # Start a new sheet
+                    n += 1
+                    new_title = utils.truncate_text("%s(%d)" % (title,n),
+                                                    self._title_limit)
+                    print "Wrapping onto new sheet: %s" % new_title
+                    ws = self._xls.addSheet(new_title)
+                    ws.addText(header)
+                    i += 1
                 ws.addText(line.rstrip('\n'))
+                i += 1
 
     def write(self,xls_file):
         """
