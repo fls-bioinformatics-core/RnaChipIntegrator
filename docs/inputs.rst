@@ -4,6 +4,8 @@ Input files
 ``RnaChipIntegrator`` expects two input files: a list of genomic
 features and a list of peaks.
 
+.. _features_data_file:
+
 Features data file
 ------------------
 
@@ -25,7 +27,8 @@ Optionally there can be a sixth column::
     ID  chr  start  end  strand  DE_flag
 
 If ``DE_flag`` is present then it can be used to indicate whether
-the feature should be considered to be differentially expressed;
+the feature should be considered to be differentially expressed
+(``DE_flag`` = 1) or not (``DE_flag`` = 0);
 see :ref:`using_differential_expression_data`.
 
 Note that any additional columns will be are discarded.

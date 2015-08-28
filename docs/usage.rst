@@ -65,9 +65,9 @@ Using differential expression data (``--only-DE``)
 --------------------------------------------------
 
 If the input feature data contains a differential expression flag
-then this can be used in the analysis by turning on the ``--only-DE``
-option::
+(see :ref:`features_data_file`) then this can be used in the analysis
+by turning on the ``--only-DE`` option::
 
     RnaChipIntegrator.py --only-DE FEATURES PEAKS
 
-which will only consider the flagged features in the analyses.
+which will only included the flagged features in the analyses.

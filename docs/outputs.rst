@@ -16,6 +16,44 @@ input feature file; use the ``--name`` option to set a custom basename.
 Additional files may be produced depending on the options that have
 been specified on the command line.
 
+The columns in the 'features to peak' file are:
+
+================ ================================================
+Name             Description
+================ ================================================
+chr	         chromosome
+start	         peak start position
+end	         peak end position
+feature.id	 feature ID
+strand	         feature strand direction
+TSS	         feature TSS position
+TES	         feature TES position
+dist_closest	 closest distance between peak and feature
+dist_TSS	 distance between peak and feature TSS
+dist_TES	 distance between peak and feature TES
+overlap_feature	 1 if peak overlaps the feature, 0 if not
+overlap_promoter 1 if peak overlaps the promoter region, 0 if not
+================ ================================================
+
+The columns in the 'peaks to features' file are:
+
+=============== ====================================================
+Name            Description
+=============== ====================================================
+feature.id	feature ID
+feature.chr	chromosome of the feature
+feature.start	feature start position
+feature.end	feature end position
+feature.strand	feature strand direction
+peak.chr	chromosome of the peak
+peak.start	peak start position
+peak.end	peak end position
+order	        the 'order' of the feature/peak pair (e.g. '1 of 4')
+dist_closest	closest distance between peak and feature
+dist_TSS	distance between peak and feature TSS
+dist_TES	distance between peak and feature TES
+=============== ====================================================
+
 Summary files (``--summary``)
 -----------------------------
 
