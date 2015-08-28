@@ -9,7 +9,7 @@ This directory contains three example data files:
 
 RnaChipIntegrator can be run on these data files as follows:
 
-    RnaChipIntegrator --window=130000 ExpressionData.txt ChIP_regions.txt
-    RnaChipIntegrator --window=130000 ExpressionData.txt ChIP_summits.txt
+    RnaChipIntegrator.py --cutoff=130000 ExpressionData.txt ChIP_regions.txt
+    RnaChipIntegrator.py --cutoff=130000 ExpressionData.txt ChIP_summits.txt
 
 --
