@@ -10,6 +10,7 @@ versa.
 .. toctree::
    :maxdepth: 2
 
+   about
    install
    usage
    inputs
