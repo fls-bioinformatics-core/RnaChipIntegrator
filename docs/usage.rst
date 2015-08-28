@@ -2,7 +2,11 @@ Usage
 =====
 
 Basic usage
-***********
+-----------
+
+``RnaChipIntegrator`` that performs integrated analyses of feature
+data (any set of genomic features) with ‘peak’ data (a set of regions)
+and reports the 'nearest' features to each peak, and vice versa.
 
 The simplest form of usage is::
 
@@ -20,16 +24,16 @@ This will produce two output files:
 
 In both cases the files will contain one peak/feature pair per line.
 
-Distance cutoffs and maximum numbers of pairs
-*********************************************
+Distance cutoffs (``--cutoff``) and number to report (``--number``)
+-------------------------------------------------------------------
 
 The ``--cutoff`` option specifies a maximum distance that a
 feature/peak pair can be apart and still be included in the results;
 the ``--number`` option sets the maximum number of pairs that will
 be reported for each peak or feature.
 
-Distance to TSS versus 'feature edges'
-**************************************
+Distance to TSS versus 'feature edges' (``--edge``)
+---------------------------------------------------
 
 By default the distance between a peak and a feature is calculated
 as the distance from the feature TSS to the nearest peak edge, for
@@ -57,8 +61,8 @@ much smaller closest distance:
 
 .. _using_differential_expression_data:
 
-Using differential expression data
-**********************************
+Using differential expression data (``--only-DE``)
+--------------------------------------------------
 
 If the input feature data contains a differential expression flag
 then this can be used in the analysis by turning on the ``--only-DE``

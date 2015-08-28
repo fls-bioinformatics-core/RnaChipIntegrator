@@ -5,7 +5,7 @@ Input files
 features and a list of peaks.
 
 Features data file
-******************
+------------------
 
 The features data file must be a tab-delimited file with at least
 5 columns of data for each genomic feature (one per line)::
@@ -31,7 +31,7 @@ see :ref:`using_differential_expression_data`.
 Note that any additional columns will be are discarded.
 
 Peaks data file
-***************
+---------------
 
 The peaks data file must be a tab-delimited file with at least 3
 columns of data for each peak (one per line)::

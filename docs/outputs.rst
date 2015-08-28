@@ -1,7 +1,11 @@
 Output files
 ============
 
-The output of the program consists of a pair of tab-delimited files:
+Default output
+--------------
+
+The default output of the program consists of a pair of tab-delimited
+files:
 
 * ``BASENAME_features_to_peak.txt``
 * ``BASENAME_peaks_to_features.txt``
@@ -10,18 +14,37 @@ By default the output file ``BASENAME`` is taken from the name of the
 input feature file; use the ``--name`` option to set a custom basename.
 
 Additional files may be produced depending on the options that have
-been specified on the command line:
+been specified on the command line.
 
-* ``BASENAME_features_to_peak_summary.txt`` and 
-  ``BASENAME_peaks_to_features_summary.txt``: tab-delimited files which
-  contain only the top (i.e. closest) feature/peak pairs (if
-  ``--summary`` is specified).
-* ``BASENAME.xls``: Excel spreadsheet containing the results from all
-  the tab-delimited files, plus a 'notes' sheet with additional
-  information about the results from each analysis.
+Summary files (``--summary``)
+-----------------------------
 
-Compact output
-**************
+Using the ``--summary`` option outputs an additional pair of
+tab-delimited files:
+
+* ``BASENAME_features_to_peak_summary.txt``
+* ``BASENAME_peaks_to_features_summary.txt``
+
+These will only contain the 'top' (i.e. closest) feature/peak pairs.
+
+Excel spreadsheet (``--xls``)
+-----------------------------
+
+Using the ``--xls`` option outputs an additional Excel spreadsheet
+file  ``BASENAME.xls``, which contains the results from all the
+tab-delimited files (include the summaries, if ``--summary`` was
+also specified, plus a 'notes' sheet with additional  information
+about the results from each analysis.
+
+.. note::
+
+   The XLS-writing library has a limit on the number of rows that
+   can be written to a sheet; if the number of results exceeds this
+   limit then the results will be broken into multiple sheets in
+   the output XLS file.
+
+Compact output format (``--compact``)
+-------------------------------------
 
 By default each feature/peak pair will be output on a separate line, for
 example::
@@ -48,8 +71,8 @@ single line, for example::
 
    In this mode only a "minimal" set of fields are reported.
 
-Output padding
-**************
+Output padding (``--pad``)
+--------------------------
 
 If the ``--pad`` option is specified then where fewer than the
 maximum number of pairs would be reported, additional 'blank'
