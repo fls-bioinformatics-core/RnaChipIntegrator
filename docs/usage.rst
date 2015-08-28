@@ -13,9 +13,9 @@ the genomic feature and peak data respecitively.
 
 This will produce two output files:
 
- - ``FEATURES_features_to_peaks.txt``: reports the nearest genomic
+ - ``FEATURES_features_per_peak.txt``: reports the nearest genomic
    features for each peak
- - ``FEATURES_peaks_to_features.txt``: reports the nearest peaks
+ - ``FEATURES_peaks_per_feature.txt``: reports the nearest peaks
    for each feature
 
 In both cases the files will contain one peak/feature pair per line.
