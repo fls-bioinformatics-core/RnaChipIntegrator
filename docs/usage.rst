@@ -4,10 +4,6 @@ Usage
 Basic usage
 -----------
 
-``RnaChipIntegrator`` that performs integrated analyses of feature
-data (any set of genomic features) with ‘peak’ data (a set of regions)
-and reports the 'nearest' features to each peak, and vice versa.
-
 The simplest form of usage is::
 
     RnaChipIntegrator.py FEATURES PEAKS
