@@ -1,13 +1,16 @@
 #!/bin/env python
 #
-#     analysis_redux.py: reimplement functions for performing analyses
+#     analysis.py: analyses of peaks vs features and vice versa
 #     Copyright (C) University of Manchester 2011-15 Peter Briggs, Leo Zeef
 #     & Ian Donaldson
 #
 """
-analysis_redux.py
+analysis.py
 
-Reimplementation of analysis functions.
+Functions for analysing peaks against features, and vice versa:
+
+- find_nearest_features
+- find_nearest_peaks
 
 """
 import os
@@ -50,9 +53,7 @@ def find_nearest_features(peaks,features,distance=None,tss_only=False,
         nearest features, for each peak in the input PeakSet
 
     """
-    # Reimplemtation & generalisation of:
-    # - AnalyseNearestTSSToSummits
-    # - AnalyseNearestTranscriptsToPeakEdges
+    # Find nearest features to each peak
     for peak in peaks:
         # Only consider features on same chromosome
         feature_list = features.filterByChr(peak.chrom)
@@ -102,8 +103,6 @@ def find_nearest_peaks(features,peaks,distance=None,tss_only=False,
         FeatureSet
 
     """
-    # Reimplementation & generalisation of
-    # AnalyseNearestPeaksToTranscripts function
     # Reduce to set of differentially expressed features
     if only_differentially_expressed:
         features = features.filterByFlag(1)

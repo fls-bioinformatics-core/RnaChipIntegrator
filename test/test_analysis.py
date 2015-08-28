@@ -5,8 +5,8 @@
 import unittest
 from rnachipintegrator.Features import FeatureSet,Feature
 from rnachipintegrator.Peaks import PeakSet,Peak
-from rnachipintegrator.analysis_redux import find_nearest_features
-from rnachipintegrator.analysis_redux import find_nearest_peaks
+from rnachipintegrator.analysis import find_nearest_features
+from rnachipintegrator.analysis import find_nearest_peaks
 
 # Data
 from common import *
@@ -1572,7 +1572,7 @@ class TestFindNearestPeaksForRegions(unittest.TestCase):
         expected.addPeak(peaks_[2])
         self.assertEqual(peaks,expected)
 
-from rnachipintegrator.analysis_redux import edge_distances
+from rnachipintegrator.analysis import edge_distances
 class TestEdgeDistancesFunction(unittest.TestCase):
     def test_distances_peak_before_feature(self):
         self.assertEqual(edge_distances(Peak('chr1','100','200'),
@@ -1599,7 +1599,7 @@ class TestEdgeDistancesFunction(unittest.TestCase):
                                    Feature('NM6','chr1','100','400','+')),
                          (0,0))
 
-from rnachipintegrator.analysis_redux import tss_distances
+from rnachipintegrator.analysis import tss_distances
 class TestTSSDistancesFunction(unittest.TestCase):
     def test_tss_distances_peak_before_TSS(self):
         self.assertEqual(tss_distances(Peak('chr1','100','200'),

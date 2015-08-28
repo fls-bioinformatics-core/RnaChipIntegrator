@@ -31,7 +31,7 @@ import optparse
 import time,datetime
 from rnachipintegrator.Features import FeatureSet
 from rnachipintegrator.Peaks import PeakSet
-import rnachipintegrator.analysis_redux as analysis
+import rnachipintegrator.analysis as analysis
 import rnachipintegrator.output as output
 import rnachipintegrator.xls_output as xls_output
 import logging

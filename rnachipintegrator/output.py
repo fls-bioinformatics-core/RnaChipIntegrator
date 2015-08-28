@@ -1,6 +1,6 @@
 #!/bin/env python
 #
-#     output.py: functions for outputing analysis results
+#     output.py: functions for outputting analysis results
 #     Copyright (C) University of Manchester 2015 Peter Briggs, Leo Zeef
 #     & Ian Donaldson
 #
@@ -12,8 +12,8 @@ Functions for outputing analysis results
 """
 import distances
 from Peaks import Peak
-from analysis_redux import distance_closest_edge
-from analysis_redux import distance_tss,distance_tes
+from analysis import distance_closest_edge
+from analysis import distance_tss,distance_tes
 
 #######################################################################
 # Constants
