@@ -54,7 +54,11 @@ if __name__ == '__main__':
     
     # Parse command line
     p = optparse.OptionParser(usage="%prog [options] FEATURES PEAKS",
-                              version="%prog "+__version__)
+                              version="%prog "+__version__,
+                              description=
+                              "Analyse FEATURES (any set of genomic features) "
+                              "against PEAKS (a set of regions) and report "
+                              "nearest features to each peak (and vice versa)")
     p.add_option('--cutoff',action='store',dest='max_distance',
                  type='int',default=max_distance,
                  help="Maximum distance allowed between peaks and "
@@ -66,17 +70,17 @@ if __name__ == '__main__':
                  help="Maximum number of hits to report from the analyses "
                  "(default %d; set to zero to report all hits)" %
                  max_closest)
-    p.add_option('--promoter_region',action="store",dest="promoter_region",
-                 default="%d,%d" % promoter_region,
-                 help="Define promoter region with respect to feature TSS "
-                 "in the form UPSTREAM,DOWNSTREAM (default -%d to %dbp of "
-                 "TSS)" %  promoter_region)
     p.add_option('--edge',action='store',dest="edge",type="choice",
                  choices=('tss','both'),default='tss',
                  help="Feature edges to consider when calculating distances "
                  "between features and peaks, either: 'tss' (default: only "
                  "use TSS) or 'both' (use whichever of TSS or TES gives "
                  "shortest distance)")
+    p.add_option('--promoter_region',action="store",dest="promoter_region",
+                 default="%d,%d" % promoter_region,
+                 help="Define promoter region with respect to feature TSS "
+                 "in the form UPSTREAM,DOWNSTREAM (default -%d to %dbp of "
+                 "TSS)" %  promoter_region)
     p.add_option('--only-DE',action='store_true',
                  dest='only_diff_expressed',default=False,
                  help="Only use features flagged as differentially expressed "
