@@ -3,8 +3,12 @@
 #     Copyright (C) University of Manchester 2011-5 Peter Briggs
 
 from common import *
+from rnachipintegrator.Peaks import Peak
+from rnachipintegrator.Features import Feature
 from rnachipintegrator.distances import regions_overlap
 from rnachipintegrator.distances import closestDistanceToRegion
+from rnachipintegrator.distances import edge_distances
+from rnachipintegrator.distances import tss_distances
 import unittest
 
 ########################################################################
@@ -93,3 +97,64 @@ class TestClosestDistanceToRegion(unittest.TestCase):
                                                  zero_inside_region=True),
                          0,
                          "Incorrect closest distance (inside region #2)")
+
+########################################################################
+#
+# TestEdgeDistancesFunction
+#
+#########################################################################
+
+class TestEdgeDistancesFunction(unittest.TestCase):
+    def test_distances_peak_before_feature(self):
+        self.assertEqual(edge_distances(Peak('chr1','100','200'),
+                                        Feature('NM1','chr1','250','400','+')),
+                         (50,200))
+    def test_distances_feature_before_peak(self):
+        self.assertEqual(edge_distances(Peak('chr1','250','400'),
+                                   Feature('NM2','chr1','100','200','+')),
+                         (50,150))
+    def test_distances_peak_overlaps_feature_start(self):
+        self.assertEqual(edge_distances(Peak('chr1','100','250'),
+                                   Feature('NM3','chr1','200','400','+')),
+                         (0,100))
+    def test_distances_feature_overlaps_peak_start(self):
+        self.assertEqual(edge_distances(Peak('chr1','250','350'),
+                                   Feature('NM4','chr1','300','400','+')),
+                         (0,50))
+    def test_distances_peak_contains_feature(self):
+        self.assertEqual(edge_distances(Peak('chr1','250','450'),
+                                   Feature('NM5','chr1','300','400','+')),
+                         (0,0))
+    def test_distances_feature_contains_peak(self):
+        self.assertEqual(edge_distances(Peak('chr1','250','350'),
+                                   Feature('NM6','chr1','100','400','+')),
+                         (0,0))
+
+########################################################################
+#
+# TestTSSDistancesFunction
+#
+#########################################################################
+
+class TestTSSDistancesFunction(unittest.TestCase):
+    def test_tss_distances_peak_before_TSS(self):
+        self.assertEqual(tss_distances(Peak('chr1','100','200'),
+                                       Feature('NM1','chr1','250','400','+')),
+                         (50,150))
+        self.assertEqual(tss_distances(Peak('chr1','100','200'),
+                                       Feature('NM1','chr1','250','400','-')),
+                         (200,300))
+    def test_tss_distances_TSS_before_peak(self):
+        self.assertEqual(tss_distances(Peak('chr1','250','400'),
+                                       Feature('NM2','chr1','100','200','+')),
+                         (150,300))
+        self.assertEqual(tss_distances(Peak('chr1','250','400'),
+                                       Feature('NM2','chr1','100','200','-')),
+                         (50,200))
+    def test_tss_distances_peak_contains_TSS(self):
+        self.assertEqual(tss_distances(Peak('chr1','100','250'),
+                                       Feature('NM3','chr1','200','400','+')),
+                         (0,75))
+        self.assertEqual(tss_distances(Peak('chr1','250','350'),
+                                       Feature('NM4','chr1','200','300','-')),
+                         (0,50))

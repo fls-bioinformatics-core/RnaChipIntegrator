@@ -107,3 +107,155 @@ def GetNearestTranscriptToPeak(rna_data1,rna_data2,chip_peak):
     else:
         # Transcript 1 is nearest
         return rna_data1
+
+def edge_distances(peak,feature):
+    """
+    Return distances between peak and feature edges
+
+    Arguments:
+      peak (Peak): peak instance
+      feature (Feature): feature instance
+
+    Returns:
+      tuple: a pair of distances, the first being the
+        smallest distance between an edge of the peak
+        region and an edge of the feature region and
+        the second being the distance from the same peak
+        edge to the opposite feature edge.
+        Both distances are zero if the peak is entirely
+        contained within the feature (or vice versa).
+        If there is partial overlap then the smallest
+        distance is returned as zero, the second is
+        the amount of the peak that lies outside the
+        feature.
+
+    """
+    if ((peak.start >= feature.start and
+         peak.end <= feature.end) or
+        (feature.start >= peak.start and
+         feature.end <= peak.end)):
+        # Peak entirely contained in feature (or vice versa)
+        return (0,0)
+    # All possible distances
+    ds_fs = abs(peak.start - feature.start)
+    ds_fe = abs(peak.start - feature.end)
+    de_fs = abs(peak.end - feature.start)
+    de_fe = abs(peak.end - feature.end)
+    if peak.start >= feature.start and peak.start <= feature.end:
+        # Peak start inside feature:
+        #
+        # |              PPPPPPP     |
+        # |--------FFFFFFFFF---------|
+        #
+        # Return distances from peak end to feature end
+        return (0,de_fe)
+    if peak.end >= feature.start and peak.end <= feature.end:
+        # Peak end inside feature
+        #
+        # |    PPPPPPP               |
+        # |--------FFFFFFFFF---------|
+        #
+        # Return distances from peak start to feature start
+        return (0,ds_fs)
+    if ds_fe < de_fs:
+        # No overlap: peak start to feature end is smallest
+        #
+        # |                PPPPPPP    |
+        # |----FFFFFFFFF--------------|
+        #
+        return (ds_fe,ds_fs)
+    else:
+        # No overlap: peak end to feature start is smallest
+        #
+        # |    PPPPPPP                |
+        # |-------------FFFFFFFFF-----|
+        #
+        return (de_fs,de_fe)
+
+def tss_distances(peak,feature):
+    """
+    Return distances between peak edges and feature TSS
+
+    Arguments:
+      peak (Peak): peak instance
+      feature (Feature): feature instance
+
+    Returns:
+      tuple: a pair of distances, the first being the
+        smallest distance between an edge of the peak
+        region to the TSS of the feature region, and
+        the second being the distance from the other peak
+        edge to the TSS.
+        If the TSS position is entirely contained within
+        the peak then the smallest distance is returned as
+        zero, the second is the average of the distances
+        to the two peak edges from the TSS.
+
+    """
+    # TSS is considered as a point
+    if (feature.tss >= peak.start and
+        feature.tss <= peak.end):
+        # TSS entirely contained in the peak
+        # Rank using the average distance of the peak
+        # edges from the TSS
+        return (0,(abs(feature.tss - peak.start) +
+                   abs(feature.tss - peak.end))/2)
+    # Possible distances to TSS
+    d_tss = [abs(feature.tss - peak.start),
+             abs(feature.tss - peak.end)]
+    d_tss.sort()
+    return tuple(d_tss)
+
+def distance_closest_edge(peak,feature):
+    """
+    Get distance from a peak to a feature
+
+    Arguments:
+      peak (Peak): peak
+      feature (Feature): feature
+
+    Returns:
+      int: Smallest absolute distance from the peak to
+        the feature.
+
+    """
+    return min(closestDistanceToRegion(peak.start,
+                                       feature.tss,feature.tes,
+                                       zero_inside_region=True),
+               closestDistanceToRegion(peak.end,
+                                       feature.tss,feature.tes,
+                                       zero_inside_region=True))
+
+def distance_tss(peak,feature):
+    """
+    Get distance from a peak to a feature TSS
+
+    Arguments:
+      peak (Peak): peak
+      feature (Feature): feature
+
+    Returns:
+      int: Smallest absolute distance from the peak to
+        the feature TSS.
+
+    """
+    return closestDistanceToRegion(feature.tss,
+                                   peak.start,peak.end,
+                                   zero_inside_region=True)
+
+def distance_tes(peak,feature):
+    """
+    Get distance from a peak to a feature TES
+
+    Arguments:
+      peak (Peak): peak
+      feature (Feature): feature
+
+    Returns:
+      int: Smallest absolute distance from the peak to
+        the feature TES.
+
+    """
+    return closestDistanceToRegion(feature.tes,
+                                   peak.start,peak.end,
+                                   zero_inside_region=True)

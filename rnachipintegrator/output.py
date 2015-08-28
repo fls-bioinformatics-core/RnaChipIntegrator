@@ -12,8 +12,6 @@ Functions for outputing analysis results
 """
 import distances
 from Peaks import Peak
-from analysis import distance_closest_edge
-from analysis import distance_tss,distance_tes
 
 #######################################################################
 # Constants
@@ -329,11 +327,11 @@ class AnalysisReporter:
         elif attr == 'differentially_expressed':
             return feature.flag
         elif attr == 'dist_closest':
-            return distance_closest_edge(peak,feature)
+            return distances.distance_closest_edge(peak,feature)
         elif attr == 'dist_TSS':
-            return distance_tss(peak,feature)
+            return distances.distance_tss(peak,feature)
         elif attr == 'dist_TES':
-            return distance_tes(peak,feature)
+            return distances.distance_tes(peak,feature)
         elif attr == 'overlap_feature' or attr == 'in_the_gene':
             if distances.regions_overlap((peak.start,peak.end),
                                          (feature.tss,feature.tes)):
