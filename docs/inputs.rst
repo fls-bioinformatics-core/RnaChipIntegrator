@@ -24,8 +24,9 @@ Optionally there can be a sixth column::
 
     ID  chr  start  end  strand  DE_flag
 
-If ``DE_flag`` is present then it is used to indicate whether the
-feature should be considered to be differentially expressed.
+If ``DE_flag`` is present then it can be used to indicate whether
+the feature should be considered to be differentially expressed;
+see :ref:`using_differential_expression_data`.
 
 Note that any additional columns will be are discarded.
 

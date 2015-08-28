@@ -13,6 +13,7 @@ example ChIP peaks) to identify the features to each peak, and vice versa.
    usage
    inputs
    outputs
+   examples
    credits
 
 

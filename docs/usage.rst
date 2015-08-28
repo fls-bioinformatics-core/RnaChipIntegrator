@@ -32,7 +32,11 @@ Distance to TSS versus 'feature edges'
 **************************************
 
 By default the distance between a peak and a feature is calculated
-as the distance from the feature TSS to the nearest peak edge.
+as the distance from the feature TSS to the nearest peak edge, for
+example:
+
+.. image:: nearest_tss.png
+   :align: center
 
 Alternatively distances can be calculated as the shortest distance
 between either of the peak edges to either the TSS or the TES of
@@ -40,10 +44,18 @@ the feature, by specifying the ``--edge=both`` option::
 
     RnaChipIntegrator.py --edge=both FEATURES PEAKS
 
+For example for the same arrangement as above this would generate a
+much smaller closest distance:
+
+.. image:: nearest_edge.png
+   :align: center
+
 .. note::
 
    Using ``--edge=both`` essentially makes the analyses
    'strand-agnostic'.
+
+.. _using_differential_expression_data:
 
 Using differential expression data
 **********************************
