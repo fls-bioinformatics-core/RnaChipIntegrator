@@ -1,3 +1,31 @@
+2015-09-01  Peter Briggs  <peter.briggs@manchester.ac.uk>
+
+	* Version 0.5.0-alpha.1
+	- Complete reimplementation of RnaChipIntegrator to unify internal
+	  algorithms, simplify usage and substantially update the
+	  documentation.
+	- No distinction is now made between 'summits' and 'peaks'; the
+	  same algorithm is applied in each case.
+	- The program always finds the nearest features to each peak, and
+	  vice versa. The same distance cutoff and maximum number of hits
+	  are applied to both and can be specified using the --cutoff and
+	  --number options.
+	- By default nearest distances between peaks and features are
+	  calculated from the TSS of the feature to whichever of the peak
+	  edges are closer; alternatively distances can be calculated
+	  between the nearest pair of peak/feature edges by specifying the
+	  --edge=both option.
+	- Any differential expression flags in the input features file
+	  are ignored unless the --only-DE option is specified, in which
+	  case only the differentially expressed features are considered
+	  in the analyses.
+	- By default each peak/feature pair is reported on a separate
+	  line; the --compact option reports all nearest features/peaks
+	  on a single line of output.
+	- Excel output is only produced if the --xls option is specified;
+	  summary output is only produced if --summary is specified.
+	- The 'rearrange_columns.py' utility has been dropped.
+
 2015-06-10  Peter Briggs  <peter.briggs@manchester.ac.uk>
 
 	* Version 0.4.4

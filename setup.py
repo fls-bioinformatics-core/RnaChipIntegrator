@@ -1,6 +1,7 @@
 """Description
 
-Setup script to install RnaChipIntegrator: analyses of ChIP-Seq and RNA-Seq data
+Setup script to install RnaChipIntegrator: analyses of peak data with
+genomic feature data
 
 Copyright (C) University of Manchester 2011-15 Peter Briggs, Leo Zeef &
 Ian Donaldson
