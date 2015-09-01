@@ -37,15 +37,10 @@ CpG islands) with expression data.
     tests_require = ['nose'],
     scripts = scripts,
     data_files = [ ('RnaChipIntegrator',
-                    ['README.markdown',
+                    ['README.rst',
                      'LICENSE',
                      'INSTALL',
-                     'ChangeLog']),
-                   ('RnaChipIntegrator/doc',
-                    ['doc/MANUAL.markdown',
-                     'doc/rnachipintegrator_nearestEdgetoPeak.png',
-                     'doc/rnachipintegrator_nearestTSStoSummit.png',
-                     'doc/rnachipintegrator_nearestTSStoPeak.png']) ],
+                     'ChangeLog']),],
     include_package_data=True,
     zip_safe = False
 )
