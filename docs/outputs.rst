@@ -124,3 +124,22 @@ For example::
     chr2R	4959563	4959564	---	---	---	---	---	---	---	---	---
     chr2R	4959563	4959564	---	---	---	---	---	---	---	---	---
 
+Feature type (``--feature``)
+----------------------------
+
+By default the program uses the generic term "feature" in its outputs
+to describe the genomic features being examined.
+
+A specific feature type can be specified using the ``--feature``
+option, for example::
+
+    --feature=gene
+
+in which case the work "feature" will be replaced by "gene" in output
+headers and so on.
+
+.. note::
+
+   The feature type is purely cosmetic and has no effect on the
+   distance calculations.
+

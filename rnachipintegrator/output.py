@@ -42,7 +42,7 @@ FIELDS = {
     'dist_TES': "distance between peak and feature TES",
     'overlap_feature': "1 if peak overlaps the feature, 0 if not",
     'overlap_promoter': "1 if peak overlaps the promoter region, 0 if not",
-    'in_the_gene': "'YES' if peak overlaps the feaure, 'NO' if not",
+    'in_the_feature': "'YES' if peak overlaps the feaure, 'NO' if not",
     'differentially_expressed': "1 if feature is differentially expressed, 0 if not",
     'order': "the 'order' of the feature/peak pair (e.g. '1 of 4')",
     'number_of_results': "number of hits being reported",
@@ -82,7 +82,7 @@ class AnalysisReporter:
     - dist_TES: distance between peak and feature TES
     - overlap_feature: 'YES' if peak overlaps the feaure, 'NO' if not
     - overlap_promoter: 1 if peak overlaps the promoter region, 0 if not
-    - in_the_gene: synonym for 'overlap_feature'
+    - in_the_feature: synonym for 'overlap_feature'
     - 'differentially_expressed': flag value for feature
 
     (In the field names above, the parts in (...) are optional e.g.
@@ -109,7 +109,8 @@ class AnalysisReporter:
     """
     def __init__(self,mode,fields,promoter_region=None,
                  max_hits=None,pad=False,
-                 null_placeholder='.'):
+                 null_placeholder='.',
+                 feature_type=None):
         """
         Create new AnalysisReporter instance
 
@@ -123,6 +124,9 @@ class AnalysisReporter:
             fields which evaluate to 'null'
           pad (bool): add extra 'None' items to output hits to
             pad out to max_closest results
+          feature_type (str): if not 'None' then replace 'feature'
+            with 'feature_type' (e.g. 'gene', 'transcript' etc) in
+            the output
 
         """
         self._fields = fields
@@ -133,6 +137,7 @@ class AnalysisReporter:
         self._pad = pad
         self._context_peak = None
         self._context_feature = None
+        self._feature_type = feature_type
 
     def report_nearest(self,reference,results):
         """
@@ -332,13 +337,13 @@ class AnalysisReporter:
             return distances.distance_tss(peak,feature)
         elif attr == 'dist_TES':
             return distances.distance_tes(peak,feature)
-        elif attr == 'overlap_feature' or attr == 'in_the_gene':
+        elif attr == 'overlap_feature' or attr == 'in_the_feature':
             if distances.regions_overlap((peak.start,peak.end),
                                          (feature.tss,feature.tes)):
                 overlap_feature = 1
             else:
                 overlap_feature = 0
-            if attr == 'in_the_gene':
+            if attr == 'in_the_feature':
                 overlap_feature = ('YES' if overlap_feature == 1 else 'NO')
             return overlap_feature
         elif attr == 'overlap_promoter':
@@ -371,7 +376,11 @@ class AnalysisReporter:
 
         """
         if self._mode == MULTI_LINE:
-            return '\t'.join(self._fields)
+            if self._feature_type is None:
+                return '\t'.join(self._fields)
+            else:
+                return '\t'.join([x.replace('feature',self._feature_type)
+                                  for x in self._fields])
         elif self._mode == SINGLE_LINE:
             header_fields = []
             for f in self._fields:
@@ -386,6 +395,9 @@ class AnalysisReporter:
                 except IndexError:
                     # Not a list
                     header_fields.append(f)
+            if self._feature_type is not None:
+                header_fields = [x.replace('feature',self._feature_type)
+                                 for x in header_fields]
             return '\t'.join(header_fields)
 
 class AnalysisReportWriter(AnalysisReporter):
@@ -398,7 +410,8 @@ class AnalysisReportWriter(AnalysisReporter):
 
     """
     def __init__(self,mode,fields,promoter_region=None,
-                 null_placeholder='.',max_hits=None,pad=None,
+                 null_placeholder='.',feature_type=None,
+                 max_hits=None,pad=None,
                  outfile=None,summary=None):
         """
         Create new AnalysisReportWriter instance
@@ -409,6 +422,9 @@ class AnalysisReportWriter(AnalysisReporter):
           promoter_region (tuple): promoter region extent (optional)
           null_placeholder (str): placeholder to use in output for
             fields which evaluate to 'null'
+          feature_type (str): if not 'None' then replace 'feature'
+            with 'feature_type' (e.g. 'gene', 'transcript' etc) in
+            the output
           max_hits (int): optional maximum number of hits to
             report for each set of results
           pad (bool): add extra 'None' items to output hits to
@@ -421,7 +437,8 @@ class AnalysisReportWriter(AnalysisReporter):
         AnalysisReporter.__init__(self,mode,fields,
                                   promoter_region=promoter_region,
                                   null_placeholder=null_placeholder,
-                                  pad=pad,max_hits=max_hits)
+                                  pad=pad,max_hits=max_hits,
+                                  feature_type=feature_type)
         if outfile is not None:
             # Open output file and write header
             self._fp = open(outfile,'w')

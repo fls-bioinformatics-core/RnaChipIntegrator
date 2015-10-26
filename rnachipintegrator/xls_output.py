@@ -26,10 +26,10 @@ Run on %s
 
 <style font=bold bgcolor=gray25>Settings</style>"""
 NOTES['features_to_peaks'] = """
-<style font=bold bgcolor=gray25>'Features': nearest features to each peak</style>
+<style font=bold bgcolor=gray25>'%ss': nearest %s to each peak</style>
 Column\tDescription"""
 NOTES['peaks_to_features'] = """
-<style font=bold bgcolor=gray25>'Peaks': nearest peaks to each feature</style>
+<style font=bold bgcolor=gray25>'Peaks': nearest peaks to each %s</style>
 Column\tDescription"""
 
 class XLS:
@@ -46,13 +46,16 @@ class XLS:
     >>> xls.write('results.xls')
 
     """
-    def __init__(self,program_version):
+    def __init__(self,program_version,feature_type=None):
         """
         Create a new XLS instance
 
         Arguments:
           program_version (str): name and version of the program
             that is writing the spreadsheet
+          feature_type (str): if not None then replace 'feature'
+            with 'feature_type' (e.g. 'gene', 'transcript' etc) in
+            the output
 
         """
         self._xls = Spreadsheet.Workbook()
@@ -62,6 +65,8 @@ class XLS:
         self._notes = self._xls.addSheet("Notes")
         self._notes.addText(NOTES['preamble'] % (program_version,
                                                  datetime.date.today()))
+        self._feature_type = ('feature' if feature_type is None
+                              else feature_type)
 
     def append_to_notes(self,text):
         """
@@ -82,7 +87,9 @@ class XLS:
           fields (list): list of fields in the output
 
         """
-        self.append_to_notes(NOTES['features_to_peaks'])
+        self.append_to_notes(NOTES['features_to_peaks'] %
+                             (self._feature_type.title(),
+                              self._feature_type))
         self.append_to_notes(self._field_descriptions(fields))
 
     def write_peaks_to_features(self,fields):
@@ -93,7 +100,7 @@ class XLS:
           fields (list): list of fields in the output
 
         """
-        self.append_to_notes(NOTES['peaks_to_features'])
+        self.append_to_notes(NOTES['peaks_to_features'] % self._feature_type)
         self.append_to_notes(self._field_descriptions(fields))
 
     def _field_descriptions(self,fields):
@@ -109,7 +116,9 @@ class XLS:
 
         """
         return '\n'.join(['\t'.join(x) for x in
-                          output.describe_fields(fields)])
+                          output.describe_fields(fields)]).\
+                             replace('feature',self._feature_type).\
+                             replace('Feature',self._feature_type.title())
 
     def add_result_sheet(self,title,tsv_file):
         """

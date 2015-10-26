@@ -99,6 +99,9 @@ if __name__ == '__main__':
                  "are still reported")
     p.add_option('--xls',action="store_true",dest="xls_output",
                  help="Output XLS spreadsheet with results")
+    p.add_option('--feature',action="store",dest="feature_type",
+                 help="rename features to FEATURE_TYPE in output (e.g. "
+                 "'gene', 'transcript' etc)")
     options,args = p.parse_args()
 
     # Input files
@@ -159,6 +162,12 @@ if __name__ == '__main__':
                           'dist_closest','dist_TSS','dist_TES')
         placeholder = '---'
 
+    # Feature type
+    if options.feature_type is None:
+        feature_type = 'feature'
+    else:
+        feature_type = options.feature_type
+
     # Report settings
     print "Input features file: %s" % feature_file
     print "Input peaks file   : %s" % peak_file
@@ -172,6 +181,8 @@ if __name__ == '__main__':
         print "Distances will be calculated from feature TSS only"
     else:
         print "Distances will be calculated from nearest of feature TSS or TES"
+    print
+    print "Features are %ss" % feature_type
     print
 
     # Read in feature data
@@ -233,7 +244,8 @@ if __name__ == '__main__':
                                            max_hits=max_closest,
                                            pad=options.pad_output,
                                            outfile=outfile,
-                                           summary=summary)
+                                           summary=summary,
+                                           feature_type=options.feature_type)
     for peak,nearest_features in analysis.find_nearest_features(
             peaks,features,tss_only=tss_only,distance=max_distance,
             only_differentially_expressed=use_differentially_expressed):
@@ -255,7 +267,8 @@ if __name__ == '__main__':
                                            max_hits=max_closest,
                                            pad=options.pad_output,
                                            outfile=outfile,
-                                           summary=summary)
+                                           summary=summary,
+                                           feature_type=options.feature_type)
     for feature,nearest_peaks in analysis.find_nearest_peaks(
             features,peaks,tss_only=tss_only,distance=max_distance,
             only_differentially_expressed=use_differentially_expressed):
@@ -269,9 +282,10 @@ if __name__ == '__main__':
     # Make XLS file
     if options.xls_output:
         print "**** Writing XLS file ****"
-        xls = xls_output.XLS(p.get_version())
+        xls = xls_output.XLS(p.get_version(),feature_type)
         # Write the settings
-        xls.append_to_notes("Input features file\t%s" % feature_file)
+        xls.append_to_notes("Input %ss file\t%s" % (feature_type,
+                                                    feature_file))
         xls.append_to_notes("Input peaks file\t%s" % peak_file)
         xls.append_to_notes("Maximum cutoff distance (bp)\t%d" % max_distance)
         xls.append_to_notes("Maximum no. of hits to report\t%d" % max_closest)
@@ -281,17 +295,15 @@ if __name__ == '__main__':
             xls.append_to_notes("Distances calculated from\tTSS only")
         else:
             xls.append_to_notes("Distances calculated from\tTSS or TES")
-        if use_differentially_expressed:
-            xls.append_to_notes("Only use differentially expressed features\t"
-                                "Yes")
-        else:
-            xls.append_to_notes("Only use differentially expressed features\t"
-                                "No")
+        xls.append_to_notes("Only use differentially expressed %ss\t%s" %
+                            (feature_type,
+                             "Yes" if use_differentially_expressed else "No"))
         # Add features to peaks
         xls.write_features_to_peaks(peak_fields)
-        xls.add_result_sheet('Features',basename+"_features_per_peak.txt")
+        xls.add_result_sheet('%ss' % feature_type.title(),
+                             basename+"_features_per_peak.txt")
         if options.summary:
-            xls.add_result_sheet('Features (summary)',
+            xls.add_result_sheet('%ss (summary)' % feature_type.title(),
                                  basename+"_features_per_peak_summary.txt")
         # Add peaks to features
         xls.write_peaks_to_features(feature_fields)
