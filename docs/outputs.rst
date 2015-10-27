@@ -69,9 +69,9 @@ Excel spreadsheet (``--xls``)
 -----------------------------
 
 Using the ``--xls`` option outputs an additional Excel spreadsheet
-file  ``BASENAME.xls``, which contains the results from all the
-tab-delimited files (include the summaries, if ``--summary`` was
-also specified, plus a 'notes' sheet with additional  information
+file ``BASENAME.xls``, which contains the results from all the
+tab-delimited files (including the summaries, if ``--summary`` was
+also specified), plus a 'notes' sheet with additional information
 about the results from each analysis.
 
 .. note::
