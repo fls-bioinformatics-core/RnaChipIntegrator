@@ -18,12 +18,12 @@ Peaks:
 
 The simplest example run::
 
-    RnaChipIntegrator.py --cutoff=130000 ExpressionData.txt ChIP_regions.txt
-    RnaChipIntegrator.py --cutoff=130000 ExpressionData.txt ChIP_summits.txt
+    RnaChipIntegrator --cutoff=130000 ExpressionData.txt ChIP_regions.txt
+    RnaChipIntegrator --cutoff=130000 ExpressionData.txt ChIP_summits.txt
 
 which will find the nearest peaks and features using the feature TSS
 position only.
 
 To analyse the region data considering both the TSS and TES positions::
 
-    RnaChipIntegrator.py --cutoff=130000 --edge=both ExpressionData.txt ChIP_regions.txt
+    RnaChipIntegrator --cutoff=130000 --edge=both ExpressionData.txt ChIP_regions.txt

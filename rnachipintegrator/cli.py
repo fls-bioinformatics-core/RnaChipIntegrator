@@ -29,23 +29,31 @@ import sys
 import os
 import optparse
 import time,datetime
-from rnachipintegrator.Features import FeatureSet
-from rnachipintegrator.Peaks import PeakSet
-import rnachipintegrator.analysis as analysis
-import rnachipintegrator.output as output
-import rnachipintegrator.xls_output as xls_output
+from .Features import FeatureSet
+from .Peaks import PeakSet
+import analysis
+import output
+import xls_output
 import logging
 logging.getLogger().setLevel(logging.WARNING)
 logging.basicConfig(format='%(levelname)s: %(message)s')
 
-import rnachipintegrator
-__version__ = rnachipintegrator.get_version()
+from . import get_version
+__version__ = get_version()
 
 #######################################################################
 # Main program
 #######################################################################
 
-if __name__ == '__main__':
+def main(args=None):
+    """
+    Implements the 'RnaChipIntegrator' CLI
+
+    """
+
+    # Command line arguments
+    if args is None:
+        args = sys.argv[1:]
     
     # Defaults
     promoter_region = (1000,100)

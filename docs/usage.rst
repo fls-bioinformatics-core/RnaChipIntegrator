@@ -6,7 +6,7 @@ Basic usage
 
 The simplest form of usage is::
 
-    RnaChipIntegrator.py FEATURES PEAKS
+    RnaChipIntegrator FEATURES PEAKS
 
 where ``FEATURES`` and ``PEAKS`` are tab-delimited files containing
 the genomic feature and peak data respecitively.
@@ -42,7 +42,7 @@ Alternatively distances can be calculated as the shortest distance
 between either of the peak edges to either the TSS or the TES of
 the feature, by specifying the ``--edge=both`` option::
 
-    RnaChipIntegrator.py --edge=both FEATURES PEAKS
+    RnaChipIntegrator --edge=both FEATURES PEAKS
 
 For example for the same arrangement as above this would generate a
 much smaller closest distance:
@@ -64,6 +64,6 @@ If the input feature data contains a differential expression flag
 (see :ref:`features_data_file`) then this can be used in the analysis
 by turning on the ``--only-DE`` option::
 
-    RnaChipIntegrator.py --only-DE FEATURES PEAKS
+    RnaChipIntegrator --only-DE FEATURES PEAKS
 
 which will only included the flagged features in the analyses.

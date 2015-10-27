@@ -30,6 +30,9 @@ CpG islands) with expression data.
     maintainer = 'Peter Briggs',
     maintainer_email = 'peter.briggs@manchester.ac.uk',
     packages = ['rnachipintegrator'],
+    entry_points = { 'console_scripts': [
+        'RnaChipIntegrator = rnachipintegrator.cli:main',]
+    },
     license = 'Artistic License',
     install_requires = ['xlwt >= 0.7.2',
                         'xlrd >= 0.7.1',

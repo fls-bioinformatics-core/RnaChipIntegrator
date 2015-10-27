@@ -16,7 +16,7 @@ Basic usage
 
 The simplest use of the program is::
 
-    RnaChipIntegrator.py FEATURES PEAKS
+    RnaChipIntegrator FEATURES PEAKS
 
 where ``FEATURES`` and ``PEAKS`` are tab-delimited files containing
 the genomic feature and peak data respecitively.
@@ -26,7 +26,7 @@ and the nearest peaks for each feature.
 
 Use::
 
-    RnaChipIntegrator.py -h
+    RnaChipIntegrator -h
 
 to see the full set of options for controlling the analyses and the
 outputs.

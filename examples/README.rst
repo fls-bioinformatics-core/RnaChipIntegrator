@@ -3,13 +3,13 @@ RnaChipIntegrator: examples
 
 This directory contains three example data files:
 
- * `ExpressionData.txt` has sample expression data
- * `ChIP_summits.txt` has sample ChIP peak summit data
- * `ChIP_regions.txt` has sample ChIP peak region data
+ * ``ExpressionData.txt`` has sample expression data
+ * ``ChIP_summits.txt`` has sample ChIP peak summit data
+ * ``ChIP_regions.txt`` has sample ChIP peak region data
 
-RnaChipIntegrator can be run on these data files as follows:
+RnaChipIntegrator can be run on these data files as follows::
 
-    RnaChipIntegrator.py --cutoff=130000 ExpressionData.txt ChIP_regions.txt
-    RnaChipIntegrator.py --cutoff=130000 ExpressionData.txt ChIP_summits.txt
+    RnaChipIntegrator --cutoff=130000 ExpressionData.txt ChIP_regions.txt
+    RnaChipIntegrator --cutoff=130000 ExpressionData.txt ChIP_summits.txt
 
 --
