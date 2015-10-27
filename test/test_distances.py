@@ -9,6 +9,7 @@ from rnachipintegrator.distances import regions_overlap
 from rnachipintegrator.distances import closestDistanceToRegion
 from rnachipintegrator.distances import edge_distances
 from rnachipintegrator.distances import tss_distances
+from rnachipintegrator.distances import direction
 import unittest
 
 ########################################################################
@@ -158,3 +159,97 @@ class TestTSSDistancesFunction(unittest.TestCase):
         self.assertEqual(tss_distances(Peak('chr1','250','350'),
                                        Feature('NM4','chr1','200','300','-')),
                          (0,50))
+
+########################################################################
+#
+# TestDirectionFunction
+#
+#########################################################################
+
+from rnachipintegrator.distances import UPSTREAM,DOWNSTREAM,OVERLAP
+
+class TestDirectionFunction(unittest.TestCase):
+    # Positive strand, peak relative to feature
+    def test_peak_upstream_from_feature(self):
+        peak = Peak('chr1','100','200')
+        feature = Feature('NM1','chr1','250','400','+')
+        self.assertEqual(direction(feature,peak),UPSTREAM)
+    def test_peak_downstream_from_feature(self):
+        peak = Peak('chr1','450','550')
+        feature = Feature('NM1','chr1','250','400','+')
+        self.assertEqual(direction(feature,peak),DOWNSTREAM)
+    def test_peak_upstream_from_feature_partial_overlap(self):
+        peak = Peak('chr1','100','300')
+        feature = Feature('NM1','chr1','250','400','+')
+        self.assertEqual(direction(feature,peak),UPSTREAM)
+    def test_peak_downstream_from_feature_partial_overlap(self):
+        peak = Peak('chr1','350','550')
+        feature = Feature('NM1','chr1','250','400','+')
+        self.assertEqual(direction(feature,peak),DOWNSTREAM)
+    def test_peak_full_overlap_feature(self):
+        peak = Peak('chr1','200','450')
+        feature = Feature('NM1','chr1','250','400','+')
+        self.assertEqual(direction(feature,peak),OVERLAP)
+    # Negative strand, peak relative to feature
+    def test_peak_upstream_from_feature_neg_strand(self):
+        peak = Peak('chr1','100','200')
+        feature = Feature('NM1','chr1','250','400','-')
+        self.assertEqual(direction(feature,peak),DOWNSTREAM)
+    def test_peak_downstream_from_feature_neg_strand(self):
+        peak = Peak('chr1','450','550')
+        feature = Feature('NM1','chr1','250','400','-')
+        self.assertEqual(direction(feature,peak),UPSTREAM)
+    def test_peak_upstream_from_feature_neg_strand_partial_overlap(self):
+        peak = Peak('chr1','100','300')
+        feature = Feature('NM1','chr1','250','400','-')
+        self.assertEqual(direction(feature,peak),DOWNSTREAM)
+    def test_peak_downstream_from_feature_neg_strand_partial_overlap(self):
+        peak = Peak('chr1','350','550')
+        feature = Feature('NM1','chr1','250','400','-')
+        self.assertEqual(direction(feature,peak),UPSTREAM)
+    def test_peak_full_overlap_feature_neg_strand(self):
+        peak = Peak('chr1','200','450')
+        feature = Feature('NM1','chr1','250','400','-')
+        self.assertEqual(direction(feature,peak),OVERLAP)
+    # Positive strand, feature relative to peak
+    def test_feature_upstream_from_peak(self):
+        peak = Peak('chr1','450','550')
+        feature = Feature('NM1','chr1','250','400','+')
+        self.assertEqual(direction(peak,feature),UPSTREAM)
+    def test_feature_downstream_from_peak(self):
+        peak = Peak('chr1','100','200')
+        feature = Feature('NM1','chr1','250','400','+')
+        self.assertEqual(direction(peak,feature),DOWNSTREAM)
+    def test_feature_upstream_from_peak_partial_overlap(self):
+        peak = Peak('chr1','350','550')
+        feature = Feature('NM1','chr1','250','400','+')
+        self.assertEqual(direction(peak,feature),UPSTREAM)
+    def test_feature_downstream_from_peak_partial_overlap(self):
+        peak = Peak('chr1','100','300')
+        feature = Feature('NM1','chr1','250','400','+')
+        self.assertEqual(direction(peak,feature),DOWNSTREAM)
+    def test_feature_full_overlap_peak(self):
+        peak = Peak('chr1','200','450')
+        feature = Feature('NM1','chr1','250','400','+')
+        self.assertEqual(direction(peak,feature),OVERLAP)
+    # Negative strand, feature relative to peak
+    def test_feature_upstream_from_peak_neg_strand(self):
+        peak = Peak('chr1','100','200')
+        feature = Feature('NM1','chr1','250','400','-')
+        self.assertEqual(direction(peak,feature),UPSTREAM)
+    def test_feature_downstream_from_peak_neg_strand(self):
+        peak = Peak('chr1','450','550')
+        feature = Feature('NM1','chr1','250','400','-')
+        self.assertEqual(direction(peak,feature),DOWNSTREAM)
+    def test_feature_upstream_from_peak_neg_strand_partial_overlap(self):
+        peak = Peak('chr1','100','300')
+        feature = Feature('NM1','chr1','250','400','-')
+        self.assertEqual(direction(peak,feature),UPSTREAM)
+    def test_feature_downstream_from_peak_neg_strand_partial_overlap(self):
+        peak = Peak('chr1','350','550')
+        feature = Feature('NM1','chr1','250','400','-')
+        self.assertEqual(direction(peak,feature),DOWNSTREAM)
+    def test_feature_full_overlap_peak_neg_strand(self):
+        peak = Peak('chr1','200','450')
+        feature = Feature('NM1','chr1','250','400','-')
+        self.assertEqual(direction(peak,feature),OVERLAP)

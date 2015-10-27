@@ -14,8 +14,20 @@ Functions for determining distances and overlaps:
 - regions_overlap:            determine if two regions have any overlap
 - GetNearestTranscriptToPeak: compare two transcripts against the same
                               region
+- direction:                  indicate whether two regions are upstream,
+                              downstream, or overlapping
+
+Also defines constants:
+
+- UPSTREAM
+- DOWNSTREAM
+- OVERLAP
 
 """
+# Module constants (used for 'direction' function)
+UPSTREAM = -1
+DOWNSTREAM = 1
+OVERLAP = 0
 
 def closestDistanceToRegion(reference,position1,position2=None,
                             zero_inside_region=False):
@@ -259,3 +271,77 @@ def distance_tes(peak,feature):
     return closestDistanceToRegion(feature.tes,
                                    peak.start,peak.end,
                                    zero_inside_region=True)
+
+def direction(region1,region2,strand=None):
+    """
+    Direction (up- or downstream) of one region relative to another
+
+    Given two regions (either Peak or Feature instances),
+    determine the direction of the second region relative to
+    the first.
+
+    For positive strand, 'upstream' means that the test region
+    occurs "before" the reference (i.e. has smaller coordinate
+    positions), 'downstream' indicates it occurs after. For the
+    negative strand the meaning is reversed.
+
+    If region1 partially overlaps region2 then the upstream or
+    downstream position will still be determined. However if
+    one region wholly overlaps the other then 'overlap' will
+    be returned instead.
+
+    Arguments:
+      region1 (Peak/Feature): reference region
+      region2 (Peak/Feature): region to get direction of
+        relative to region1
+      strand (str): (optional) explicit strand direction
+        ('+' or '-').
+
+    Returns:
+      int: UPSTREAM, DOWNSTREAM or OVERLAP (module constants)
+        indicating direction of test region relative to
+        reference region.
+
+    """
+    # Get strandedness info
+    if strand is None:
+        try:
+            strand = region1.strand
+        except AttributeError:
+            try:
+                strand = region2.strand
+            except AttributeError:
+                strand = '+'
+    # Check for overlapping regions
+    if (region1.start >= region2.start and region1.end <= region2.end) or \
+       (region2.start >= region1.start and region2.end <= region1.end):
+        return OVERLAP
+    if region2.start >= region1.start and region2.start <= region1.end:
+        # region2 start inside feature:
+        #
+        # |              2222222     |
+        # |--------111111111---------|
+        #
+        # Return distances from peak end to feature end
+        return (DOWNSTREAM if strand == '+' else UPSTREAM)
+    if region2.end >= region1.start and region2.end <= region1.end:
+        # region2 end inside region1
+        #
+        # |    2222222               |
+        # |--------111111111---------|
+        #
+        return (UPSTREAM if strand == '+' else DOWNSTREAM)
+    if region1.end < region2.start:
+        # No overlap: peak start to feature end is smallest
+        #
+        # |                2222222    |
+        # |----111111111--------------|
+        #
+        return (DOWNSTREAM if strand == '+' else UPSTREAM)
+    else:
+        # No overlap: region2 is downstream of region1
+        #
+        # |    2222222                |
+        # |-------------111111111-----|
+        #
+        return (UPSTREAM if strand == '+' else DOWNSTREAM)
