@@ -84,6 +84,14 @@ chr3L	12139192	12139193
 chr3L	14983597	14983598
 chr3L	17004143	17004144"""
 #
+# ChIP_peaks_multi_columns-ex1.txt
+chip_peaks_multi_columns_ex1 = \
+"""peak1	chr3L	66.1	4252919	4252920
+peak2	chr3L	49.9	9502640	9502641
+peak3	chr3L	50.0	12139192	12139193
+peak4	chr3L	89.2	14983597	14983598
+peak5	chr3L	63.4	17004143	17004144"""
+#
 # ChIP_peaks-ex2.txt 
 chip_peaks_ex2 = \
 """chr2L	66811	66812

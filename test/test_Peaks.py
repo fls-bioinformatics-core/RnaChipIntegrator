@@ -16,6 +16,8 @@ class TestPeakSet(unittest.TestCase):
         create_test_file('ChIP_peaks-ex1.txt',chip_peaks_ex1)
         create_test_file('ChIP_peaks-ex2.txt',chip_peaks_ex2)
         create_test_file('ChIP_peaks-ex5.txt',chip_peaks_ex5)
+        create_test_file('ChIP_peaks_multi_columns-ex1.txt',
+                         chip_peaks_multi_columns_ex1)
 
     def tearDown(self):
         # Remove input files
@@ -27,6 +29,22 @@ class TestPeakSet(unittest.TestCase):
         peaks = PeakSet('ChIP_peaks-ex1.txt')
         self.assertEqual(len(peaks),5,
                          "Wrong number of lines read from ChIP-seq file")
+        self.assertEqual(peaks[0],Peak('chr3L',4252919,4252920))
+        self.assertEqual(peaks[1],Peak('chr3L',9502640,9502641))
+        self.assertEqual(peaks[2],Peak('chr3L',12139192,12139193))
+        self.assertEqual(peaks[3],Peak('chr3L',14983597,14983598))
+        self.assertEqual(peaks[4],Peak('chr3L',17004143,17004144))
+
+    def test_reading_in_ChIPseq_data_custom_columns(self):
+        peaks = PeakSet('ChIP_peaks_multi_columns-ex1.txt',
+                        columns=(2,4,5))
+        self.assertEqual(len(peaks),5,
+                         "Wrong number of lines read from ChIP-seq file")
+        self.assertEqual(peaks[0],Peak('chr3L',4252919,4252920))
+        self.assertEqual(peaks[1],Peak('chr3L',9502640,9502641))
+        self.assertEqual(peaks[2],Peak('chr3L',12139192,12139193))
+        self.assertEqual(peaks[3],Peak('chr3L',14983597,14983598))
+        self.assertEqual(peaks[4],Peak('chr3L',17004143,17004144))
 
     def test_populate_from_list_of_peaks(self):
         peaks = PeakSet(

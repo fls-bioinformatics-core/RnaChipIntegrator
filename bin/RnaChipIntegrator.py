@@ -102,6 +102,10 @@ if __name__ == '__main__':
     p.add_option('--feature',action="store",dest="feature_type",
                  help="rename features to FEATURE_TYPE in output (e.g. "
                  "'gene', 'transcript' etc)")
+    p.add_option('--peak_cols',action="store",dest="peak_cols",
+                 help="list of 3 column indices (e.g. '1,4,5') indicating "
+                 "columns to use for chromosome, start and end from the "
+                 "input peak file (if not first three columns).")
     options,args = p.parse_args()
 
     # Input files
@@ -168,6 +172,16 @@ if __name__ == '__main__':
     else:
         feature_type = options.feature_type
 
+    # Columns to extract from input peaks file
+    if options.peak_cols is None:
+        peak_cols = (1,2,3)
+    else:
+        try:
+            peak_cols = tuple([int(x)
+                               for x in options.peak_cols.split(',')])
+        except Exception, ex:
+            p.error("Bad column assignment for --peak_cols")
+
     # Report settings
     print "Input features file: %s" % feature_file
     print "Input peaks file   : %s" % peak_file
@@ -214,7 +228,9 @@ if __name__ == '__main__':
     print
 
     # Read in peak data
-    peaks = PeakSet(peak_file)
+    print "Using columns %s from peaks file as chrom, start, end" % \
+        (peak_cols,)
+    peaks = PeakSet(peak_file,columns=peak_cols)
     if not len(peaks):
         logging.error("No peak data read in")
         sys.exit(1)

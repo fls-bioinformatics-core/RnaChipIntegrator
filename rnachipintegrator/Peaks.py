@@ -24,7 +24,8 @@ class PeakSet:
     based on various criteria.
 
     """
-    def __init__(self,peaks_file=None,peaks_list=None):
+    def __init__(self,peaks_file=None,peaks_list=None,
+                 columns=None):
         """Create a new PeakSet instance
         
         Arguments:
@@ -32,44 +33,61 @@ class PeakSet:
             to read the peak data from
           peaks_list (list): (optional) list of Peak objects to
             populate the PeakSet with
+          columns (tuple): (optional) tuple with 3 integers
+            indicating which columns to use from the input
+            ``peaks_file`` for the chromosome, start and end
+            columns (if not the first three columns). The
+            columns should be numbered from 1.
 
         """
         self.peaks = []
         if peaks_file:
-            self.loadPeaksFromFile(peaks_file)
+            self.loadPeaksFromFile(peaks_file,columns=columns)
         elif peaks_list:
             for peak in peaks_list:
                 self.addPeak(peak)
 
-    def loadPeaksFromFile(self,peaks_file):
+    def loadPeaksFromFile(self,peaks_file,columns=None):
         """Read peaks data from a file and populate the object
 
         Arguments:
-          peaks_file: the name of the input file to read peaks
-          data from.
+          peaks_file (str): the name of the input file to read peaks
+            data from.
+          columns (tuple): (optional) tuple with 3 integers
+            indicating which columns to use from the input
+            ``peaks_file`` for the chromosome, start and end
+            columns (if not the first three columns). The
+            columns should be numbered from 1.
 
         """
+        # Handle columns
+        if columns is None:
+            columns = (1,2,3)
+        chrom = columns[0] - 1
+        start = columns[1] - 1
+        end = columns[2] - 1
+        ncols = max(chrom,start,end) + 1
+        # Read in from file
         fp = open(peaks_file,'rU')
         for line in fp:
             # Skip lines that start with a # symbol
             if line.startswith('#'):
                 logging.debug("Peaks file: skipped line: %s" % line.strip())
                 continue
-            # Lines are tab-delimited and have at least 3 columns:
-            # chr  start  end
+            # Lines are tab-delimited
             items = line.strip().split('\t')
-            if len(items) < 3:
+            if len(items) < ncols:
                 logging.warning("Peaks file: skipped line: %s" % line.strip())
-                logging.warning("Insufficient number of fields (%d)" % \
-                                    len(items))
+                logging.warning("Insufficient number of fields (%d): need at "
+                                "least %d" % (len(items),ncols))
                 continue
-            # Check that items in 2nd and 3rd columns are digits
-            if not items[1].isdigit() or not items[2].isdigit():
+            # Check that items in 'start' and 'end' columns are digits
+            if not items[start].isdigit() or not items[end].isdigit():
                 logging.warning("Peaks file: skipped line: %s" % line.strip())
                 # Indicate problem field(s)
                 errline = []
                 for i in range(len(items)):
-                    if i == 1 or i == 2:
+                    if i == start or i == end:
                         if not items[i].isdigit():
                             errline.append("^"*len(items[i]))
                         else:
@@ -78,11 +96,12 @@ class PeakSet:
                         errline.append(" "*len(items[i]))
                 logging.warning("                         %s" % \
                                     ('\t'.join(errline)))
+                logging.warning("Expected integer at indicated positions")
                 continue
             # Store in a new Peak object
-            peak = Peak(items[0],
-                        items[1],
-                        items[2])
+            peak = Peak(items[chrom],
+                        items[start],
+                        items[end])
             self.peaks.append(peak)
         fp.close()
         # Return a reference to this object
