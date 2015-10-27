@@ -31,6 +31,8 @@ TES	         feature TES position
 dist_closest	 closest distance between peak and feature
 dist_TSS	 distance between peak and feature TSS
 dist_TES	 distance between peak and feature TES
+direction        'U' if hit is upstream, 'D' if downstream, '.' if
+                 overlapped
 overlap_feature	 1 if peak overlaps the feature, 0 if not
 overlap_promoter 1 if peak overlaps the promoter region, 0 if not
 ================ ================================================
