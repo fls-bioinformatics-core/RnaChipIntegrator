@@ -196,7 +196,7 @@ if __name__ == '__main__':
     else:
         print "Distances will be calculated from nearest of feature TSS or TES"
     print
-    print "Features are %ss" % feature_type
+    print "Features will be referred to as '%ss'" % feature_type
     print
 
     # Read in feature data
