@@ -389,23 +389,25 @@ class TestDescribeFieldsFunction(unittest.TestCase):
 
     def test_describe_derived_fields(self):
         desc = describe_fields(('dist_closest',
-                                      'dist_TSS','dist_TES',
-                                      'overlap_feature',
-                                      'overlap_promoter',
-                                      'in_the_feature',
-                                      'order','number_of_results'))
+                                'dist_TSS','dist_TES',
+                                'direction',
+                                'overlap_feature',
+                                'overlap_promoter',
+                                'in_the_feature',
+                                'order','number_of_results'))
         self.assertEqual(desc[0],('dist_closest',
                                   output.FIELDS['dist_closest']))
         self.assertEqual(desc[1],('dist_TSS',output.FIELDS['dist_TSS']))
         self.assertEqual(desc[2],('dist_TES',output.FIELDS['dist_TES']))
-        self.assertEqual(desc[3],('overlap_feature',
+        self.assertEqual(desc[3],('direction',output.FIELDS['direction']))
+        self.assertEqual(desc[4],('overlap_feature',
                                   output.FIELDS['overlap_feature']))
-        self.assertEqual(desc[4],('overlap_promoter',
+        self.assertEqual(desc[5],('overlap_promoter',
                                   output.FIELDS['overlap_promoter']))
-        self.assertEqual(desc[5],('in_the_feature',
+        self.assertEqual(desc[6],('in_the_feature',
                                   output.FIELDS['in_the_feature']))
-        self.assertEqual(desc[6],('order',output.FIELDS['order']))
-        self.assertEqual(desc[7],('number_of_results',
+        self.assertEqual(desc[7],('order',output.FIELDS['order']))
+        self.assertEqual(desc[8],('number_of_results',
                                   output.FIELDS['number_of_results']))
 
     def test_describe_listed_fields_for_peaks(self):
