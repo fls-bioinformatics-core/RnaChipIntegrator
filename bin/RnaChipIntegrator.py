@@ -146,7 +146,8 @@ if __name__ == '__main__':
     if options.compact:
         mode = output.SINGLE_LINE
         peak_fields = ('chr','start','end','list(feature.id)')
-        feature_fields = ('feature.id','list(chr,start,end,dist_closest)')
+        feature_fields = ('feature.id',
+                          'list(chr,start,end,dist_closest,direction)')
         placeholder = '.'
         if options.summary:
             options.summary = False
@@ -157,6 +158,7 @@ if __name__ == '__main__':
         peak_fields = ('chr','start','end',
                        'feature.id','strand','TSS','TES',
                        'dist_closest','dist_TSS','dist_TES',
+                       'direction',
                        'overlap_feature',
                        'overlap_promoter')
         feature_fields = ('feature.id',

@@ -43,6 +43,7 @@ FIELDS = {
     'overlap_feature': "1 if peak overlaps the feature, 0 if not",
     'overlap_promoter': "1 if peak overlaps the promoter region, 0 if not",
     'in_the_feature': "'YES' if peak overlaps the feaure, 'NO' if not",
+    'direction': "'U' if hit is upstream, 'D' if downstream, '.' if overlapped",
     'differentially_expressed': "1 if feature is differentially expressed, 0 if not",
     'order': "the 'order' of the feature/peak pair (e.g. '1 of 4')",
     'number_of_results': "number of hits being reported",
@@ -137,6 +138,7 @@ class AnalysisReporter:
         self._pad = pad
         self._context_peak = None
         self._context_feature = None
+        self._is_features = None
         self._feature_type = feature_type
 
     def report_nearest(self,reference,results):
@@ -164,10 +166,11 @@ class AnalysisReporter:
         # Initialise and set the context
         if isinstance(reference,Peak):
             self._context_peak = reference
-            is_features = True
+            self._is_features = True
         else:
             self._context_feature = reference
-            is_features = False
+            self._is_features = False
+        is_features = self._is_features
         # Reduce to maximum number of hits
         if self._max_hits is not None:
             results = results[:self._max_hits]
@@ -228,6 +231,7 @@ class AnalysisReporter:
         # Reset the context
         self._context_peak = None
         self._context_feature = None
+        self._is_features = None
 
     def report_nearest_features(self,peak,features):
         """
@@ -309,6 +313,7 @@ class AnalysisReporter:
         """
         peak = self._context_peak
         feature = self._context_feature
+        is_features = self._is_features
         if attr == 'chr' or attr == 'peak.chr':
             return peak.chrom
         elif attr == 'peak.start' or attr == 'start':
@@ -358,6 +363,17 @@ class AnalysisReporter:
                 raise Exception("'overlap_promoter' requested but no "
                                 "promoter region has been defined")
             return overlap_promoter
+        elif attr == 'direction':
+            if self._is_features:
+                direction = distances.direction(feature,peak)
+            else:
+                direction = distances.direction(peak,feature)
+            if direction == distances.UPSTREAM:
+                return 'U'
+            elif direction == distances.DOWNSTREAM:
+                return 'D'
+            else:
+                return '.'
         elif attr == 'features_inbetween':
             raise NotImplementedError("'features_inbetween' not implemented")
         else:
