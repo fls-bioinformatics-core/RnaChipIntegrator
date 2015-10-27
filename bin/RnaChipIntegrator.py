@@ -319,12 +319,18 @@ if __name__ == '__main__':
         xls.add_result_sheet('%ss' % feature_type.title(),
                              basename+"_features_per_peak.txt")
         if options.summary:
+            xls.append_to_notes("\n'%ss (summary)' lists the 'top' result "
+                                "(i.e. closest peak/%s pair) for each peak"
+                                % (feature_type.title(),feature_type))
             xls.add_result_sheet('%ss (summary)' % feature_type.title(),
                                  basename+"_features_per_peak_summary.txt")
         # Add peaks to features
         xls.write_peaks_to_features(feature_fields)
         xls.add_result_sheet('Peaks',basename+"_peaks_per_feature.txt")
         if options.summary:
+            xls.append_to_notes("\n'Peaks (summary)' lists the 'top' result "
+                                "(i.e. closest %s/peak pair) for each %s"
+                                % (feature_type,feature_type))
             xls.add_result_sheet('Peaks (summary)',
                                  basename+"_peaks_per_feature_summary.txt")
         xls.write(basename+'.xls')
