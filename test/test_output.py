@@ -54,6 +54,32 @@ class TestAnalysisReporterHeader(unittest.TestCase):
         self.assertEqual(ap.make_header(),
                          "feature.id\tfeature.chr\tfeature.start\tfeature.end\tpeak.chr\tpeak.start\tpeak.end")
 
+    def test_make_header_single_line_custom_feature_type(self):
+        ap = AnalysisReporter(output.SINGLE_LINE,
+                              fields=('peak.chr',
+                                      'peak.start',
+                                      'peak.end',
+                                      'number_of_results',
+                                      'list(feature.id)'),
+                              feature_type='gene',
+                              max_hits=2)
+        self.assertEqual(ap.make_header(),
+                         "peak.chr\tpeak.start\tpeak.end\tnumber_of_results\tgene.id_1\tgene.id_2")
+
+    def test_make_header_multi_line_custom_feature_type(self):
+        ap = AnalysisReporter(output.MULTI_LINE,
+                              fields=('feature.id',
+                                      'feature.chr',
+                                      'feature.start',
+                                      'feature.end',
+                                      'peak.chr',
+                                      'peak.start',
+                                      'peak.end'),
+                              feature_type='gene',
+                              max_hits=2)
+        self.assertEqual(ap.make_header(),
+                         "gene.id\tgene.chr\tgene.start\tgene.end\tpeak.chr\tpeak.start\tpeak.end")
+
 class TestAnalysisReporterNearestFeatures(unittest.TestCase):
 
     def setUp(self):
@@ -366,7 +392,7 @@ class TestDescribeFieldsFunction(unittest.TestCase):
                                       'dist_TSS','dist_TES',
                                       'overlap_feature',
                                       'overlap_promoter',
-                                      'in_the_gene',
+                                      'in_the_feature',
                                       'order','number_of_results'))
         self.assertEqual(desc[0],('dist_closest',
                                   output.FIELDS['dist_closest']))
@@ -376,7 +402,8 @@ class TestDescribeFieldsFunction(unittest.TestCase):
                                   output.FIELDS['overlap_feature']))
         self.assertEqual(desc[4],('overlap_promoter',
                                   output.FIELDS['overlap_promoter']))
-        self.assertEqual(desc[5],('in_the_gene',output.FIELDS['in_the_gene']))
+        self.assertEqual(desc[5],('in_the_feature',
+                                  output.FIELDS['in_the_feature']))
         self.assertEqual(desc[6],('order',output.FIELDS['order']))
         self.assertEqual(desc[7],('number_of_results',
                                   output.FIELDS['number_of_results']))
