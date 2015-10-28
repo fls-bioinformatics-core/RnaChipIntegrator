@@ -124,7 +124,8 @@ class AnalysisReporter:
           null_placeholder (str): placeholder to use in output for
             fields which evaluate to 'null'
           pad (bool): add extra 'None' items to output hits to
-            pad out to max_closest results
+            pad out to max_closest results (n.b. padding is
+            always performed in SINGLE_LINE mode)
           feature_type (str): if not 'None' then replace 'feature'
             with 'feature_type' (e.g. 'gene', 'transcript' etc) in
             the output
@@ -178,7 +179,7 @@ class AnalysisReporter:
             results = results[:]
         nresults = len(results)
         # Pad with null results
-        if self._pad:
+        if self._mode == SINGLE_LINE or self._pad:
             while len(results) < self._max_hits:
                 if is_features:
                     results.addFeature(None)

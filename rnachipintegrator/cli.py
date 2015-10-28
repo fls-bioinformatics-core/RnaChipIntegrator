@@ -104,7 +104,7 @@ def main(args=None):
     p.add_option('--pad',action="store_true",dest="pad_output",
                  help="Where less than MAX_CLOSEST hits are found, pad "
                  "output with blanks to ensure that MAX_CLOSEST hits "
-                 "are still reported")
+                 "are still reported (nb --pad is implied for --compact)")
     p.add_option('--xls',action="store_true",dest="xls_output",
                  help="Output XLS spreadsheet with results")
     p.add_option('--feature',action="store",dest="feature_type",
