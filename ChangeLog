@@ -1,3 +1,17 @@
+2015-10-28  Peter Briggs  <peter.briggs@manchester.ac.uk>
+
+	* Version 0.5.0-alpha.2
+	- Executable now installs as 'RnaChipIntegrator' (i.e. no '.py'
+	  extension)
+	- Specify feature type (e.g. 'gene', 'transcript' etc) to be used
+	  in output using --feature option.
+	- New 'direction' field in output indicates whether hits are
+	  up- or downstream from reference.
+	- Specify arbitrary columns from input peaks file using new
+	  --peak_cols options to set chromosome, start and end.
+	- --pad option is automatically implied by the --compact option
+	  (i.e. single line output is always padded).
+
 2015-09-01  Peter Briggs  <peter.briggs@manchester.ac.uk>
 
 	* Version 0.5.0-alpha.1
