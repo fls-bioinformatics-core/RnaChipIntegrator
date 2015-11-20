@@ -28,7 +28,8 @@ feature.id	 feature ID
 strand	         feature strand direction
 TSS	         feature TSS position
 TES	         feature TES position
-dist_closest	 closest distance between peak and feature
+dist_closest	 closest distance between peak and feature considering
+                 all edges (zero if there is overlap)
 dist_TSS	 distance between peak and feature TSS
 dist_TES	 distance between peak and feature TES
 direction        'U' if hit is upstream, 'D' if downstream, '.' if
@@ -50,7 +51,8 @@ feature.strand	feature strand direction
 peak.chr	chromosome of the peak
 peak.start	peak start position
 peak.end	peak end position
-dist_closest	closest distance between peak and feature
+dist_closest	closest distance between peak and feature considering
+                all edges (zero if there is overlap)
 dist_TSS	distance between peak and feature TSS
 direction       'U' if hit is upstream, 'D' if downstream, '.' if
                 overlapped

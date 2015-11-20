@@ -37,7 +37,7 @@ FIELDS = {
     'feature.TSS': "feature TSS position",
     'feature.TES': "feature TES position",
     'feature.strand': "feature strand direction",
-    'dist_closest': "closest distance between peak and feature",
+    'dist_closest': "closest distance between peak and feature considering all edges (zero if there is overlap)",
     'dist_TSS': "distance between peak and feature TSS",
     'dist_TES': "distance between peak and feature TES",
     'overlap_feature': "1 if peak overlaps the feature, 0 if not",
