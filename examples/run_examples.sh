@@ -1,4 +1,4 @@
-#!/bin/sh -e
+#!/bin/sh
 #
 # Run examples for RnaChipIntegrator
 #
@@ -18,7 +18,12 @@ RnaChipIntegrator --name=summits \
     $TEST_DIR/ExpressionData.txt \
     $TEST_DIR/ChIP_summits.txt
 for f in $SUMMIT_OUTPUTS ; do
-    diff -f $REF_DATA/ref_$f $f
+    diff -q $REF_DATA/ref_$f $f
+    if [ $? -ne 0 ] ; then
+	echo "$f: doesn't match reference data:"
+	diff $REF_DATA/ref_$f $f
+	exit 1
+    fi
 done
 # Regions
 REGION_OUTPUTS="regions_features_per_peak.txt regions_peaks_per_feature.txt"
@@ -26,7 +31,13 @@ RnaChipIntegrator --name=regions \
     $TEST_DIR/ExpressionData.txt \
     $TEST_DIR/ChIP_regions.txt
 for f in $REGION_OUTPUTS ; do
-    diff -f $REF_DATA/ref_$f $f
+    diff -q $REF_DATA/ref_$f $f
+    if [ $? -ne 0 ] ; then
+	echo "$f: doesn't match reference data:"
+	diff $REF_DATA/ref_$f $f
+	exit 1
+    fi
 done
+exit 0
 ##
 #

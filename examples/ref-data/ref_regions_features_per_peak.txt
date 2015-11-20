@@ -1,4 +1,4 @@
-#chr	start	end	feature.id	strand	TSS	TES	dist_closest	dist_TSS	dist_TES	direction	overlap_feature	overlap_promoter
+#peak.chr	peak.start	peak.end	feature.id	strand	TSS	TES	dist_closest	dist_TSS	dist_TES	direction	overlap_feature	overlap_promoter
 chr1	9619046	9619167	NM_178399_3110035E14Rik	+	9591248	9617222	1824	27798	1824	D	0	0
 chr1	9619046	9619167	NM_008651_Mybl1	-	9690280	9635825	16658	71113	16658	D	0	0
 chr1	9619046	9619167	NM_175236_Adhfe1	+	9538049	9570746	48300	80997	48300	D	0	0
