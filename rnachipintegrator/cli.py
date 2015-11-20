@@ -96,7 +96,8 @@ def main(args=None):
     p.add_option('--name',action='store',dest='name',default=None,
                  help="Set basename for output files")
     p.add_option('--compact',action='store_true',dest='compact',default=False,
-                 help="Output minimal information in a compact format")
+                 help="Output all hits for each peak or feature on a single "
+                 "line (cannot be used with --summary)")
     p.add_option('--summary',action='store_true',dest='summary',default=False,
                  help="Output 'summary' for each analysis, consisting of "
                  "only the top hit for each peak or feature (cannot be used "
@@ -153,9 +154,14 @@ def main(args=None):
     # Reporting formats
     if options.compact:
         mode = output.SINGLE_LINE
-        peak_fields = ('chr','start','end','list(feature.id)')
-        feature_fields = ('feature.id',
-                          'list(chr,start,end,dist_closest,direction)')
+        peak_fields = ('peak.chr','peak.start','peak.end',
+                       'list(feature.id,strand,TSS,TES,dist_closest,'
+                       'dist_TSS,dist_TES,direction,overlap_feature,'
+                       'overlap_promoter)')
+        feature_fields = ('feature.id','feature.chr','feature.start',
+                          'feature.end','feature.strand',
+                          'list(chr,start,end,dist_closest,dist_TSS,'
+                          'direction,in_the_feature)')
         placeholder = '.'
         if options.summary:
             options.summary = False
@@ -163,17 +169,14 @@ def main(args=None):
             sys.exit(1)
     else:
         mode = output.MULTI_LINE
-        peak_fields = ('chr','start','end',
+        peak_fields = ('peak.chr','peak.start','peak.end',
                        'feature.id','strand','TSS','TES',
                        'dist_closest','dist_TSS','dist_TES',
-                       'direction',
-                       'overlap_feature',
-                       'overlap_promoter')
-        feature_fields = ('feature.id',
-                          'feature.chr','feature.start','feature.end',
-                          'feature.strand',
-                          'peak.chr','peak.start','peak.end','order',
-                          'dist_closest','dist_TSS','dist_TES')
+                       'direction','overlap_feature','overlap_promoter')
+        feature_fields = ('feature.id','feature.chr','feature.start',
+                          'feature.end','feature.strand',
+                          'chr','start','end','dist_closest','dist_TSS',
+                          'direction','in_the_feature')
         placeholder = '---'
 
     # Feature type

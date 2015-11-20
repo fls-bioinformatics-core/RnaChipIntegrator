@@ -21,9 +21,9 @@ The columns in the 'features to peak' file are:
 ================ ================================================
 Name             Description
 ================ ================================================
-chr	         chromosome
-start	         peak start position
-end	         peak end position
+peak.chr	 chromosome of the peak
+peak.start	 peak start position
+peak.end	 peak end position
 feature.id	 feature ID
 strand	         feature strand direction
 TSS	         feature TSS position
@@ -50,10 +50,11 @@ feature.strand	feature strand direction
 peak.chr	chromosome of the peak
 peak.start	peak start position
 peak.end	peak end position
-order	        the 'order' of the feature/peak pair (e.g. '1 of 4')
 dist_closest	closest distance between peak and feature
 dist_TSS	distance between peak and feature TSS
-dist_TES	distance between peak and feature TES
+direction       'U' if hit is upstream, 'D' if downstream, '.' if
+                overlapped
+in_the_feature  'YES' if peak overlaps the feaure, 'NO' if not
 =============== ====================================================
 
 Summary files (``--summary``)
@@ -106,10 +107,6 @@ single line, for example::
 .. warning::
 
    ``--compact`` is not compatible with ``--summary``.
-
-.. note::
-
-   In this mode only a "minimal" set of fields are reported.
 
 Output padding (``--pad``)
 --------------------------
