@@ -1,3 +1,17 @@
+2015-12-01  Peter Briggs  <peter.briggs@manchester.ac.uk>
+
+	* Version 0.5.0-alpha.4
+	- Fix the broken --promoter_region option which was being ignored.
+
+2015-12-20  Peter Briggs  <peter.briggs@manchester.ac.uk>
+
+	* Version 0.5.0-alpha.3
+	- --compact now only changes the output format from "multi-line"
+	  (i.e. one hit pair per line) to "single-line" (i.e. all hits on
+	  the same line). The same fields are reported in both modes.
+        - The explanatory text for the dist_closest field has been updated
+	  to make it clearer what this means.
+
 2015-10-28  Peter Briggs  <peter.briggs@manchester.ac.uk>
 
 	* Version 0.5.0-alpha.2
