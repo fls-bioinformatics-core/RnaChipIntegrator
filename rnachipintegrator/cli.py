@@ -56,7 +56,7 @@ def main(args=None):
         args = sys.argv[1:]
     
     # Defaults
-    promoter_region = (1000,100)
+    promoter = (1000,100)
     max_distance = 1000000
     max_closest = 4
     
@@ -85,10 +85,10 @@ def main(args=None):
                  "use TSS) or 'both' (use whichever of TSS or TES gives "
                  "shortest distance)")
     p.add_option('--promoter_region',action="store",dest="promoter_region",
-                 default="%d,%d" % promoter_region,
+                 default="%d,%d" % promoter,
                  help="Define promoter region with respect to feature TSS "
                  "in the form UPSTREAM,DOWNSTREAM (default -%d to %dbp of "
-                 "TSS)" %  promoter_region)
+                 "TSS)" %  promoter)
     p.add_option('--only-DE',action='store_true',
                  dest='only_diff_expressed',default=False,
                  help="Only use features flagged as differentially expressed "
@@ -201,8 +201,7 @@ def main(args=None):
     print
     print "Maximum cutoff distance: %d (bp)" % max_distance
     print "Maximum no. of hits    : %d" % max_closest
-    print "Promoter region        : -%d to %d (bp from TSS)" % \
-        promoter_region
+    print "Promoter region        : -%d to %d (bp from TSS)" % promoter
     print
     if tss_only:
         print "Distances will be calculated from feature TSS only"
@@ -319,7 +318,7 @@ def main(args=None):
         xls.append_to_notes("Maximum cutoff distance (bp)\t%d" % max_distance)
         xls.append_to_notes("Maximum no. of hits to report\t%d" % max_closest)
         xls.append_to_notes("Promoter region (bp from TSS)\t-%d to %d" %
-                            promoter_region)
+                            promoter)
         if tss_only:
             xls.append_to_notes("Distances calculated from\tTSS only")
         else:
