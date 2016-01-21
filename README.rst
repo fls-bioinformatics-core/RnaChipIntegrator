@@ -11,8 +11,13 @@ data but works equally well for ChIP-chip and microarray expression data,
 and can also be used to integrate any set of genomic features (e.g.
 canonical genes, CpG islands) with peak data.
 
-Basic usage
+Quick Start
 ***********
+
+Install the latest version of the program from the Python Package Index
+(PyPI)::
+
+    pip install RnaChipIntegrator
 
 The simplest use of the program is::
 
@@ -24,34 +29,26 @@ the genomic feature and peak data respecitively.
 This will output two files with the nearest features for each peak,
 and the nearest peaks for each feature.
 
-Use::
+Full documentation can be found at ReadTheDocs:
 
-    RnaChipIntegrator -h
+ * http://rnachipintegrator.readthedocs.org/en/latest/
 
-to see the full set of options for controlling the analyses and the
-outputs.
+See the ``INSTALL`` file for complete installation instructions.
 
-Installation
-************
+Developers
+**********
 
-It is recommended to use::
+The source code for the development version of the program is hosted
+on GitHub in the ``devel`` branch:
 
-    pip install .
+ * https://github.com/fls-bioinformatics-core/RnaChipIntegrator/tree/devel
 
-from within the top-level source directory to install the package.
+and can be installed directly from GitHub using ``pip``::
 
-To use the package without installing it first you will need to add the
-directory to your ``PYTHONPATH`` environment.
-
-To install directly from github using ``pip``::
-
-    pip install git+https://github.com/fls-bioinformatics-core/RnaChipIntegrator.git
+    pip install git+https://github.com/fls-bioinformatics-core/RnaChipIntegrator.git@devel
 
 The program depends on the Python ``xlwt``, ``xlrd`` and ``xlutils``
 libraries, which should be installed automatically if using ``pip``.
-
-Documentation
-*************
 
 Documentation based on ``sphinx`` is available under the ``docs`` directory.
 
