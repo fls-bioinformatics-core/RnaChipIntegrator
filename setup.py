@@ -28,10 +28,6 @@ setup(
     name = "RnaChipIntegrator",
     version = version,
     description = "Integrate genomic features with expression data",
-    long_description = """
-Utility for integrating sets of genomic features (e.g. canonical genes,
-CpG islands) with expression data.
-""",
     url = 'https://github.com/fls-bioinformatics-core/RnaChipIntegrator',
     download_url = download_url,
     author = 'Peter Briggs, Ian Donaldson, Leo Zeef',
