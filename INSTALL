@@ -1,51 +1,57 @@
 Installing RnaChipIntegrator
 ============================
 
-1. You can use Python's setuptools to install the RnaChipIntegrator code. To do this, download the
-archive (either .tar.gz or .zip), unpack it and install as follows:
+Installing the latest version
+*****************************
 
-    $ wget --no-check-certificate https://github.com/downloads/fls-bioinformatics-core/RnaChipIntegrator/RnaChipIntegrator-0.3.2.tar.gz
-    $ tar -xvzf RnaChipIntegrator-0.3.2.tar.gz
-    $ cd RnaChipIntegrator-0.3.2
-    $ sudo python setup.py install
+The recommended method is to install the latest version of the program
+directly from the Python Package Index (PyPI) using::
 
-2. Alternatively if you're using pip (see http://www.pip-installer.org/en/latest/index.html) to manage your Python 
-installations then you can install as follows:
+    pip install RnaChipIntegrator
 
-    $ wget --no-check-certificate https://github.com/downloads/fls-bioinformatics-core/RnaChipIntegrator/RnaChipIntegrator-0.3.2.tar.gz
-    $ sudo pip install RnaChipIntegrator-0.3.2.tar.gz
+You may need to have root privileges to install to the system
+directories, in which case preface this command with ``sudo`` i.e.::
 
-You can also use pip to install directly from github as follows:
+    sudo pip install RnaChipIntegrator
 
-    $ sudo pip install -e git+git://github.com/fls-bioinformatics-core/RnaChipIntegrator#egg=RnaChipIntegrator
+Alternatively you can use Python's ``virtualenv`` mechanism to install
+a non-root version (this example creates one under ``.venv``)::
 
-Or to get install a specific version using pip:
+    virtualenv .venv; . .venv/bin/activate
+    pip install RnaChipIntegrator
 
-    $ sudo pip install -e git+git://github.com/fls-bioinformatics-core/RnaChipIntegrator@v0.3.1#egg=RnaChipIntegrator
+Installing older versions
+*************************
 
-Any of these options will make the `RnaChipIntegrator` utility available to run system-wide.
+All versions of the program can be found via:
 
-Note: If you don't want to do a system install then you can just unpack the archive and run the program directly:
+ * https://github.com/fls-bioinformatics-core/RnaChipIntegrator/releases
 
-    $ /path/to/RnaChipIntegrator.py [options] ...
+To install a specific version of the program download the ``.tar.gz`` or
+``.zip`` file from the above site and install using one of the ``pip``
+recipes above, for example::
 
-(Note that in this case if you would like spreadsheet output from the program then you
-will need to install the `xlwt`, `xlrd` and `xlutils` third-party Python libraries.)
+    pip install RnaChipIntegrator-0.4.4.tar.gz
+
+Installing directly from GitHub (advanced users/developers)
+***********************************************************
+
+``pip`` can be used to install directly from GitHub::
+
+    pip install git+https://github.com/fls-bioinformatics-core/RnaChipIntegrator
+
+To install a specific version (e.g. ``v0.5.0``)::
+
+    pip install git+https://github.com/fls-bioinformatics-core/RnaChipIntegrator@v0.5.0
+
+To install the ``devel`` branch::
+
+    pip install git+https://github.com/fls-bioinformatics-core/RnaChipIntegrator@devel
 
 Uninstalling RnaChipIntegrator
 ==============================
 
-1. If you installed RnaChipIntegrator with Python's setuptools, you should uninstall using this utility as well. To do this, download the
-archive (either .tar.gz or .zip), unpack it, reinstall to get a list of files, and remove as follows:
+To remove the program do::
 
-    $ wget --no-check-certificate https://github.com/downloads/fls-bioinformatics-core/RnaChipIntegrator/RnaChipIntegrator-0.3.2.tar.gz
-    $ tar -xvzf RnaChipIntegrator-0.3.2.tar.gz
-    $ cd RnaChipIntegrator-0.3.2
-    $ sudo python setup.py install --record files.txt
-    $ sudo rm $(cat files.txt)
-    
-2. If you installed RnaChipIntegrator with pip, you should uninstall using this utility as well. You can do this as follows:
+    pip uninstall RnaChipIntegrator
 
-    $ sudo pip uninstall RnaChipIntegrator
-
---
