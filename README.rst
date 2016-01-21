@@ -1,6 +1,12 @@
 RnaChipIntegrator: analysis of genomic features with peak data
 ==============================================================
 
+.. image:: https://readthedocs.org/projects/rnachipintegrator/badge/?version=latest
+   :target: https://rnachipintegrator.readthedocs.org
+
+.. image:: https://travis-ci.org/fls-bioinformatics-core/RnaChipIntegrator.png?branch=master
+   :target: https://travis-ci.org/fls-bioinformatics-core/RnaChipIntegrator
+
 ``RnaChipIntegrator`` is a utility that performs integrated analyses
 of feature data (any set of genomic features, for example gene expression
 data or canonical gene lists) with 'peak' data (a set of regions, for
