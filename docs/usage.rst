@@ -3,15 +3,16 @@
 Usage
 =====
 
-Basic usage
------------
+Simple usage
+------------
 
-The simplest form of usage is::
+The easiest form of usage is::
 
     RnaChipIntegrator FEATURES PEAKS
 
 where ``FEATURES`` and ``PEAKS`` are tab-delimited files containing
-the genomic feature and peak data respectively.
+the genomic feature and peak data respectively (see :ref:`inputs` for
+details of these files).
 
 This will produce two output files:
 
@@ -20,18 +21,23 @@ This will produce two output files:
  - ``FEATURES_peaks_per_feature.txt``: reports the nearest peaks
    for each feature
 
-In both cases the files will contain one peak/feature pair per line.
+In both cases the files will contain one peak/feature pair per line
+(see :ref:`outputs` for details of these files).
 
-Distance cutoffs (``--cutoff``) and number to report (``--number``)
--------------------------------------------------------------------
+The program has various options that can be applied to control the
+analyses that are performed and the outputs from each run, as outlined
+in the following sections.
+
+Specifying distance cutoffs (``--cutoff``) and number to report (``--number``)
+------------------------------------------------------------------------------
 
 The ``--cutoff`` option specifies a maximum distance that a
 feature/peak pair can be apart and still be included in the results;
 the ``--number`` option sets the maximum number of pairs that will
 be reported for each peak or feature.
 
-Distance to TSS versus 'feature edges' (``--edge``)
----------------------------------------------------
+Specifying how distances are measured between peaks and features (``--edge``)
+-----------------------------------------------------------------------------
 
 By default the distance between a peak and a feature is calculated
 as the distance from the feature TSS to the nearest peak edge, for
@@ -59,8 +65,8 @@ much smaller closest distance:
 
 .. _using_differential_expression_data:
 
-Using differential expression data (``--only-DE``)
---------------------------------------------------
+Only using differentially expressed genes (``--only-DE``)
+---------------------------------------------------------
 
 If the input feature data contains a differential expression flag
 (see :ref:`features_data_file`) then this can be used in the analysis
