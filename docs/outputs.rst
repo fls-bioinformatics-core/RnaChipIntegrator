@@ -3,22 +3,28 @@
 Output files
 ============
 
-Default output
---------------
+Overview
+--------
 
 The default output of the program consists of a pair of tab-delimited
 files:
 
-* **<BASENAME>_features_per_peak.txt**: shows all of the features
-  associated with each peak
-* **<BASENAME>_peaks_per_feature.txt**: shows all of the peaks associated
-  with each feature
+* | **<BASENAME>_features_per_peak.txt**
+  | shows all of the features associated with each peak
+
+* | **<BASENAME>_peaks_per_feature.txt**
+  | shows all of the peaks associated with each feature
 
 By default the output file ``BASENAME`` is taken from the name of the
 input feature file; use the ``--name`` option to set a custom basename.
 
 Additional files may be produced depending on the options that have
 been specified on the command line.
+
+The format and content of each file is described in the following sections.
+
+Features associated with each peak
+----------------------------------
 
 The columns in the 'features to peak' file are:
 
@@ -41,6 +47,9 @@ direction        'U' if hit is upstream, 'D' if downstream, '.' if
 overlap_feature	 1 if peak overlaps the feature, 0 if not
 overlap_promoter 1 if peak overlaps the promoter region, 0 if not
 ================ ================================================
+
+Peaks associated with each feature
+----------------------------------
 
 The columns in the 'peaks to features' file are:
 
