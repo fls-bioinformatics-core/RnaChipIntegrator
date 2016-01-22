@@ -17,4 +17,4 @@ versa.
    outputs
    citing
    examples
-   credits
+   additional_info

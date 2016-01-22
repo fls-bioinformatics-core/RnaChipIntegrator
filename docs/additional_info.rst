@@ -1,4 +1,4 @@
-.. _credits:
+.. _additional_info:
 
 Additional information
 ======================
