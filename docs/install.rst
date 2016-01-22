@@ -3,30 +3,44 @@
 Getting started
 ===============
 
-The source code for ``RnaChipIntegrator`` can be obtained from
-https://github.com/fls-bioinformatics-core/RnaChipIntegrator/releases
+The easiest way to get the latest version of ``RnaChipIntegrator`` is to
+use Python's ``pip`` utility to install the latest version of the program
+directly from the `Python Package Index (PyPI)
+<https://pypi.python.org/pypi/>`_, by doing::
 
-It's recommended to download either a ``tar.gz`` or ``zip`` archive,
-unpack and then install using ``pip``, for example by running::
+    pip install RnaChipIntegrator
 
-    pip install .
+.. note::
 
-from within the top-level source directory to install the package.
+   You may need to have root privileges to install to the system
+   directories, in which case preface this command with ``sudo``
+   i.e.::
 
-To use the package without installing it first you will need to add the
-directory to your ``PYTHONPATH`` environment.
+       sudo pip install RnaChipIntegrator
 
-Alternatively you can install the latest version directly from github
-using ``pip``::
+   or you can do::
 
-    pip install git+https://github.com/fls-bioinformatics-core/RnaChipIntegrator.git
+       pip install --user RnaChipIntegrator
 
-(Note that ``git`` needs to be installed for this to work.)
+   to install it under your home area.
 
-The program needs the following additional Python libraries:
+Alternatively you can use Python's ``virtualenv`` mechanism to install
+a non-root version (this example creates one under ``.venv``)::
 
-- ``xlrd``
-- ``xlrd``
-- ``xlutils``
+    virtualenv .venv; . .venv/bin/activate
+    pip install RnaChipIntegrator
 
-If using ``pip`` these should be installed automatically.
+.. note::
+
+   For an introduction to ``pip`` and ``virtualenv``, see for example:
+
+   * http://www.dabapps.com/blog/introduction-to-pip-and-virtualenv-python/
+   * https://www.biostars.org/p/109179/
+
+To update an existing version of the program to a newer one, use::
+
+    pip install -U RnaChipIntegrator
+
+For other ways of installing please refer to the ``INSTALL`` document
+included with the distribtion.
+
