@@ -11,7 +11,7 @@ The simplest form of usage is::
     RnaChipIntegrator FEATURES PEAKS
 
 where ``FEATURES`` and ``PEAKS`` are tab-delimited files containing
-the genomic feature and peak data respecitively.
+the genomic feature and peak data respectively.
 
 This will produce two output files:
 
