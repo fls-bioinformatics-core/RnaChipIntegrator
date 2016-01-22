@@ -33,7 +33,7 @@ the feature should be considered to be differentially expressed
 (``DE_flag`` = 1) or not (``DE_flag`` = 0);
 see :ref:`using_differential_expression_data`.
 
-Note that any additional columns will be are discarded.
+Note that any additional columns are ignored.
 
 Peaks data file
 ---------------
