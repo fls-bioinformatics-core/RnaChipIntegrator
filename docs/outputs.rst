@@ -26,7 +26,9 @@ The format and content of each file is described in the following sections.
 Features associated with each peak
 ----------------------------------
 
-The columns in the 'features to peak' file are:
+By default the 'features to peaks' file has one line for each
+peak/feature pair that is being reported, with the following
+columns of data for each:
 
 ================ ================================================
 Name             Description
@@ -48,10 +50,15 @@ overlap_feature	 1 if peak overlaps the feature, 0 if not
 overlap_promoter 1 if peak overlaps the promoter region, 0 if not
 ================ ================================================
 
+Use the ``--compact`` option to output all the features for each peak
+on a single line (:ref:`compact_output`).
+
 Peaks associated with each feature
 ----------------------------------
 
-The columns in the 'peaks to features' file are:
+By default the 'peaks to features' file has one line for each
+feature/peak pair that is being reported, with the following
+columns of data for each:
 
 =============== ====================================================
 Name            Description
@@ -72,6 +79,11 @@ direction       'U' if hit is upstream, 'D' if downstream, '.' if
 in_the_feature  'YES' if peak overlaps the feaure, 'NO' if not
 =============== ====================================================
 
+Use the ``--compact`` option to output all the peaks for each feature
+on a single line (:ref:`compact_output`).
+
+.. _summary_files:
+
 Summary files (``--summary``)
 -----------------------------
 
@@ -81,7 +93,10 @@ tab-delimited files:
 * ``BASENAME_features_per_peak_summary.txt``
 * ``BASENAME_peaks_per_feature_summary.txt``
 
-These will only contain the 'top' (i.e. closest) feature/peak pairs.
+These will only contain the 'top' (i.e. closest) feature/peak pairs,
+with the same columns of data as the 'full' versions of the files.
+
+.. _xls_file:
 
 Excel spreadsheet (``--xls``)
 -----------------------------
@@ -99,29 +114,33 @@ about the results from each analysis.
    limit then the results will be broken into multiple sheets in
    the output XLS file.
 
+.. _compact_output:
+
 Compact output format (``--compact``)
 -------------------------------------
 
 By default each feature/peak pair will be output on a separate line, for
 example::
 
-    #chr	start	end	feature.id	strand	TSS	TES	dist_closest	dist_TSS	dist_TES	overlap_feature	overlap_promoter
-    chr2R	4959563	4959564	CG8084-RA	+	4956606	4965060	0	2957	5496	1	0
-    chr2R	4959563	4959564	CG8193-RA	-	4932214	4929765	27349	2734	929798	0	0
-    chr3R	12882217	12882218	CG3937-RB	-	12921260	12917257	35039	39042	35039	0	0
+    #chr   start    end      feature.id  strand  TSS      TES      dist_closest dist_TSS dist_TES  overlap_feature  overlap_promoter
+    chr2R  4959563  4959564  CG8084-RA   +       4956606  4965060  0            2957     5496      1                0
+    chr2R  4959563  4959564  CG8193-RA   -       4932214  4929765  27349        27349    29798     0                0
+    chr3R  12882217 12882218 CG3937-RB   -       12921260 12917257 35039        39042    35039     0                0
     ...
 
 Specifying the ``--compact`` option changes the ouput so that all the
 features closest to each peak (and vice versa) are written on a
 single line, for example::
 
-    #chr	start	end	feature.id_1	feature.id_2	feature.id_3	feature.id_4
-    chr2R	4959563	4959564	CG8084-RA	CG8193-RA
-    chr3R	12882217	12882218	CG3937-RB
+    #chr   start    end      feature.id_1 feature.id_2 feature.id_3 feature.id_4
+    chr2R  4959563  4959564  CG8084-RA    CG8193-RA
+    chr3R  12882217 12882218 CG3937-RB
 
 .. warning::
 
    ``--compact`` is not compatible with ``--summary``.
+
+.. _output_padding:
 
 Output padding (``--pad``)
 --------------------------
@@ -132,11 +151,13 @@ lines are inserted to make up the number of lines to the maximum.
 
 For example::
 
-    #chr	start	end	feature.id	strand	TSS	TES	dist_closest	dist_TSS	dist_TES	overlap_feature	overlap_promoter
-    chr2R	4959563	4959564	CG8084-RA	+	4956606	4965060	0	2957	5496	1	0
-    chr2R	4959563	4959564	CG8193-RA	-	4932214	4929765	27349	27349	29798	0	0
-    chr2R	4959563	4959564	---	---	---	---	---	---	---	---	---
-    chr2R	4959563	4959564	---	---	---	---	---	---	---	---	---
+    #chr   start    end      feature.id  strand  TSS      TES      dist_closest dist_TSS dist_TES  overlap_feature  overlap_promoter
+    chr2R  4959563  4959564  CG8084-RA   +       4956606  4965060  0            2957     5496      1                0
+    chr2R  4959563  4959564  CG8193-RA   -       4932214  4929765  27349        27349    29798     0                0
+    chr2R  4959563  4959564  ---         ---     ---      ---      ---          ---      ---       ---              ---
+    chr2R  4959563  4959564  ---         ---     ---      ---      ---          ---      ---       ---              ---
+
+.. _feature_type:
 
 Feature type (``--feature``)
 ----------------------------
