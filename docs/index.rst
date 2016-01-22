@@ -15,5 +15,6 @@ versa.
    usage
    inputs
    outputs
+   citing
    examples
    credits
