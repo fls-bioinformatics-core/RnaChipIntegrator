@@ -1,3 +1,5 @@
+.. _outputs:
+
 Output files
 ============
 
