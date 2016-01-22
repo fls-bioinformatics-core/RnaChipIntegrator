@@ -75,3 +75,30 @@ by turning on the ``--only-DE`` option::
     RnaChipIntegrator --only-DE FEATURES PEAKS
 
 which will only included the flagged features in the analyses.
+
+Changing the output files and formats
+-------------------------------------
+
+There are a number of options to produce additional output files, and
+to modify the format depending on requirements:
+
+ * :ref:`xls_file`
+ * :ref:`summary_files`
+ * :ref:`compact_output`
+ * :ref:`output_padding`
+ * :ref:`feature_type`
+
+Using RnaChipIntegrator in Galaxy
+---------------------------------
+
+In addition to the command-line version, we have also provided a tool
+which allows ``RnaChipIntegrator`` to be run within the popular
+`Galaxy <https://galaxyproject.org/>`_ bioinformatics platform:
+
+ * https://toolshed.g2.bx.psu.edu/view/pjbriggs/rnachipintegrator/
+
+The tool can be installed into a local instance of Galaxy directly from
+the Galaxy Toolshed
+
+See the documentation at http://getgalaxy.org/ on how to get a local
+Galaxy up and running, and how to install tools from the Toolshed.
