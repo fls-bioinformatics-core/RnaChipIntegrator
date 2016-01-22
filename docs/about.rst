@@ -11,7 +11,7 @@ coordinate based data sets.
 ``RnaChipIntegrator`` answers the questions:
 
  * "Which genes are close to each of my ChIP-seq regions?", and
- * "Which ChIP-seq regions are close to each of my expressed genes".
+ * "Which ChIP-seq regions are close to each of my expressed genes?".
 
 The first data set, called **'features'**, is strand specific and the
 genome coordinates correspond to the transcription start site (TSS)
