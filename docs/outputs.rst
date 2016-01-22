@@ -9,8 +9,10 @@ Default output
 The default output of the program consists of a pair of tab-delimited
 files:
 
-* ``BASENAME_features_per_peak.txt``
-* ``BASENAME_peaks_per_feature.txt``
+* **<BASENAME>_features_per_peak.txt**: shows all of the features
+  associated with each peak
+* **<BASENAME>_peaks_per_feature.txt**: shows all of the peaks associated
+  with each feature
 
 By default the output file ``BASENAME`` is taken from the name of the
 input feature file; use the ``--name`` option to set a custom basename.
