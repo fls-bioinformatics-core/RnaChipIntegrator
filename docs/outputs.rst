@@ -159,8 +159,8 @@ For example::
 
 .. _feature_type:
 
-Feature type (``--feature``)
-----------------------------
+Specifying feature type as 'gene' etc (``--feature``)
+-----------------------------------------------------
 
 By default the program uses the generic term "feature" in its outputs
 to describe the genomic features being examined.
