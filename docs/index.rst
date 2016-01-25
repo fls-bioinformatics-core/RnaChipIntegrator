@@ -16,5 +16,4 @@ features to each peak, and vice versa.
    inputs
    outputs
    citing
-   examples
    additional_info
