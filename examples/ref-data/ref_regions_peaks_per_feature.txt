@@ -1,4 +1,4 @@
-#feature.id	feature.chr	feature.start	feature.end	feature.strand	chr	start	end	dist_closest	dist_TSS	direction	in_the_feature
+#gene.id	gene.chr	gene.start	gene.end	gene.strand	chr	start	end	dist_closest	dist_TSS	direction	in_the_gene
 AF064749_Col6a3	chr1	92566771	92800755	-	chr1	92070253	92070431	496340	730324	U	NO
 AF064749_Col6a3	chr1	92566771	92800755	-	chr1	92070253	92070431	496340	730324	U	NO
 AK015559_4930472D16Rik	chr1	25020851	25021989	-	chr1	24730996	24731077	289774	290912	U	NO

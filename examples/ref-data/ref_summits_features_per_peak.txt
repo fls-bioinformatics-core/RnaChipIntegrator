@@ -1,4 +1,4 @@
-#peak.chr	peak.start	peak.end	feature.id	strand	TSS	TES	dist_closest	dist_TSS	dist_TES	direction	overlap_feature	overlap_promoter
+#peak.chr	peak.start	peak.end	gene.id	strand	TSS	TES	dist_closest	dist_TSS	dist_TES	direction	overlap_gene	overlap_promoter
 chr17	23681171	23681172	---	---	---	---	---	---	---	---	---	---
 chr2	109810219	109810220	---	---	---	---	---	---	---	---	---	---
 chr2	136745391	136745392	---	---	---	---	---	---	---	---	---	---
