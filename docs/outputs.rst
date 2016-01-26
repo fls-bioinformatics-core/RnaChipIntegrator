@@ -9,11 +9,11 @@ Overview
 The default output of the program consists of a pair of tab-delimited
 files:
 
-* | **<BASENAME>_features_per_peak.txt**
-  | shows all of the genes associated with each peak
+* | **<BASENAME>_peak_centric.txt**
+  | shows all of the genes associated with each peak ('peak-centric' analysis)
 
-* | **<BASENAME>_peaks_per_feature.txt**
-  | shows all of the peaks associated with each gene
+* | **<BASENAME>_gene_centric.txt**
+  | shows all of the peaks associated with each gene ('gene-centric' analysis)
 
 By default the output file ``BASENAME`` is taken from the name of the
 input 'genes' file; use the ``--name`` option to set a custom basename.
@@ -90,8 +90,8 @@ Summary files (``--summary``)
 Using the ``--summary`` option outputs an additional pair of
 tab-delimited files:
 
-* ``BASENAME_features_per_peak_summary.txt``
-* ``BASENAME_peaks_per_feature_summary.txt``
+* ``BASENAME_peak_centric_summary.txt``
+* ``BASENAME_gene_centric_summary.txt``
 
 These will only contain the 'top' (i.e. closest) gene/peak pairs,
 with the same columns of data as the 'full' versions of the files.
