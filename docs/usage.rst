@@ -16,10 +16,10 @@ of these files).
 
 This will produce two output files:
 
- - ``GENES_feature_per_peak.txt``: reports the nearest genes
-   for each peak
- - ``GENES_peaks_per_feature.txt``: reports the nearest peaks
-   for each gene
+ - ``GENES_peak_centric.txt``: reports the nearest genes
+   for each peak ('peak-centric' analysis)
+ - ``GENES_feature_centric.txt``: reports the nearest peaks
+   for each gene ('gene-centric' analysis)
 
 In both cases the files will contain one peak/gene pair per line
 (see :ref:`outputs` for details of these files).

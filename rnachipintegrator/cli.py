@@ -263,10 +263,10 @@ def main(args=None):
         basename = os.path.splitext(os.path.basename(gene_file))[0]
 
     # Do the analyses
-    print "**** Nearest genes to peaks ****"
-    outfile = basename+"_features_per_peak.txt"
+    print "**** Peak-centric analysis: nearest genes to each peak ****"
+    outfile = basename+"_peak_centric.txt"
     if options.summary:
-        summary = basename+"_features_per_peak_summary.txt"
+        summary = basename+"_peak_centric_summary.txt"
     else:
         summary = None
     reporter = output.AnalysisReportWriter(mode,peak_fields,
@@ -287,10 +287,10 @@ def main(args=None):
         print "Summary written to %s" % summary
     print
 
-    print "**** Nearest peaks to genes ****"
-    outfile = basename+"_peaks_per_feature.txt"
+    print "**** Gene-centric analysis: nearest peaks to each gene ****"
+    outfile = basename+"_gene_centric.txt"
     if options.summary:
-        summary = basename+"_peaks_per_feature_summary.txt"
+        summary = basename+"_gene_centric_summary.txt"
     else:
         summary = None
     reporter = output.AnalysisReportWriter(mode,gene_fields,
