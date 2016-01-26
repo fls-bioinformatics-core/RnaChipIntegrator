@@ -3,42 +3,42 @@
 Input files
 ===========
 
-``RnaChipIntegrator`` expects two input files: a list of genomic
-features and a list of peaks.
+``RnaChipIntegrator`` expects two input files: a list of genes and
+a list of peaks.
 
-.. _features_data_file:
+.. _genes_data_file:
 
-Features data file
-------------------
+'Genes' data file
+-----------------
 
-The features data file must be a tab-delimited file with at least
-5 columns of data for each genomic feature (one per line)::
+The 'genes' data file must be a tab-delimited file with at least
+5 columns of data for each gene or genomic feature (one per line)::
 
     ID  chr  start  end  strand
 
 where:
 
-* ``chr`` is chromosome the feature appears on
-* ``start`` and ``end`` define the limits of the feature
+* ``chr`` is chromosome the gene appears on
+* ``start`` and ``end`` define the limits of the gene
 * ``strand`` is the strand direction (either ``+`` or ``-``)
-* ``ID`` is a name which is used to identify the genomic feature
-  in the output.
+* ``ID`` is a name which is used to identify the gene in the
+  output.
 
 Optionally there can be a sixth column::
 
     ID  chr  start  end  strand  DE_flag
 
 If ``DE_flag`` is present then it can be used to indicate whether
-the feature should be considered to be differentially expressed
+the gene should be considered to be differentially expressed
 (``DE_flag`` = 1) or not (``DE_flag`` = 0);
 see :ref:`using_differential_expression_data`.
 
 Note that any additional columns are ignored.
 
-Peaks data file
----------------
+'Peaks' data file
+-----------------
 
-The peaks data file must be a tab-delimited file with at least 3
+The 'peaks' data file must be a tab-delimited file with at least 3
 columns of data for each peak (one per line). By default the
 first 3 columns should be::
 
@@ -49,16 +49,7 @@ where:
 * ``chrom`` is the chromosome that the peak appears on
 * ``start`` and ``end`` define the limits of the peak region
 
-The ``--peak_cols`` option can be used to specify an arbitrary
-set of three columns to use for the chromosome and start and end
-positions. For example::
-
-    --peak_cols=2,4,5
-
-will use the values from the 2nd, 4th and 5th columns for ``chrom``,
-``start`` and ``end`` respectively.
-
-In either case, any additional columns are ignored.
+Any additional columns found in the file are ignored.
 
 .. note::
 
@@ -70,3 +61,14 @@ In either case, any additional columns are ignored.
    For this version of the program no distinction is made and the
    same analyses are performed regardless of whether the data
    define summits or regions.
+
+.. note::
+
+   The ``--peak_cols`` option can be used to specify an arbitrary
+   set of three columns to use for the chromosome and start and end
+   positions. For example::
+
+       --peak_cols=2,4,5
+
+   will use the values from the 2nd, 4th and 5th columns for
+   ``chrom``, ``start`` and ``end`` respectively.

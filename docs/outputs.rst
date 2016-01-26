@@ -10,24 +10,24 @@ The default output of the program consists of a pair of tab-delimited
 files:
 
 * | **<BASENAME>_features_per_peak.txt**
-  | shows all of the features associated with each peak
+  | shows all of the genes associated with each peak
 
 * | **<BASENAME>_peaks_per_feature.txt**
-  | shows all of the peaks associated with each feature
+  | shows all of the peaks associated with each gene
 
 By default the output file ``BASENAME`` is taken from the name of the
-input feature file; use the ``--name`` option to set a custom basename.
+input 'genes' file; use the ``--name`` option to set a custom basename.
 
 Additional files may be produced depending on the options that have
 been specified on the command line.
 
 The format and content of each file is described in the following sections.
 
-Features associated with each peak
-----------------------------------
+Genes associated with each peak ('peak-centric' output)
+-------------------------------------------------------
 
-By default the 'features to peaks' file has one line for each
-peak/feature pair that is being reported, with the following
+By default the 'peak-centric' output file has one line for each
+peak/gene pair that is being reported, with the following
 columns of data for each:
 
 ================ ================================================
@@ -36,50 +36,50 @@ Name             Description
 peak.chr	 chromosome of the peak
 peak.start	 peak start position
 peak.end	 peak end position
-feature.id	 feature ID
-strand	         feature strand direction
-TSS	         feature TSS position
-TES	         feature TES position
-dist_closest	 closest distance between peak and feature considering
+gene.id	         gene ID
+strand	         gene strand direction
+TSS	         gene TSS position
+TES	         gene TES position
+dist_closest	 closest distance between peak and gene considering
                  all edges (zero if there is overlap)
 dist_TSS	 distance between peak and feature TSS
 dist_TES	 distance between peak and feature TES
 direction        'U' if hit is upstream, 'D' if downstream, '.' if
                  overlapped
-overlap_feature	 1 if peak overlaps the feature, 0 if not
+overlap_gene	 1 if peak overlaps the gene, 0 if not
 overlap_promoter 1 if peak overlaps the promoter region, 0 if not
 ================ ================================================
 
-Use the ``--compact`` option to output all the features for each peak
+Use the ``--compact`` option to output all the genes for each peak
 on a single line (:ref:`compact_output`).
 
-Peaks associated with each feature
-----------------------------------
+Peaks associated with each feature ('gene-centric' output)
+----------------------------------------------------------
 
-By default the 'peaks to features' file has one line for each
-feature/peak pair that is being reported, with the following
+By default the 'gene-centric' file has one line for each
+gene/peak pair that is being reported, with the following
 columns of data for each:
 
 =============== ====================================================
 Name            Description
 =============== ====================================================
-feature.id	feature ID
-feature.chr	chromosome of the feature
-feature.start	feature start position
-feature.end	feature end position
-feature.strand	feature strand direction
+gene.id	        gene ID
+gene.chr	chromosome of the gene
+gene.start	gene start position
+gene.end	gene end position
+gene.strand	gene strand direction
 peak.chr	chromosome of the peak
 peak.start	peak start position
 peak.end	peak end position
-dist_closest	closest distance between peak and feature considering
+dist_closest	closest distance between peak and gene considering
                 all edges (zero if there is overlap)
 dist_TSS	distance between peak and feature TSS
 direction       'U' if hit is upstream, 'D' if downstream, '.' if
                 overlapped
-in_the_feature  'YES' if peak overlaps the feaure, 'NO' if not
+in_the_gene     'YES' if peak overlaps the feaure, 'NO' if not
 =============== ====================================================
 
-Use the ``--compact`` option to output all the peaks for each feature
+Use the ``--compact`` option to output all the peaks for each genes
 on a single line (:ref:`compact_output`).
 
 .. _summary_files:
@@ -93,7 +93,7 @@ tab-delimited files:
 * ``BASENAME_features_per_peak_summary.txt``
 * ``BASENAME_peaks_per_feature_summary.txt``
 
-These will only contain the 'top' (i.e. closest) feature/peak pairs,
+These will only contain the 'top' (i.e. closest) gene/peak pairs,
 with the same columns of data as the 'full' versions of the files.
 
 .. _xls_file:
@@ -119,21 +119,21 @@ about the results from each analysis.
 Compact output format (``--compact``)
 -------------------------------------
 
-By default each feature/peak pair will be output on a separate line, for
+By default each gene/peak pair will be output on a separate line, for
 example::
 
-    #chr   start    end      feature.id  strand  TSS      TES      dist_closest dist_TSS dist_TES  overlap_feature  overlap_promoter
-    chr2R  4959563  4959564  CG8084-RA   +       4956606  4965060  0            2957     5496      1                0
-    chr2R  4959563  4959564  CG8193-RA   -       4932214  4929765  27349        27349    29798     0                0
-    chr3R  12882217 12882218 CG3937-RB   -       12921260 12917257 35039        39042    35039     0                0
+    #chr   start    end      gene.id     strand  TSS      TES      dist_closest dist_TSS dist_TES  overlap_gene  overlap_promoter
+    chr2R  4959563  4959564  CG8084-RA   +       4956606  4965060  0            2957     5496      1             0
+    chr2R  4959563  4959564  CG8193-RA   -       4932214  4929765  27349        27349    29798     0             0
+    chr3R  12882217 12882218 CG3937-RB   -       12921260 12917257 35039        39042    35039     0             0
     ...
 
 Specifying the ``--compact`` option changes the ouput so that all the
-features closest to each peak (and vice versa) are written on a
-single line, for example::
+genes closest to each peak (and vice versa) are written on a single
+line, for example::
 
-    #chr   start    end      feature.id_1 feature.id_2 feature.id_3 feature.id_4
-    chr2R  4959563  4959564  CG8084-RA    CG8193-RA
+    #chr   start    end      gene.id_1  gene.id_2  gene.id_3  gene.id_4
+    chr2R  4959563  4959564  CG8084-RA  CG8193-RA
     chr3R  12882217 12882218 CG3937-RB
 
 .. warning::
@@ -151,7 +151,7 @@ lines are inserted to make up the number of lines to the maximum.
 
 For example::
 
-    #chr   start    end      feature.id  strand  TSS      TES      dist_closest dist_TSS dist_TES  overlap_feature  overlap_promoter
+    #chr   start    end      gene.id     strand  TSS      TES      dist_closest dist_TSS dist_TES  overlap_gene     overlap_promoter
     chr2R  4959563  4959564  CG8084-RA   +       4956606  4965060  0            2957     5496      1                0
     chr2R  4959563  4959564  CG8193-RA   -       4932214  4929765  27349        27349    29798     0                0
     chr2R  4959563  4959564  ---         ---     ---      ---      ---          ---      ---       ---              ---
@@ -159,22 +159,22 @@ For example::
 
 .. _feature_type:
 
-Specifying feature type as 'gene' etc (``--feature``)
------------------------------------------------------
+Specifying feature type other than 'gene' etc (``--feature``)
+-------------------------------------------------------------
 
-By default the program uses the generic term "feature" in its outputs
-to describe the genomic features being examined.
+By default the program uses the term 'gene' in its outputs
+regardless of the nature of the genomic features being examined.
+This term can be changed to refer to a different feature type
+by using the ``--feature`` option.
 
-A specific feature type can be specified using the ``--feature``
-option, for example::
+For example::
 
-    --feature=gene
+    --feature=transcript
 
-in which case the work "feature" will be replaced by "gene" in output
-headers and so on.
+in which case the word 'gene' will be replaced by 'transcript' in
+output headers and so on.
 
 .. note::
 
    The feature type is purely cosmetic and has no effect on the
-   distance calculations.
-
+   input or output file formats, or the analyses performed.
