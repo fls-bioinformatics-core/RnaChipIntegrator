@@ -8,20 +8,20 @@ Simple usage
 
 The easiest form of usage is::
 
-    RnaChipIntegrator FEATURES PEAKS
+    RnaChipIntegrator GENES PEAKS
 
-where ``FEATURES`` and ``PEAKS`` are tab-delimited files containing
-the genomic feature and peak data respectively (see :ref:`inputs` for
-details of these files).
+where ``GENES`` and ``PEAKS`` are tab-delimited files containing
+the gene and peak data respectively (see :ref:`inputs` for details
+of these files).
 
 This will produce two output files:
 
- - ``FEATURES_features_per_peak.txt``: reports the nearest genomic
-   features for each peak
- - ``FEATURES_peaks_per_feature.txt``: reports the nearest peaks
-   for each feature
+ - ``GENES_feature_per_peak.txt``: reports the nearest genes
+   for each peak
+ - ``GENES_peaks_per_feature.txt``: reports the nearest peaks
+   for each gene
 
-In both cases the files will contain one peak/feature pair per line
+In both cases the files will contain one peak/gene pair per line
 (see :ref:`outputs` for details of these files).
 
 The program has various options that can be applied to control the
@@ -32,15 +32,15 @@ Specifying distance cutoffs (``--cutoff``) and number to report (``--number``)
 ------------------------------------------------------------------------------
 
 The ``--cutoff`` option specifies a maximum distance that a
-feature/peak pair can be apart and still be included in the results;
+gene/peak pair can be apart and still be included in the results;
 the ``--number`` option sets the maximum number of pairs that will
-be reported for each peak or feature.
+be reported for each peak or gene.
 
-Specifying how distances are measured between peaks and features (``--edge``)
------------------------------------------------------------------------------
+Specifying how distances are measured between peaks and genes (``--edge``)
+--------------------------------------------------------------------------
 
-By default the distance between a peak and a feature is calculated
-as the distance from the feature TSS to the nearest peak edge, for
+By default the distance between a peak and a gene is calculated
+as the distance from the gene TSS to the nearest peak edge, for
 example:
 
 .. image:: nearest_tss.png
@@ -48,9 +48,9 @@ example:
 
 Alternatively distances can be calculated as the shortest distance
 between either of the peak edges to either the TSS or the TES of
-the feature, by specifying the ``--edge=both`` option::
+the gene, by specifying the ``--edge=both`` option::
 
-    RnaChipIntegrator --edge=both FEATURES PEAKS
+    RnaChipIntegrator --edge=both GENES PEAKS
 
 For example for the same arrangement as above this would generate a
 much smaller closest distance:
@@ -68,13 +68,13 @@ much smaller closest distance:
 Only using differentially expressed genes (``--only-DE``)
 ---------------------------------------------------------
 
-If the input feature data contains a differential expression flag
-(see :ref:`features_data_file`) then this can be used in the analysis
+If the input genes data contains a differential expression flag
+(see :ref:`genes_data_file`) then this can be used in the analysis
 by turning on the ``--only-DE`` option::
 
-    RnaChipIntegrator --only-DE FEATURES PEAKS
+    RnaChipIntegrator --only-DE GENES PEAKS
 
-which will only included the flagged features in the analyses.
+which will only included the flagged genes in the analyses.
 
 Changing the output files and formats
 -------------------------------------
