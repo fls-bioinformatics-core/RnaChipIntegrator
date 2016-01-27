@@ -132,7 +132,13 @@ def main(args=None):
     print "University of Manchester"
     print "Faculty of Life Sciences"
     print "Bioinformatics Core Facility"
-    print "Authors: Ian Donaldson, Leo Zeef and Peter Briggs"
+    print "Authors: Peter Briggs, Ian Donaldson and Leo Zeef"
+    print
+    print "If you use this program in your published work then please cite:"
+    print
+    print "   Briggs PJ, Donaldson IJ, Zeef LAH. RnaChipIntegrator"
+    print "   (version %s). Available at:" % __version__
+    print "   https://github.com/fls-bioinformatics-core/RnaChipIntegrator"
     print
 
     # Promoter region
