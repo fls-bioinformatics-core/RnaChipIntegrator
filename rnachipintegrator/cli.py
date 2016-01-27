@@ -69,54 +69,81 @@ def main(args=None):
                               "features) against PEAKS (a set of regions) "
                               "and report nearest genes to each peak (and "
                               "vice versa)")
-    p.add_option('--cutoff',action='store',dest='max_distance',
-                 type='int',default=max_distance,
-                 help="Maximum distance allowed between peaks and "
-                 "genes before being omitted from the analyses "
-                 "(default %dbp; set to zero for no cutoff)" %
-                 max_distance)
-    p.add_option('--number',action='store',dest='max_closest',
-                 type='int',default=None,
-                 help="Filter results after applying --cutoff to report only "
-                 "the nearest MAX_CLOSEST number of pairs for each gene/peak "
-                 "from the analyses (default is to report all results)")
-    p.add_option('--edge',action='store',dest="edge",type="choice",
-                 choices=('tss','both'),default='tss',
-                 help="Gene edges to consider when calculating distances "
-                 "between genes and peaks, either: 'tss' (default: only "
-                 "use gene TSS) or 'both' (use whichever of TSS or TES "
-                 "gives shortest distance)")
-    p.add_option('--promoter_region',action="store",dest="promoter_region",
-                 default="%d,%d" % promoter,
-                 help="Define promoter region with respect to gene TSS "
-                 "in the form UPSTREAM,DOWNSTREAM (default -%d to %dbp of "
-                 "TSS)" %  promoter)
-    p.add_option('--only-DE',action='store_true',
-                 dest='only_diff_expressed',default=False,
-                 help="Only use genes flagged as differentially expressed "
-                 "in analyses (input gene data must include DE flags)")
-    p.add_option('--name',action='store',dest='name',default=None,
-                 help="Set basename for output files")
-    p.add_option('--compact',action='store_true',dest='compact',default=False,
-                 help="Output all hits for each peak or gene on a single "
-                 "line (cannot be used with --summary)")
-    p.add_option('--summary',action='store_true',dest='summary',default=False,
-                 help="Output 'summary' for each analysis, consisting of "
-                 "only the top hit for each peak or gene (cannot be used "
-                 "with --compact)")
-    p.add_option('--pad',action="store_true",dest="pad_output",
-                 help="Where less than MAX_CLOSEST hits are found, pad "
-                 "output with blanks to ensure that MAX_CLOSEST hits "
-                 "are still reported (nb --pad is implied for --compact)")
-    p.add_option('--xls',action="store_true",dest="xls_output",
-                 help="Output XLS spreadsheet with results")
-    p.add_option('--feature',action="store",dest="feature_type",
-                 help="rename '%s' to FEATURE_TYPE in output (e.g. "
-                 "'transcript' etc)" % DEFAULT_FEATURE_TYPE)
-    p.add_option('--peak_cols',action="store",dest="peak_cols",
-                 help="list of 3 column indices (e.g. '1,4,5') indicating "
-                 "columns to use for chromosome, start and end from the "
-                 "input peak file (if not first three columns).")
+
+    # Analysis options
+    analysis_opts = optparse.OptionGroup(p,"Analysis options")
+    analysis_opts.add_option('--cutoff',action='store',dest='max_distance',
+                             type='int',default=max_distance,
+                             help="Maximum distance allowed between peaks "
+                             "and genes before being omitted from the "
+                             "analyses (default %dbp; set to zero for no "
+                             "cutoff)" % max_distance)
+    analysis_opts.add_option('--edge',action='store',dest="edge",
+                             type="choice",choices=('tss','both'),
+                             default='tss',
+                             help="Gene edges to consider when calculating "
+                             "distances between genes and peaks, either: "
+                             "'tss' (default: only use gene TSS) or 'both' "
+                             "(use whichever of TSS or TES gives shortest "
+                             "distance)")
+    analysis_opts.add_option('--only-DE',action='store_true',
+                             dest='only_diff_expressed',default=False,
+                             help="Only use genes flagged as differentially "
+                             "expressed in analyses (input gene data must "
+                             "include DE flags)")
+    p.add_option_group(analysis_opts)
+
+    # Reporting options
+    reporting_opts = optparse.OptionGroup(p,"Reporting options")
+    reporting_opts.add_option('--number',action='store',dest='max_closest',
+                              type='int',default=None,
+                              help="Filter results after applying --cutoff "
+                              "to report only the nearest MAX_CLOSEST number "
+                              "of pairs for each gene/peak from the analyses "
+                              "(default is to report all results)")
+    reporting_opts.add_option('--promoter_region',action="store",
+                              dest="promoter_region",
+                              default="%d,%d" % promoter,
+                              help="Define promoter region with respect to "
+                              "gene TSS in the form UPSTREAM,DOWNSTREAM "
+                              "(default -%d to %dbp of TSS)" %  promoter)
+    p.add_option_group(reporting_opts)
+
+    # Output options
+    output_opts = optparse.OptionGroup(p,"Output options")
+    output_opts.add_option('--name',action='store',dest='name',default=None,
+                           help="Set basename for output files")
+    output_opts.add_option('--compact',action='store_true',dest='compact',
+                           default=False,
+                           help="Output all hits for each peak or gene on a "
+                           "single line (cannot be used with --summary)")
+    output_opts.add_option('--summary',action='store_true',dest='summary',
+                           default=False,
+                           help="Output 'summary' for each analysis, "
+                           "consisting of only the top hit for each peak or "
+                           "gene (cannot be used with --compact)")
+    output_opts.add_option('--pad',action="store_true",dest="pad_output",
+                           help="Where less than MAX_CLOSEST hits are found, "
+                           "pad output with blanks to ensure that MAX_CLOSEST "
+                           "hits are still reported (nb --pad is implied for "
+                           "--compact)")
+    output_opts.add_option('--xls',action="store_true",dest="xls_output",
+                           help="Output XLS spreadsheet with results")
+    p.add_option_group(output_opts)
+
+    # Advanced options
+    advanced_opts = optparse.OptionGroup(p,"Advanced options")
+    advanced_opts.add_option('--feature',action="store",dest="feature_type",
+                             help="rename '%s' to FEATURE_TYPE in output (e.g. "
+                             "'transcript' etc)" % DEFAULT_FEATURE_TYPE)
+    advanced_opts.add_option('--peak_cols',action="store",dest="peak_cols",
+                             help="list of 3 column indices (e.g. '1,4,5') "
+                             "indicating columns to use for chromosome, "
+                             "start and end from the input peak file (if not "
+                             "first three columns).")
+    p.add_option_group(advanced_opts)
+
+    # Process command line
     options,args = p.parse_args()
 
     # Input files
