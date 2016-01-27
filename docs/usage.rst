@@ -28,13 +28,24 @@ The program has various options that can be applied to control the
 analyses that are performed and the outputs from each run, as outlined
 in the following sections.
 
-Specifying distance cutoffs (``--cutoff``) and number to report (``--number``)
-------------------------------------------------------------------------------
+.. _distance_cutoff:
 
-The ``--cutoff`` option specifies a maximum distance that a
-gene/peak pair can be apart and still be included in the results;
-the ``--number`` option sets the maximum number of pairs that will
-be reported for each peak or gene.
+Specifying distance cutoff (``--cutoff``)
+------------------------------------------
+
+The ``--cutoff`` option specifies a maximum distance in bp that a
+gene/peak pair can be apart and still be included in the analyses;
+gene/peak pairs which are further apart than this distance will
+not be reported.
+
+For example::
+
+    RnaChipIntegrator --cutoff=130000 GENES PEAKS
+
+.. note::
+
+   If a maximum cutoff distance is not explicitly specified then
+   the default is 1000000 bp.
 
 Specifying how distances are measured between peaks and genes (``--edge``)
 --------------------------------------------------------------------------
@@ -82,6 +93,7 @@ Changing the output files and formats
 There are a number of options to produce additional output files, and
 to modify the format depending on requirements:
 
+ * :ref:`number`
  * :ref:`xls_file`
  * :ref:`summary_files`
  * :ref:`compact_output`

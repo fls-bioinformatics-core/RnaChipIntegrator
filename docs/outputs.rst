@@ -80,7 +80,27 @@ in_the_gene     'YES' if peak overlaps the feaure, 'NO' if not
 =============== ====================================================
 
 Use the ``--compact`` option to output all the peaks for each genes
-on a single line (:ref:`compact_output`).
+on a single line (see :ref:`compact_output`).
+
+.. _number:
+
+Number of results to report (``--number``)
+------------------------------------------
+
+By default, all gene/peak pairs that are located within the
+specified cut-off distance (see :ref:`distance_cutoff`) will be
+reported in the output files.
+
+To restrict the maximum number of pairs that are reported per gene
+or peak use the ``--number`` to specify a limit. Even if more pairs
+are found, only this number of pairs will be output.
+
+.. warning::
+
+   Be aware that if used, this number limit is applied rigidly.
+   For example, even if the fourth and fifth gene/peak pairs both
+   have the same distance separation then using ``--number=4``
+   will only include the first of these and reject the second.
 
 .. _summary_files:
 
