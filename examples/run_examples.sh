@@ -15,6 +15,7 @@ cd test-output
 SUMMIT_OUTPUTS="summits_peak_centric.txt summits_gene_centric.txt"
 RnaChipIntegrator --name=summits \
     --cutoff=130000 \
+    --number=4 \
     $TEST_DIR/ExpressionData.txt \
     $TEST_DIR/ChIP_summits.txt
 for f in $SUMMIT_OUTPUTS ; do
@@ -28,6 +29,7 @@ done
 # Regions
 REGION_OUTPUTS="regions_peak_centric.txt regions_gene_centric.txt"
 RnaChipIntegrator --name=regions \
+    --number=4 \
     $TEST_DIR/ExpressionData.txt \
     $TEST_DIR/ChIP_regions.txt
 for f in $REGION_OUTPUTS ; do

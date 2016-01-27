@@ -60,7 +60,6 @@ def main(args=None):
     # Defaults
     promoter = (1000,100)
     max_distance = 1000000
-    max_closest = 4
     
     # Parse command line
     p = optparse.OptionParser(usage="%prog [options] GENES PEAKS",
@@ -73,14 +72,14 @@ def main(args=None):
     p.add_option('--cutoff',action='store',dest='max_distance',
                  type='int',default=max_distance,
                  help="Maximum distance allowed between peaks and "
-                 "genes before being omitted from the analysis "
+                 "genes before being omitted from the analyses "
                  "(default %dbp; set to zero for no cutoff)" %
                  max_distance)
     p.add_option('--number',action='store',dest='max_closest',
-                 type='int',default=max_closest,
-                 help="Maximum number of hits to report from the analyses "
-                 "(default %d; set to zero to report all hits)" %
-                 max_closest)
+                 type='int',default=None,
+                 help="Filter results after applying --cutoff to report only "
+                 "the nearest MAX_CLOSEST number of pairs for each gene/peak "
+                 "from the analyses (default is to report all results)")
     p.add_option('--edge',action='store',dest="edge",type="choice",
                  choices=('tss','both'),default='tss',
                  help="Gene edges to consider when calculating distances "
@@ -145,8 +144,6 @@ def main(args=None):
     if max_distance <= 0:
         max_distance = None
     max_closest = options.max_closest
-    if max_closest <= 0:
-        max_closest = None
 
     # Gene edge to use
     if options.edge == 'tss':
@@ -203,7 +200,8 @@ def main(args=None):
     print "Input peaks file: %s" % peak_file
     print
     print "Maximum cutoff distance: %d (bp)" % max_distance
-    print "Maximum no. of hits    : %d" % max_closest
+    print "Maximum no. of hits    : %s" % ('All' if max_closest is None
+                                           else "%d" % max_closest)
     print "Promoter region        : -%d to %d (bp from TSS)" % promoter
     print
     if tss_only:
@@ -319,7 +317,9 @@ def main(args=None):
                                                     gene_file))
         xls.append_to_notes("Input peaks file\t%s" % peak_file)
         xls.append_to_notes("Maximum cutoff distance (bp)\t%d" % max_distance)
-        xls.append_to_notes("Maximum no. of hits to report\t%d" % max_closest)
+        xls.append_to_notes("Maximum no. of hits to report\t%s"
+                            % ('All' if max_closest is None
+                               else "%d" % max_closest))
         xls.append_to_notes("Promoter region (bp from TSS)\t-%d to %d" %
                             promoter)
         if tss_only:
