@@ -39,7 +39,7 @@ def make_errline(line,bad_fields=[]):
     """
     # Indicate problem field(s)
     errline = []
-    items = line.split('\t')
+    items = line.rstrip().split('\t')
     for i in range(len(items)):
         if i in bad_fields:
             errline.append("^"*len(items[i]))
