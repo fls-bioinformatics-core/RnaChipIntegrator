@@ -135,6 +135,13 @@ chip_peaks_ex5 = \
 "chr4"	107209680	107211432
 "chr12"	28921259	28923030"""
 #
+# ChIP_peaks-ex6.txt (same start/end position)
+chip_peaks_ex6 = \
+"""chr2L	66811	66812
+chr2L	8825470	8825470
+chr2L	8832523	8832524
+chr2L	8842036	8842037"""
+#
 # NearestTranscriptToPeak-ex3.txt
 nearest_transcript_to_peak_ex3 = \
 """#chr	start	geneID	nearest	TSS	distance_to_TSS	distance_to_TES	strand	in_the_gene	transcripts_inbetween	transcript_ids_inbetween
