@@ -49,6 +49,11 @@ where:
 * ``chrom`` is the chromosome that the peak appears on
 * ``start`` and ``end`` define the limits of the peak region
 
+.. warning::
+
+   ``start`` and ``end`` positions must differ by at least 1bp,
+   and the ``end`` must come after the ``start``.
+
 Any additional columns found in the file are ignored.
 
 .. note::
