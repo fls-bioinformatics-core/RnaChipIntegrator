@@ -1,10 +1,11 @@
 #
 #     test_Peaks.py: unit tests for Peaks module
-#     Copyright (C) University of Manchester 2011-5 Peter Briggs
+#     Copyright (C) University of Manchester 2011-6 Peter Briggs
 
 from common import *
 from rnachipintegrator.Peaks import PeakSet
 from rnachipintegrator.Peaks import Peak
+from rnachipintegrator.Peaks import PeakRangeError
 from rnachipintegrator.Features import FeatureSet
 from rnachipintegrator.distances import GetNearestTranscriptToPeak
 import unittest
@@ -16,6 +17,8 @@ class TestPeakSet(unittest.TestCase):
         create_test_file('ChIP_peaks-ex1.txt',chip_peaks_ex1)
         create_test_file('ChIP_peaks-ex2.txt',chip_peaks_ex2)
         create_test_file('ChIP_peaks-ex5.txt',chip_peaks_ex5)
+        create_test_file('ChIP_peaks-ex6.txt',chip_peaks_ex6)
+        create_test_file('ChIP_peaks-ex7.txt',chip_peaks_ex7)
         create_test_file('ChIP_peaks_multi_columns-ex1.txt',
                          chip_peaks_multi_columns_ex1)
 
@@ -24,6 +27,8 @@ class TestPeakSet(unittest.TestCase):
         delete_test_file('ChIP_peaks-ex1.txt')
         delete_test_file('ChIP_peaks-ex2.txt')
         delete_test_file('ChIP_peaks-ex5.txt')
+        delete_test_file('ChIP_peaks-ex6.txt')
+        delete_test_file('ChIP_peaks-ex7.txt')
 
     def test_reading_in_ChIPseq_data(self):
         peaks = PeakSet('ChIP_peaks-ex1.txt')
@@ -55,6 +60,12 @@ class TestPeakSet(unittest.TestCase):
         self.assertEqual(peaks[0],Peak('chr2L',66711,66911))
         self.assertEqual(peaks[1],Peak('chr2L',605850,606050))
         self.assertEqual(peaks[2],Peak('chr3L',2258089,2258289))
+
+    def test_fail_when_peak_start_and_end_are_equal(self):
+        self.assertRaises(PeakRangeError,PeakSet,'ChIP_peaks-ex6.txt')
+
+    def test_fail_when_peak_end_is_before_start(self):
+        self.assertRaises(PeakRangeError,PeakSet,'ChIP_peaks-ex7.txt')
 
     def test_is_summit_data(self):
         peaks = PeakSet('ChIP_peaks-ex1.txt')
@@ -162,6 +173,10 @@ class TestPeak(unittest.TestCase):
                          Peak('chr2L','66811','66812'))
         self.assertNotEqual(Peak('chr2L','66811','66812'),
                             Peak('chr2L','249177','605951'))
+    def test_peak_start_and_end_are_equal(self):
+        self.assertRaises(PeakRangeError,Peak,'chr2L','66811','66811')
+    def test_peak_end_before_start(self):
+        self.assertRaises(PeakRangeError,Peak,'chr2L','66812','66811')
 
 class TestFeatureSetWithChIPSeqData(unittest.TestCase):
     def setUp(self):

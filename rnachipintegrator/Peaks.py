@@ -1,7 +1,7 @@
 #!/bin/env python
 #
 #     Peaks.py: classes for handling peak data
-#     Copyright (C) University of Manchester 2011-15 Peter Briggs, Leo Zeef
+#     Copyright (C) University of Manchester 2011-16 Peter Briggs, Leo Zeef
 #     & Ian Donaldson
 #
 """
@@ -85,23 +85,25 @@ class PeakSet:
             if not items[start].isdigit() or not items[end].isdigit():
                 logging.warning("Peaks file: skipped line: %s" % line.strip())
                 # Indicate problem field(s)
-                errline = []
-                for i in range(len(items)):
-                    if i == start or i == end:
-                        if not items[i].isdigit():
-                            errline.append("^"*len(items[i]))
-                        else:
-                            errline.append(" "*len(items[i]))
-                    else:
-                        errline.append(" "*len(items[i]))
+                bad_fields = []
+                for i in (start,end):
+                    if not items[i].isdigit():
+                        bad_fields.append(i)
                 logging.warning("                         %s" % \
-                                    ('\t'.join(errline)))
+                                make_errline(line,bad_fields))
                 logging.warning("Expected integer at indicated positions")
                 continue
             # Store in a new Peak object
-            peak = Peak(items[chrom],
-                        items[start],
-                        items[end])
+            try:
+                peak = Peak(items[chrom],
+                            items[start],
+                            items[end])
+            except PeakRangeError,ex:
+                logging.error("Peaks file: bad line: %s" % line.strip())
+                logging.error("                      %s" %
+                              make_errline(line,(start,end)))
+                logging.error("%s" % ex)
+                raise ex
             self.peaks.append(peak)
         fp.close()
         # Return a reference to this object
@@ -238,11 +240,20 @@ class Peak:
 
     There are also convenience methods (e.g. insideRegion).
 
+    Raises a PeakRangeError exception if the peak start and end
+    positions don't differ by at least 1bp.
+
     """
     def __init__(self,chrom,start,end):
         self.chrom = chrom.strip('"\'')
         self.start = int(start)
         self.end = int(end)
+        if self.start == self.end:
+            raise PeakRangeError("'start' and 'end' positions should "
+                                 "differ by at least 1bp")
+        elif self.end < self.start:
+            raise PeakRangeError("'end' position must not come before "
+                                 "'start'")
 
     def __repr__(self):
         return "%s\t%s\t%s" % (self.chrom,
@@ -285,3 +296,8 @@ class Peak:
             return (lower <= self.start and self.start <= upper)
         else:
             return (lower < self.start and self.start < upper)
+
+class PeakRangeError(ValueError):
+    """
+    Class for raising errors with peak start/end ranges
+    """
