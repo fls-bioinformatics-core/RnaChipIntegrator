@@ -50,6 +50,22 @@ overlap_gene	 1 if peak overlaps the gene, 0 if not
 overlap_promoter 1 if peak overlaps the promoter region, 0 if not
 ================ ================================================
 
+Each peak will appear as many times as there are nearest genes being
+reported for that peak. For example::
+
+    ...
+    chr1  9619046  9619167  NM_178399_3110035E14Rik  +  9591248  9617222  ...
+    chr1  9619046  9619167  NM_008651_Mybl1          -  9690280  9635825  ...
+    chr1  9619046  9619167  NM_175236_Adhfe1         +  9538049  9570746  ...
+    chr1  9619046  9619167  NM_021511_Rrs1           +  9535513	 9537532  ...
+    ...
+
+If there are no closest genes for a peak (based on the distance cutoff)
+then the peak will still be reported but the remainder of the fields will
+be filled with placeholders::
+
+    chr17  23681171  23681172  ---  ---  ---  --- ...
+
 Use the ``--compact`` option to output all the genes for each peak
 on a single line (:ref:`compact_output`).
 
@@ -79,28 +95,22 @@ direction       'U' if hit is upstream, 'D' if downstream, '.' if
 in_the_gene     'YES' if peak overlaps the feaure, 'NO' if not
 =============== ====================================================
 
+Each gene will appear as many times as there are nearest peaks being
+reported for that gene. For example::
+
+    ...
+    BC021773_Glb1l  chr1  75193364  75207353  -  chr1  75481920  75482054  ...
+    BC021773_Glb1l  chr1  75193364  75207353  -  chr1  75481920  75482054  ...
+    ...
+
+If there are no closest peaks to a gene (based on the distance cutoff)
+then the gene will still be reported but the remainder of the fields
+will be filled with placeholders::
+
+    BC028767_3110009E18Rik  chr1  122017764  122114603  +  ---  ---  --- ...
+
 Use the ``--compact`` option to output all the peaks for each genes
 on a single line (see :ref:`compact_output`).
-
-.. _number:
-
-Number of results to report (``--number``)
-------------------------------------------
-
-By default, all gene/peak pairs that are located within the
-specified cut-off distance (see :ref:`distance_cutoff`) will be
-reported in the output files.
-
-To restrict the maximum number of pairs that are reported per gene
-or peak use the ``--number`` to specify a limit. Even if more pairs
-are found, only this number of pairs will be output.
-
-.. warning::
-
-   Be aware that if used, this number limit is applied rigidly.
-   For example, even if the fourth and fifth gene/peak pairs both
-   have the same distance separation then using ``--number=4``
-   will only include the first of these and reject the second.
 
 .. _summary_files:
 
