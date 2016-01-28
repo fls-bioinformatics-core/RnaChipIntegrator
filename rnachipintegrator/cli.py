@@ -276,7 +276,12 @@ def main(args=None):
     # Read in peak data
     print "Using columns %s from peaks file as chrom, start, end" % \
         (peak_cols,)
-    peaks = PeakSet(peak_file,columns=peak_cols)
+    try:
+        peaks = PeakSet(peak_file,columns=peak_cols)
+    except Exception,ex:
+        logging.critical("Failed to read peak data (%s)" % ex)
+        print "Please fix errors in input file before running again"
+        sys.exit(1)
     if not len(peaks):
         logging.error("No peak data read in")
         sys.exit(1)
