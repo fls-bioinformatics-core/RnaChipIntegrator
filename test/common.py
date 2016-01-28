@@ -142,6 +142,13 @@ chr2L	8825470	8825470
 chr2L	8832523	8832524
 chr2L	8842036	8842037"""
 #
+# ChIP_peaks-ex7.txt (end position before start)
+chip_peaks_ex7 = \
+"""chr2L	66811	66812
+chr2L	8825470	8825471
+chr2L	8832524	8832523
+chr2L	8842036	8842037"""
+#
 # NearestTranscriptToPeak-ex3.txt
 nearest_transcript_to_peak_ex3 = \
 """#chr	start	geneID	nearest	TSS	distance_to_TSS	distance_to_TES	strand	in_the_gene	transcripts_inbetween	transcript_ids_inbetween

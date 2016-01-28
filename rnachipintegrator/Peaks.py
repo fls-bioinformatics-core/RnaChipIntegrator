@@ -251,6 +251,9 @@ class Peak:
         if self.start == self.end:
             raise PeakRangeError("'start' and 'end' positions should "
                                  "differ by at least 1bp")
+        elif self.end < self.start:
+            raise PeakRangeError("'end' position must not come before "
+                                 "'start'")
 
     def __repr__(self):
         return "%s\t%s\t%s" % (self.chrom,
