@@ -1,5 +1,5 @@
-RnaChipIntegrator: analysis of genomic features with peak data
-==============================================================
+RnaChipIntegrator: analysis of genes with peak data
+===================================================
 
 .. image:: https://readthedocs.org/projects/rnachipintegrator/badge/?version=latest
    :target: https://rnachipintegrator.readthedocs.org
@@ -8,9 +8,9 @@ RnaChipIntegrator: analysis of genomic features with peak data
    :target: https://travis-ci.org/fls-bioinformatics-core/RnaChipIntegrator
 
 ``RnaChipIntegrator`` is a utility that performs integrated analyses
-of feature data (any set of genomic features, for example gene expression
-data or canonical gene lists) with 'peak' data (a set of regions, for
-example ChIP peaks) to identify the features to each peak, and vice versa.
+of 'gene' data (a set of genes or other genomic features) with 'peak'
+data (a set of regions, for example ChIP peaks) to identify the genes
+nearest to each peak, and vice versa.
 
 The program was originally written specifically for ChIP-Seq and RNA-Seq
 data but works equally well for ChIP-chip and microarray expression data,
@@ -27,13 +27,14 @@ Install the latest version of the program from the Python Package Index
 
 The simplest use of the program is::
 
-    RnaChipIntegrator FEATURES PEAKS
+    RnaChipIntegrator GENES PEAKS
 
-where ``FEATURES`` and ``PEAKS`` are tab-delimited files containing
-the genomic feature and peak data respecitively.
+where ``GENES`` and ``PEAKS`` are tab-delimited files containing the
+'gene' and 'peak' data respectively.
 
-This will output two files with the nearest features for each peak,
-and the nearest peaks for each feature.
+This will output two files with the nearest genes for each peak
+("peak-centric" analysis), and the nearest peaks for each gene
+("gene-centric" analysis).
 
 Full documentation can be found at ReadTheDocs:
 

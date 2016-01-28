@@ -42,8 +42,8 @@ TSS	         gene TSS position
 TES	         gene TES position
 dist_closest	 closest distance between peak and gene considering
                  all edges (zero if there is overlap)
-dist_TSS	 distance between peak and feature TSS
-dist_TES	 distance between peak and feature TES
+dist_TSS	 distance between peak and gene TSS
+dist_TES	 distance between peak and gene TES
 direction        'U' if hit is upstream, 'D' if downstream, '.' if
                  overlapped
 overlap_gene	 1 if peak overlaps the gene, 0 if not
@@ -69,8 +69,8 @@ be filled with placeholders::
 Use the ``--compact`` option to output all the genes for each peak
 on a single line (:ref:`compact_output`).
 
-Peaks associated with each feature ('gene-centric' output)
-----------------------------------------------------------
+Peaks associated with each gene ('gene-centric' output)
+-------------------------------------------------------
 
 By default the 'gene-centric' file has one line for each
 gene/peak pair that is being reported, with the following
@@ -89,10 +89,10 @@ peak.start	peak start position
 peak.end	peak end position
 dist_closest	closest distance between peak and gene considering
                 all edges (zero if there is overlap)
-dist_TSS	distance between peak and feature TSS
+dist_TSS	distance between peak and gene TSS
 direction       'U' if hit is upstream, 'D' if downstream, '.' if
                 overlapped
-in_the_gene     'YES' if peak overlaps the feaure, 'NO' if not
+in_the_gene     'YES' if peak overlaps the gene, 'NO' if not
 =============== ====================================================
 
 Each gene will appear as many times as there are nearest peaks being

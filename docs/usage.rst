@@ -18,7 +18,7 @@ This will produce two output files:
 
  - ``GENES_peak_centric.txt``: reports the nearest genes
    for each peak ('peak-centric' analysis)
- - ``GENES_feature_centric.txt``: reports the nearest peaks
+ - ``GENES_gene_centric.txt``: reports the nearest peaks
    for each gene ('gene-centric' analysis)
 
 In both cases the files will contain one peak/gene pair per line
