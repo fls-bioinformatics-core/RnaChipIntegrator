@@ -1,3 +1,18 @@
+2016-01-29  Peter Briggs  <peter.briggs@manchester.ac.uk>
+
+	* Version 0.5.0-alpha.5
+	- Rename 'feature' to 'gene' in program output, documentation etc
+	  NB this doesn't affect the program function.
+	- By default all pairs within the cut-off distance are reported
+	  unless the user explicitly restricts this to a subset by
+	  specifying the --number option (i.e. --number now turned off
+	  by default).
+	- Output file names changed to 'feature-centric' and 'peak-centric'.
+	- Options are grouped into subsets when displayed by -h/--help.
+	- Parameter defaults are also given in the documentation.
+	- Peaks in the input have 'start' and 'end' positions which
+	  aren't at least 1bp apart cause the program to raise an error.
+
 2015-12-01  Peter Briggs  <peter.briggs@manchester.ac.uk>
 
 	* Version 0.5.0-alpha.4
