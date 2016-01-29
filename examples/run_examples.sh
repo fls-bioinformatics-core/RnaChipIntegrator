@@ -40,6 +40,15 @@ for f in $REGION_OUTPUTS ; do
 	exit 1
     fi
 done
+# Check XLS file is produced by --xls
+RnaChipIntegrator --name=test \
+    --xls --number=4 \
+    $TEST_DIR/ExpressionData.txt \
+    $TEST_DIR/ChIP_regions.txt
+if [ $? -ne 0 ] || [ ! -f test.xls ] ; then
+    echo "XLS test failed"
+    exit 1
+fi
 exit 0
 ##
 #
