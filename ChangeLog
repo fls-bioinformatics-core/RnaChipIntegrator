@@ -1,5 +1,10 @@
 2016-01-29  Peter Briggs  <peter.briggs@manchester.ac.uk>
 
+	* Version 0.5.0-alpha.6
+	- Fix broken --xls option (crashed program if specified).
+
+2016-01-29  Peter Briggs  <peter.briggs@manchester.ac.uk>
+
 	* Version 0.5.0-alpha.5
 	- Rename 'feature' to 'gene' in program output, documentation etc
 	  NB this doesn't affect the program function.
