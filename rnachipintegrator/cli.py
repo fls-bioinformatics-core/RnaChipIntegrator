@@ -370,22 +370,22 @@ def main(args=None):
         # Add features to peaks
         xls.write_features_to_peaks(peak_fields)
         xls.add_result_sheet('%ss' % feature_type.title(),
-                             basename+"_features_per_peak.txt")
+                             basename+"_peak_centric.txt")
         if options.summary:
             xls.append_to_notes("\n'%ss (summary)' lists the 'top' result "
                                 "(i.e. closest peak/%s pair) for each peak"
                                 % (feature_type.title(),feature_type))
             xls.add_result_sheet('%ss (summary)' % feature_type.title(),
-                                 basename+"_features_per_peak_summary.txt")
+                                 basename+"_peak_centric_summary.txt")
         # Add peaks to features
         xls.write_peaks_to_features(gene_fields)
-        xls.add_result_sheet('Peaks',basename+"_peaks_per_feature.txt")
+        xls.add_result_sheet('Peaks',basename+"_gene_centric.txt")
         if options.summary:
             xls.append_to_notes("\n'Peaks (summary)' lists the 'top' result "
                                 "(i.e. closest %s/peak pair) for each %s"
                                 % (feature_type,feature_type))
             xls.add_result_sheet('Peaks (summary)',
-                                 basename+"_peaks_per_feature_summary.txt")
+                                 basename+"_gene_centric_summary.txt")
         xls.write(basename+'.xls')
         print "Wrote %s" % basename+'.xls'
         print
