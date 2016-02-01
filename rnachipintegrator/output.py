@@ -12,6 +12,7 @@ Functions for outputing analysis results
 """
 import distances
 from Peaks import Peak
+import tempfile
 
 #######################################################################
 # Constants
@@ -456,16 +457,20 @@ class AnalysisReportWriter(AnalysisReporter):
                                   null_placeholder=null_placeholder,
                                   pad=pad,max_hits=max_hits,
                                   feature_type=feature_type)
-        if outfile is not None:
-            # Open output file and write header
-            self._fp = open(outfile,'w')
-            self._fp.write("#%s\n" % self.make_header())
+        self.outfile = outfile
+        if self.outfile is not None:
+            # Open temporary file to handle output
+            self._fp = tempfile.TemporaryFile()
+            #self._fp = open(outfile,'w')
+            #self._fp.write("#%s\n" % self.make_header())
         else:
             self._fp = None
-        if summary is not None:
-            # Open summary file and write header
-            self._summary = open(summary,'w')
-            self._summary.write("#%s\n" % self.make_header())
+        self.summary = summary
+        if self.summary is not None:
+            # Open temporary file to handle summary
+            self._summary = tempfile.TemporaryFile()
+            #self._summary = open(summary,'w')
+            #self._summary.write("#%s\n" % self.make_header())
         else:
             self._summary = None
 
@@ -503,15 +508,37 @@ class AnalysisReportWriter(AnalysisReporter):
         """
         Close the files associated with the writer
 
+        In reality the data has been written to temporary
+        files; the purpose of this method is to open,
+        write and close the final 'visible' output files.
+
         """
-        try:
+        # Full output file
+        if self.outfile:
+            # Rewind to the start of the temp file
+            self._fp.seek(0)
+            # Write the final output file
+            with open(self.outfile,'w') as fp:
+                # Write the header
+                fp.write("#%s\n" % self.make_header())
+                # Write the content
+                for line in self._fp:
+                    fp.write(line)
+            # Dispose of the temp file
             self._fp.close()
-        except AttributeError:
-            pass
-        try:
+        # Summary output file
+        if self.summary:
+            # Rewind to the start of the temp file
+            self._summary.seek(0)
+            # Write the final summary file
+            with open(self.summary,'w') as fp:
+                # Write the header
+                fp.write("#%s\n" % self.make_header())
+                # Write the content
+                for line in self._summary:
+                    fp.write(line)
+            # Dispose of the temp file
             self._summary.close()
-        except AttributeError:
-            pass
 
 def describe_fields(fields):
     """
