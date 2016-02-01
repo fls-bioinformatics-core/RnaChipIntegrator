@@ -142,6 +142,7 @@ class AnalysisReporter:
         self._context_feature = None
         self._is_features = None
         self._feature_type = feature_type
+        self._max_pairs = 0
 
     def report_nearest(self,reference,results):
         """
@@ -173,6 +174,8 @@ class AnalysisReporter:
             self._context_feature = reference
             self._is_features = False
         is_features = self._is_features
+        # Store largest number of pairs reported
+        self._max_pairs = max(self._max_pairs,len(results))
         # Reduce to maximum number of hits
         if self._max_hits is not None:
             results = results[:self._max_hits]
@@ -401,13 +404,15 @@ class AnalysisReporter:
                                   for x in self._fields])
         elif self._mode == SINGLE_LINE:
             header_fields = []
+            if self._max_hits is not None:
+                max_pairs = self._max_hits
+            else:
+                max_pairs = self._max_pairs
             for f in self._fields:
                 try:
                     # Handle fields in a list(...)
                     subfields = f[:-1].split('(')[1].split(',')
-                    if self._max_hits is None:
-                        continue
-                    for i in range(1,self._max_hits+1):
+                    for i in range(1,max_pairs+1):
                         for s in subfields:
                             header_fields.append("%s_%d" % (s,i))
                 except IndexError:
