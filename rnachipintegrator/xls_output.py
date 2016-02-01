@@ -18,18 +18,18 @@ import utils
 NOTES = dict()
 NOTES['preamble'] = """<style font=bold bgcolor=gray25>%s</style>
 
-Find nearest peaks to genomic features (and vice versa)
+Find nearest peaks to %ss (and vice versa)
 
 Bioinformatics Core Facility, Faculty of Life Sciences, University of Manchester
 http://fls-bioinformatics-core.github.com/RnaChipIntegrator/
 Run on %s
 
 <style font=bold bgcolor=gray25>Settings</style>"""
-NOTES['features_to_peaks'] = """
-<style font=bold bgcolor=gray25>'%ss': nearest %s to each peak</style>
+NOTES['peak_centric'] = """
+<style font=bold bgcolor=gray25>'Peak-centric': nearest %ss to each peak</style>
 Column\tDescription"""
-NOTES['peaks_to_features'] = """
-<style font=bold bgcolor=gray25>'Peaks': nearest peaks to each %s</style>
+NOTES['feature_centric'] = """
+<style font=bold bgcolor=gray25>'%s-centric': nearest peaks to each %s</style>
 Column\tDescription"""
 
 class XLS:
@@ -63,10 +63,11 @@ class XLS:
         self._char_limit = Spreadsheet.MAX_LEN_WORKSHEET_CELL_VALUE
         self._line_limit = Spreadsheet.MAX_NUMBER_ROWS_PER_WORKSHEET
         self._notes = self._xls.addSheet("Notes")
-        self._notes.addText(NOTES['preamble'] % (program_version,
-                                                 datetime.date.today()))
-        self._feature_type = ('feature' if feature_type is None
+        self._feature_type = ('gene' if feature_type is None
                               else feature_type)
+        self._notes.addText(NOTES['preamble'] % (program_version,
+                                                 self._feature_type,
+                                                 datetime.date.today()))
 
     def append_to_notes(self,text):
         """
@@ -79,28 +80,29 @@ class XLS:
         """
         self._notes.addText(text)
 
-    def write_features_to_peaks(self,fields):
+    def write_peak_centric(self,fields):
         """
-        Write details of the 'Features' results to XLS notes
+        Write details of the 'peak-centric' results to XLS notes
 
         Arguments:
           fields (list): list of fields in the output
 
         """
-        self.append_to_notes(NOTES['features_to_peaks'] %
-                             (self._feature_type.title(),
-                              self._feature_type))
+        self.append_to_notes(NOTES['peak_centric'] %
+                             self._feature_type)
         self.append_to_notes(self._field_descriptions(fields))
 
-    def write_peaks_to_features(self,fields):
+    def write_feature_centric(self,fields):
         """
-        Write details of the 'Peaks' results to XLS notes
+        Write details of the 'feature-centric' results to XLS notes
 
         Arguments:
           fields (list): list of fields in the output
 
         """
-        self.append_to_notes(NOTES['peaks_to_features'] % self._feature_type)
+        self.append_to_notes(NOTES['feature_centric'] %
+                             (self._feature_type.title(),
+                              self._feature_type))
         self.append_to_notes(self._field_descriptions(fields))
 
     def _field_descriptions(self,fields):
