@@ -142,6 +142,7 @@ class AnalysisReporter:
         self._context_feature = None
         self._is_features = None
         self._feature_type = feature_type
+        self._max_pairs = 0
 
     def report_nearest(self,reference,results):
         """
@@ -173,6 +174,8 @@ class AnalysisReporter:
             self._context_feature = reference
             self._is_features = False
         is_features = self._is_features
+        # Store largest number of pairs reported
+        self._max_pairs = max(self._max_pairs,len(results))
         # Reduce to maximum number of hits
         if self._max_hits is not None:
             results = results[:self._max_hits]
@@ -401,13 +404,15 @@ class AnalysisReporter:
                                   for x in self._fields])
         elif self._mode == SINGLE_LINE:
             header_fields = []
+            if self._max_hits is not None:
+                max_pairs = self._max_hits
+            else:
+                max_pairs = self._max_pairs
             for f in self._fields:
                 try:
                     # Handle fields in a list(...)
                     subfields = f[:-1].split('(')[1].split(',')
-                    if self._max_hits is None:
-                        continue
-                    for i in range(1,self._max_hits+1):
+                    for i in range(1,max_pairs+1):
                         for s in subfields:
                             header_fields.append("%s_%d" % (s,i))
                 except IndexError:
@@ -461,16 +466,12 @@ class AnalysisReportWriter(AnalysisReporter):
         if self.outfile is not None:
             # Open temporary file to handle output
             self._fp = tempfile.TemporaryFile()
-            #self._fp = open(outfile,'w')
-            #self._fp.write("#%s\n" % self.make_header())
         else:
             self._fp = None
         self.summary = summary
         if self.summary is not None:
             # Open temporary file to handle summary
             self._summary = tempfile.TemporaryFile()
-            #self._summary = open(summary,'w')
-            #self._summary.write("#%s\n" % self.make_header())
         else:
             self._summary = None
 
@@ -522,7 +523,14 @@ class AnalysisReportWriter(AnalysisReporter):
                 # Write the header
                 fp.write("#%s\n" % self.make_header())
                 # Write the content
+                nitems = len(self.make_header().split('\t'))
                 for line in self._fp:
+                    if self._mode == SINGLE_LINE:
+                        # Handle padding trailing empty fields
+                        fields = line.rstrip().split('\t')
+                        while len(fields) < nitems:
+                            fields.append(self._placeholder)
+                        line = '\t'.join(fields) + '\n'
                     fp.write(line)
             # Dispose of the temp file
             self._fp.close()
