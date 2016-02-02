@@ -523,7 +523,14 @@ class AnalysisReportWriter(AnalysisReporter):
                 # Write the header
                 fp.write("#%s\n" % self.make_header())
                 # Write the content
+                nitems = len(self.make_header().split('\t'))
                 for line in self._fp:
+                    if self._mode == SINGLE_LINE:
+                        # Handle padding trailing empty fields
+                        fields = line.rstrip().split('\t')
+                        while len(fields) < nitems:
+                            fields.append(self._placeholder)
+                        line = '\t'.join(fields) + '\n'
                     fp.write(line)
             # Dispose of the temp file
             self._fp.close()
