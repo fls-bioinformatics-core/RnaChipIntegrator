@@ -466,16 +466,12 @@ class AnalysisReportWriter(AnalysisReporter):
         if self.outfile is not None:
             # Open temporary file to handle output
             self._fp = tempfile.TemporaryFile()
-            #self._fp = open(outfile,'w')
-            #self._fp.write("#%s\n" % self.make_header())
         else:
             self._fp = None
         self.summary = summary
         if self.summary is not None:
             # Open temporary file to handle summary
             self._summary = tempfile.TemporaryFile()
-            #self._summary = open(summary,'w')
-            #self._summary.write("#%s\n" % self.make_header())
         else:
             self._summary = None
 
