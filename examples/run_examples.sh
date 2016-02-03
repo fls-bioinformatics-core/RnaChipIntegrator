@@ -54,16 +54,16 @@ for f in $REGION_OUTPUTS ; do
     fi
 done
 echo "'Region' test: OK"
-# Check XLS file is produced by --xls
+# Check XLSX file is produced by --xlsx
 RnaChipIntegrator --name=test_xls \
-    --xls --number=4 \
+    --xlsx --compact \
     $TEST_DIR/ExpressionData.txt \
     $TEST_DIR/ChIP_regions.txt
-if [ $? -ne 0 ] || [ ! -f test_xls.xls ] ; then
+if [ $? -ne 0 ] || [ ! -f test_xls.xlsx ] ; then
     echo "XLS test: FAILED"
     exit 1
 fi
-echo "XLS test: OK"
+echo "XLSX test: OK"
 # Check single line output from --compact
 RnaChipIntegrator --name=compact \
     --compact \
