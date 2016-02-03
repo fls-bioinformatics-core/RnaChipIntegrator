@@ -7,9 +7,12 @@ Technical details
 -----------------
 
 ``RnaChipIntegrator`` is known to work with Python 2.6 and 2.7, and
-requires the external ``xlwt``, ``xlrd`` and ``xlutils`` libraries
-in order to generate Excel spreadsheets. These libraries should be
-installed automatically if using ``pip``.
+requires the external ``xlsxwriter`` library in order to generate the
+``.xlsx`` Excel spreadsheets:
+
+ * http://xlsxwriter.readthedocs.org/index.html
+
+This library will be installed automatically if using ``pip``.
 
 The source code for the program is hosted on GitHub at
 

@@ -144,7 +144,7 @@ Changing the output files and formats
 There are a number of options to produce additional output files, and
 to modify the format depending on requirements:
 
- * :ref:`xls_file`
+ * :ref:`xlsx_file`
  * :ref:`summary_files`
  * :ref:`compact_output`
  * :ref:`output_padding`

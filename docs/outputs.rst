@@ -126,23 +126,16 @@ tab-delimited files:
 These will only contain the 'top' (i.e. closest) gene/peak pairs,
 with the same columns of data as the 'full' versions of the files.
 
-.. _xls_file:
+.. _xlsx_file:
 
-Excel spreadsheet (``--xls``)
------------------------------
+Excel spreadsheet (``--xlsx``)
+------------------------------
 
-Using the ``--xls`` option outputs an additional Excel spreadsheet
-file ``BASENAME.xls``, which contains the results from all the
+Using the ``--xlsx`` option outputs an additional Excel spreadsheet
+file ``BASENAME.xlsx``, which contains the results from all the
 tab-delimited files (including the summaries, if ``--summary`` was
 also specified), plus a 'notes' sheet with additional information
 about the results from each analysis.
-
-.. note::
-
-   The XLS-writing library has a limit on the number of rows that
-   can be written to a sheet; if the number of results exceeds this
-   limit then the results will be broken into multiple sheets in
-   the output XLS file.
 
 .. _compact_output:
 
