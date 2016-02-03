@@ -1,3 +1,16 @@
+2016-02-03  Peter Briggs  <peter.briggs@manchester.ac.uk>
+
+	* Version 0.5.0-alpha.7
+	- Update --xls option to --xlsx and generate XLSX files
+	  (instead of XLS); as XLSX has much greater limits on
+	  the number of rows and columns allowed in a worksheet
+	  this should address previous problems with having data
+	  split over multiple sheets.
+	- Correct headers and placeholders now output when using
+	  --compact option when --number is not specified.
+	- Pre-existing output files are explicitly removed before
+	  analysis is run (rather than relying on overwrite).
+
 2016-01-29  Peter Briggs  <peter.briggs@manchester.ac.uk>
 
 	* Version 0.5.0-alpha.6
