@@ -1,3 +1,8 @@
+2016-02-18  Peter Briggs  <peter.briggs@manchester.ac.uk>
+
+	* Version 0.5.0-alpha.8
+	- Fix typo in XLSX 'notes' sheet.
+
 2016-02-03  Peter Briggs  <peter.briggs@manchester.ac.uk>
 
 	* Version 0.5.0-alpha.7
