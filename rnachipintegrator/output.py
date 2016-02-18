@@ -43,7 +43,7 @@ FIELDS = {
     'dist_TES': "distance between peak and feature TES",
     'overlap_feature': "1 if peak overlaps the feature, 0 if not",
     'overlap_promoter': "1 if peak overlaps the promoter region, 0 if not",
-    'in_the_feature': "'YES' if peak overlaps the feaure, 'NO' if not",
+    'in_the_feature': "'YES' if peak overlaps the feature, 'NO' if not",
     'direction': "'U' if hit is upstream, 'D' if downstream, '.' if overlapped",
     'differentially_expressed': "1 if feature is differentially expressed, 0 if not",
     'order': "the 'order' of the feature/peak pair (e.g. '1 of 4')",
@@ -82,7 +82,7 @@ class AnalysisReporter:
     - dist_closest: closest distance between peak and feature
     - dist_TSS: distance between peak and feature TSS
     - dist_TES: distance between peak and feature TES
-    - overlap_feature: 'YES' if peak overlaps the feaure, 'NO' if not
+    - overlap_feature: 'YES' if peak overlaps the feature, 'NO' if not
     - overlap_promoter: 1 if peak overlaps the promoter region, 0 if not
     - in_the_feature: synonym for 'overlap_feature'
     - 'differentially_expressed': flag value for feature
