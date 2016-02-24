@@ -1,3 +1,47 @@
+2016-02-24  Peter Briggs  <peter.briggs@manchester.ac.uk>
+
+	* Version 1.0.0
+	- Complete reimplementation of RnaChipIntegrator to unify internal
+	  algorithms, simplify usage and substantially update the
+	  documentation.
+	- Installs using 'pip'; can be obtained directly from PyPI using
+	  'pip install RnaChipIntegrator'.
+	- Executable now installs as 'RnaChipIntegrator' (i.e. no '.py'
+	  extension)
+	- Documentation now available via ReadTheDocs:
+	  http://rnachipintegrator.readthedocs.org/en/latest/
+	- No distinction is now made between 'summits' and 'peaks'; the
+	  same algorithm is applied in each case.
+	- The program always finds the nearest genes to each peak, and
+	  vice versa. The same distance cutoff and maximum number of hits
+	  are applied to both and can be specified using the --cutoff and
+	  --number options.
+	- By default all pairs within the cut-off distance are reported
+	  unless the user explicitly restricts this to a subset by
+	  specifying the --number option (i.e. --number now turned off
+	  by default).
+	- By default nearest distances between peaks and gene are
+	  calculated from the TSS of the feature to whichever of the peak
+	  edges are closer; alternatively distances can be calculated
+	  between the nearest pair of peak/gene edges by specifying the
+	  --edge=both option.
+	- Any differential expression flags in the input genes file
+	  are ignored unless the --only-DE option is specified, in which
+	  case only the differentially expressed genes are considered
+	  in the analyses.
+	- By default each peak/gene pair is reported on a separate
+	  line; the --compact option reports all nearest gene/peaks
+	  on a single line of output.
+	- New 'direction' field in output indicates whether hits are
+	  up- or downstream from reference.
+	- Specify arbitrary columns from input peaks file using new
+	  --peak_cols options to set chromosome, start and end.
+	- Output file names now end with 'gene-centric' and 'peak-centric'.
+	- Excel output is only produced if the --xlsx option is specified;
+	  spreadsheets are now output in XLSX format (instead of XLS).
+	- Summary output is only produced if --summary is specified.
+	- The 'rearrange_columns.py' utility has been dropped.
+
 2016-02-18  Peter Briggs  <peter.briggs@manchester.ac.uk>
 
 	* Version 0.5.0-alpha.8
