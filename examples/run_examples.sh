@@ -5,6 +5,13 @@
 # Assertion functions for tests
 function assert_equal {
     # Check two files are the same
+    if [ ! -e $1 ] ; then
+	echo "$1: missing reference data"
+	return 1
+    elif [ ! -e $2 ] ; then
+	echo "$2: missing"
+	return 1
+    fi
     diff -q $1 $2
     if [ $? -ne 0 ] ; then
 	echo "$2: doesn't match reference data:"
@@ -78,6 +85,24 @@ for f in $COMPACT_OUTPUTS ; do
     fi
 done
 echo "'Compact' test: OK"
+# Check --cutoff=0 works
+RnaChipIntegrator --name=zero_cutoff \
+    --cutoff=0 \
+    $TEST_DIR/ExpressionData.txt \
+    $TEST_DIR/ChIP_regions.txt
+if [ $? -ne 0 ] ; then
+    echo "'Zero cutoff' test: FAILED"
+    exit 1
+fi
+ZERO_CUTOFF_OUTPUTS="zero_cutoff_peak_centric.txt zero_cutoff_gene_centric.txt"
+for f in $ZERO_CUTOFF_OUTPUTS ; do
+    assert_equal $REF_DATA/ref_$f $f
+    if [ $? -ne 0 ] ; then
+	echo "'Zero cutoff' test: FAILED"
+	exit 1
+    fi
+done
+echo "'Zero cutoff' test: OK"
 exit 0
 ##
 #
