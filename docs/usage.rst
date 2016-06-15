@@ -45,7 +45,8 @@ For example::
 .. note::
 
    If a maximum cutoff distance is not explicitly specified then
-   the default is 1000000 bp.
+   the default is 1000000 bp. Set the distance to 0 to turn off
+   the cutoff limit and include all pairs regardless of distance.
 
 Specifying how distances are measured between peaks and genes (``--edge``)
 --------------------------------------------------------------------------
