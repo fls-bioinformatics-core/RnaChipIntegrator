@@ -232,7 +232,10 @@ def main(args=None):
     print "Input genes file: %s" % gene_file
     print "Input peaks file: %s" % peak_file
     print
-    print "Maximum cutoff distance: %d (bp)" % max_distance
+    if max_distance is not None:
+        print "Maximum cutoff distance: %d (bp)" % max_distance
+    else:
+        print "Maximum cutoff distance: no cutoff"
     print "Maximum no. of hits    : %s" % ('All' if max_closest is None
                                            else "%d" % max_closest)
     print "Promoter region        : -%d to %d (bp from TSS)" % promoter
