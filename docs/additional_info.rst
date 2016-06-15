@@ -10,7 +10,7 @@ Technical details
 requires the external ``xlsxwriter`` library in order to generate the
 ``.xlsx`` Excel spreadsheets:
 
- * http://xlsxwriter.readthedocs.org/index.html
+ * http://xlsxwriter.readthedocs.io/index.html
 
 This library will be installed automatically if using ``pip``.
 
@@ -34,7 +34,7 @@ both of which create the documentation in the ``docs/_build``
 subdirectory.
 
 A copy of the documentation is also hosted on ReadTheDocs at
-http://rnachipintegrator.readthedocs.org/en/latest/
+http://rnachipintegrator.readthedocs.io/en/latest/
 
 The unit tests for the code can be run using::
 

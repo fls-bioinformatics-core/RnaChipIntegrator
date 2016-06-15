@@ -1,8 +1,8 @@
 RnaChipIntegrator: analysis of genes with peak data
 ===================================================
 
-.. image:: https://readthedocs.org/projects/rnachipintegrator/badge/?version=latest
-   :target: https://rnachipintegrator.readthedocs.org
+.. image:: https://readthedocs.io/projects/rnachipintegrator/badge/?version=latest
+   :target: https://rnachipintegrator.readthedocs.io
 
 .. image:: https://travis-ci.org/fls-bioinformatics-core/RnaChipIntegrator.png?branch=master
    :target: https://travis-ci.org/fls-bioinformatics-core/RnaChipIntegrator
@@ -38,7 +38,7 @@ This will output two files with the nearest genes for each peak
 
 Full documentation can be found at ReadTheDocs:
 
- * http://rnachipintegrator.readthedocs.org/en/latest/
+ * http://rnachipintegrator.readthedocs.io/en/latest/
 
 See the ``INSTALL`` file for complete installation instructions.
 
