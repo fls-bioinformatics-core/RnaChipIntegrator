@@ -1,7 +1,7 @@
 RnaChipIntegrator: analysis of genes with peak data
 ===================================================
 
-.. image:: https://readthedocs.io/projects/rnachipintegrator/badge/?version=latest
+.. image:: https://readthedocs.org/projects/rnachipintegrator/badge/?version=latest
    :target: https://rnachipintegrator.readthedocs.io
 
 .. image:: https://travis-ci.org/fls-bioinformatics-core/RnaChipIntegrator.png?branch=master
