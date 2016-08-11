@@ -88,6 +88,7 @@ echo "'Compact' test: OK"
 # Check --cutoff=0 works
 RnaChipIntegrator --name=zero_cutoff \
     --cutoff=0 \
+    --xlsx \
     $TEST_DIR/ExpressionData.txt \
     $TEST_DIR/ChIP_regions.txt
 if [ $? -ne 0 ] ; then
