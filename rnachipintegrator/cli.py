@@ -370,7 +370,11 @@ def main(args=None):
         xlsx.append_to_notes("Input %ss file\t%s" % (feature_type,
                                                      gene_file))
         xlsx.append_to_notes("Input peaks file\t%s" % peak_file)
-        xlsx.append_to_notes("Maximum cutoff distance (bp)\t%d" % max_distance)
+        if max_distance is not None:
+            xlsx.append_to_notes("Maximum cutoff distance (bp)\t%d" %
+                                 max_distance)
+        else:
+            xlsx.append_to_notes("Maximum cutoff distance (bp)\tno cutoff")
         xlsx.append_to_notes("Maximum no. of hits to report\t%s"
                              % ('All' if max_closest is None
                                 else "%d" % max_closest))
