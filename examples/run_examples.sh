@@ -104,6 +104,35 @@ for f in $ZERO_CUTOFF_OUTPUTS ; do
     fi
 done
 echo "'Zero cutoff' test: OK"
+# Check using --analyses=peak_centric
+RnaChipIntegrator --name=test_peakcentric \
+    --analyses=peak_centric \
+    --number=4 \
+    $TEST_DIR/ExpressionData.txt \
+    $TEST_DIR/ChIP_regions.txt
+PEAK_CENTRIC_OUTPUTS="test_peakcentric_peak_centric.txt"
+for f in $PEAK_CENTRIC_OUTPUTS ; do
+    assert_equal $REF_DATA/ref_$f $f
+    if [ $? -ne 0 ] ; then
+	echo "Peak-centric-only test: FAILED"
+	exit 1
+    fi
+done
+echo "Peak-centric-only test: OK"
+# Check using --analyses=gene_centric
+RnaChipIntegrator --name=test_genecentric \
+    --analyses=gene_centric \
+    $TEST_DIR/ExpressionData.txt \
+    $TEST_DIR/ChIP_regions.txt
+GENE_CENTRIC_OUTPUTS="test_genecentric_gene_centric.txt"
+for f in $PEAK_CENTRIC_OUTPUTS ; do
+    assert_equal $REF_DATA/ref_$f $f
+    if [ $? -ne 0 ] ; then
+	echo "Gene-centric-only test: FAILED"
+	exit 1
+    fi
+done
+echo "Gene-centric-only test: OK"
 exit 0
 ##
 #
