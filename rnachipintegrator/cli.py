@@ -72,6 +72,12 @@ def main(args=None):
 
     # Analysis options
     analysis_opts = optparse.OptionGroup(p,"Analysis options")
+    analysis_opts.add_option('--analyses',action='store',dest="analyses",
+                             type='choice',default="all",
+                             choices=('all','gene_centric','peak_centric',),
+                             help="Select analyses to run: can be one of "
+                             "'all' (default, runs all available "
+                             "analyses), 'peak_centric' or 'gene_centric'")
     analysis_opts.add_option('--cutoff',action='store',dest='max_distance',
                              type='int',default=max_distance,
                              help="Maximum distance allowed between peaks "
@@ -228,6 +234,10 @@ def main(args=None):
         except Exception, ex:
             p.error("Bad column assignment for --peak_cols")
 
+    # Analyses to run
+    peak_centric = (options.analyses in ("all","peak_centric",))
+    gene_centric = (options.analyses in ("all","gene_centric",))
+
     # Report settings
     print "Input genes file: %s" % gene_file
     print "Input peaks file: %s" % peak_file
@@ -240,6 +250,9 @@ def main(args=None):
                                            else "%d" % max_closest)
     print "Promoter region        : -%d to %d (bp from TSS)" % promoter
     print
+    print "Analyses:"
+    print "- Peak-centric: %s" % ('yes' if peak_centric else 'no')
+    print "- Gene-centric: %s" % ('yes' if gene_centric else 'no')
     if tss_only:
         print "Distances will be calculated from gene TSS only"
     else:
@@ -316,51 +329,60 @@ def main(args=None):
     # Clean up any pre-existing output files that would otherwise
     # be overwritten
     print "Checking for pre-existing output files"
-    for f in (peak_centric_out,peak_centric_summary,
-              gene_centric_out,gene_centric_summary,
-              xlsx_out):
+    output_files = []
+    if peak_centric:
+        output_files.extend([peak_centric_out,peak_centric_summary])
+    if gene_centric:
+        output_files.extend([gene_centric_out,gene_centric_summary])
+    if xlsx_out is not None:
+        output_files.append(xlsx_out)
+    for f in output_files:
         if f is not None and os.path.isfile(f):
             print "\tRemoving %s" % f
             os.remove(f)
     print
 
     # Do the analyses
-    print "**** Peak-centric analysis: nearest genes to each peak ****"
-    reporter = output.AnalysisReportWriter(mode,peak_fields,
-                                           promoter_region=promoter,
-                                           null_placeholder=placeholder,
-                                           max_hits=max_closest,
-                                           pad=options.pad_output,
-                                           outfile=peak_centric_out,
-                                           summary=peak_centric_summary,
-                                           feature_type=feature_type)
-    for peak,nearest_genes in analysis.find_nearest_features(
-            peaks,genes,tss_only=tss_only,distance=max_distance,
-            only_differentially_expressed=use_differentially_expressed):
-        reporter.write_nearest_features(peak,nearest_genes)
-    reporter.close()
-    print "Results written to %s" % peak_centric_out
-    if peak_centric_summary:
-        print "Summary written to %s" % peak_centric_summary
-    print
+    if peak_centric:
+        print "**** Peak-centric analysis: nearest genes to each peak ****"
+        reporter = output.AnalysisReportWriter(
+            mode,peak_fields,
+            promoter_region=promoter,
+            null_placeholder=placeholder,
+            max_hits=max_closest,
+            pad=options.pad_output,
+            outfile=peak_centric_out,
+            summary=peak_centric_summary,
+            feature_type=feature_type)
+        for peak,nearest_genes in analysis.find_nearest_features(
+                peaks,genes,tss_only=tss_only,distance=max_distance,
+                only_differentially_expressed=use_differentially_expressed):
+            reporter.write_nearest_features(peak,nearest_genes)
+        reporter.close()
+        print "Results written to %s" % peak_centric_out
+        if peak_centric_summary:
+            print "Summary written to %s" % peak_centric_summary
+        print
 
-    print "**** Gene-centric analysis: nearest peaks to each gene ****"
-    reporter = output.AnalysisReportWriter(mode,gene_fields,
-                                           null_placeholder=placeholder,
-                                           max_hits=max_closest,
-                                           pad=options.pad_output,
-                                           outfile=gene_centric_out,
-                                           summary=gene_centric_summary,
-                                           feature_type=feature_type)
-    for gene,nearest_peaks in analysis.find_nearest_peaks(
-            genes,peaks,tss_only=tss_only,distance=max_distance,
-            only_differentially_expressed=use_differentially_expressed):
-        reporter.write_nearest_peaks(gene,nearest_peaks)
-    reporter.close()
-    print "Results written to %s" % gene_centric_out
-    if gene_centric_summary:
-        print "Summary written to %s" % gene_centric_summary
-    print
+    if gene_centric:
+        print "**** Gene-centric analysis: nearest peaks to each gene ****"
+        reporter = output.AnalysisReportWriter(
+            mode,gene_fields,
+            null_placeholder=placeholder,
+            max_hits=max_closest,
+            pad=options.pad_output,
+            outfile=gene_centric_out,
+            summary=gene_centric_summary,
+            feature_type=feature_type)
+        for gene,nearest_peaks in analysis.find_nearest_peaks(
+                genes,peaks,tss_only=tss_only,distance=max_distance,
+                only_differentially_expressed=use_differentially_expressed):
+            reporter.write_nearest_peaks(gene,nearest_peaks)
+        reporter.close()
+        print "Results written to %s" % gene_centric_out
+        if gene_centric_summary:
+            print "Summary written to %s" % gene_centric_summary
+        print
 
     # Make XLSX file
     if options.xlsx_output:
@@ -388,27 +410,30 @@ def main(args=None):
                              (feature_type,
                               "Yes" if use_differentially_expressed else "No"))
         # Add features to peaks
-        xlsx.write_peak_centric(peak_fields)
-        xlsx.add_result_sheet('Peak-centric',peak_centric_out)
-        if options.summary:
-            xlsx.append_to_notes("\n'Peak-centric (summary)' lists the 'top' "
-                                 "result (i.e. closest peak/%s pair) for each "
-                                 "peak" % feature_type)
-            xlsx.add_result_sheet('Peak-centric (summary)',
-                                  peak_centric_summary)
+        if peak_centric:
+            xlsx.write_peak_centric(peak_fields)
+            xlsx.add_result_sheet('Peak-centric',peak_centric_out)
+            if options.summary:
+                xlsx.append_to_notes("\n'Peak-centric (summary)' lists the "
+                                     "'top' result (i.e. closest peak/%s "
+                                     "pair) for each peak" % feature_type)
+                xlsx.add_result_sheet('Peak-centric (summary)',
+                                      peak_centric_summary)
         # Add peaks to features
-        xlsx.write_feature_centric(gene_fields)
-        xlsx.add_result_sheet('%s-centric' % feature_type.title(),
-                              gene_centric_out)
-        if options.summary:
-            xlsx.append_to_notes("\n'%s-centric (summary)' lists the 'top' "
-                                 "result (i.e. closest %s/peak pair) for each "
-                                 "%s" % (feature_type.title(),
-                                         feature_type,
-                                         feature_type))
-            xlsx.add_result_sheet('%s-centric (summary)' %
-                                  feature_type.title(),
-                                  gene_centric_summary)
+        if gene_centric:
+            xlsx.write_feature_centric(gene_fields)
+            xlsx.add_result_sheet('%s-centric' % feature_type.title(),
+                                  gene_centric_out)
+            if options.summary:
+                xlsx.append_to_notes("\n'%s-centric (summary)' lists the "
+                                     "'top' result (i.e. closest %s/peak "
+                                     "pair) for each %s" %
+                                     (feature_type.title(),
+                                      feature_type,
+                                      feature_type))
+                xlsx.add_result_sheet('%s-centric (summary)' %
+                                      feature_type.title(),
+                                      gene_centric_summary)
         xlsx.write()
         print "Wrote %s" % xlsx_out
         print
