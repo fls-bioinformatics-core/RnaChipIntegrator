@@ -201,3 +201,55 @@ output headers and so on.
 
    The feature type is purely cosmetic and has no effect on the
    input or output file formats, or the analyses performed.
+
+.. _upstream_and_downstream:
+
+Interpreting 'upstream' and 'downstream'
+----------------------------------------
+
+One of the attributes reported for each peak/gene pair found in the
+analyses is the 'directionality' (in the ``direction`` column),
+which can be either 'upstream' (``U``), 'downstream' (``D``) or
+overlapped.
+
+The intepretation of 'upstream' and 'downstream' for a given pairing
+depends on the 'centricity' of the analysis and the strand direction.
+
+For peak-centric analyses, the direction is from the point of view
+of the peak: on the + strand the peak is upstream of the gene if the
+gene is located further from the 5' end (i.e. higher start position)
+than the peak, and downstream if the gene is nearer to the 5' end
+(i.e. lower start position) than the peak::
+
+    + strand:  5' |--------Peak--------------Gene---------------> 3'
+                             |                 |
+                             |<----Upstream----|
+
+::
+
+    + strand:  5' |--------Gene--------------Peak---------------> 3'
+                             |                 |
+                             |---Downstream--->|
+
+
+(An analogy is that of a river which flows from the 5' to the 3' end;
+the 'downstream' direction is the direction of flow from start to end,
+while the 'upstream' direction is the opposite, from end to start.)
+
+For the - strand this is reversed::
+
+    - strand:  5' <--------Peak--------------Gene---------------| 3'
+                             |                 |
+                             |---Downstream--->|
+
+::
+
+    - strand:  5' <--------Gene--------------Peak---------------| 3'
+                             |                 |
+                             |<----Upstream----|
+
+For gene-centric analyses, the direction is from the point of view
+of the gene, so on the + strand the gene is upstream of the peak if
+the peak is further from the 5' end than the gene (and downstream
+if they are the other way around). Again this is reversed for the
+- strand.
