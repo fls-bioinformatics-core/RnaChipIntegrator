@@ -5,8 +5,8 @@ Known problems
 
 .. _command_installed_as_lower_case:
 
-RnaChipIntegrator command installed as 'rnachipintegrator'
-----------------------------------------------------------
+Command installs as 'rnachipintegrator' not 'RnaChipIntegrator'
+---------------------------------------------------------------
 
 When installed, the package should provide a command called
 ``RnaChipIntegrator``; however in some circumstances it appears that
