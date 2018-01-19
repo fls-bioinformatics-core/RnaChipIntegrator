@@ -35,6 +35,29 @@ see :ref:`using_differential_expression_data`.
 
 Note that any additional columns are ignored.
 
+Note that lines in the input file are ignored in the following
+cases:
+
+* Line starts with the hash character ``#`` (considered to be
+  a comment or header line)
+* First line has non-integer values for ``start`` and
+  ``end``, or an invalid value for the ``strand`` (considered
+  to a header line)
+
+The following are critical errors which will cause the program
+to terminate prematurely:
+
+* Line has values in either the ``start`` or ``end`` columns
+  which aren't integers, or a value in the ``strand`` column
+  which isn't either a ``+`` or ``-`` character (except if
+  it's the first line in the file)
+* Line has a ``start`` value which is greater than the ``end``
+  value
+* Line doesn't contain at least five columns.
+
+The program issues a warning for each problem line that it
+encounters.
+
 'Peaks' data file
 -----------------
 
@@ -55,6 +78,17 @@ where:
    and the ``end`` must come after the ``start``.
 
 Any additional columns found in the file are ignored.
+
+Note that lines in the input file are ignored in any of the
+following cases:
+
+* Line starts with the hash character ``#`` (considered to be
+  a comment line)
+* Line has values in either the ``start`` or ``end`` columns
+  which aren't integers
+* Line doesn't contain at least three columns.
+
+The program issues a warning for each line that is skipped.
 
 .. note::
 
