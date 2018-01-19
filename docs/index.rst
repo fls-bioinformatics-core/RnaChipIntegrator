@@ -15,5 +15,6 @@ genes or features to each peak, and vice versa.
    usage
    inputs
    outputs
+   know_problems
    citing
    additional_info
