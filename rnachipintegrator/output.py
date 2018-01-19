@@ -24,29 +24,29 @@ FIELDS = {
     'chr': "chromosome",
     'start': "peak start position",
     'end': "peak end position",
-    'id': "feature ID",
-    'strand': "feature strand direction",
-    'TSS': "feature TSS position",
-    'TES': "feature TES position",
+    'id': "<FEATURE> ID",
+    'strand': "<FEATURE> strand direction",
+    'TSS': "<FEATURE> TSS position",
+    'TES': "<FEATURE> TES position",
     'peak.chr': "chromosome of the peak",
     'peak.start': "peak start position",
     'peak.end': "peak end position",
-    'feature.id': "feature ID",
-    'feature.chr': "chromosome of the feature",
-    'feature.start': "feature start position",
-    'feature.end': "feature end position",
-    'feature.TSS': "feature TSS position",
-    'feature.TES': "feature TES position",
-    'feature.strand': "feature strand direction",
-    'dist_closest': "closest distance between peak and feature considering all edges (zero if there is overlap)",
-    'dist_TSS': "distance between peak and feature TSS",
-    'dist_TES': "distance between peak and feature TES",
-    'overlap_feature': "1 if peak overlaps the feature, 0 if not",
+    'feature.id': "<FEATURE> ID",
+    'feature.chr': "chromosome of the <FEATURE>",
+    'feature.start': "<FEATURE> start position",
+    'feature.end': "<FEATURE> end position",
+    'feature.TSS': "<FEATURE> TSS position",
+    'feature.TES': "<FEATURE> TES position",
+    'feature.strand': "<FEATURE> strand direction",
+    'dist_closest': "closest distance between peak and <FEATURE> considering all edges (zero if there is overlap)",
+    'dist_TSS': "distance between peak and <FEATURE> TSS",
+    'dist_TES': "distance between peak and <FEATURE> TES",
+    'overlap_feature': "1 if peak overlaps the <FEATURE>, 0 if not",
     'overlap_promoter': "1 if peak overlaps the promoter region, 0 if not",
-    'in_the_feature': "'YES' if peak overlaps the feature, 'NO' if not",
-    'direction': "'U' if peak is upstream (5') of feature; 'D' if peak is downstream (3') of feature; '.' if overlapping",
-    'differentially_expressed': "1 if feature is differentially expressed, 0 if not",
-    'order': "the 'order' of the feature/peak pair (e.g. '1 of 4')",
+    'in_the_feature': "'YES' if peak overlaps the <FEATURE>, 'NO' if not",
+    'direction': "'U' if <SOURCE> is upstream (5') of <TARGET>; 'D' if <SOURCE> is downstream (3') of <TARGET>; '.' if overlapping",
+    'differentially_expressed': "1 if <FEATURE> is differentially expressed, 0 if not",
+    'order': "the 'order' of the <FEATURE>/peak pair (e.g. '1 of 4')",
     'number_of_results': "number of hits being reported",
 }
 
@@ -84,6 +84,7 @@ class AnalysisReporter:
     - dist_TES: distance between peak and feature TES
     - overlap_feature: 'YES' if peak overlaps the feature, 'NO' if not
     - overlap_promoter: 1 if peak overlaps the promoter region, 0 if not
+    - direction: 'U' if hit is upstream, 'D' if downstream, '.' if overlapped
     - in_the_feature: synonym for 'overlap_feature'
     - 'differentially_expressed': flag value for feature
 
@@ -100,7 +101,7 @@ class AnalysisReporter:
     - list(...): output all results (peaks or features, as
       appropriate)
 
-    For the 'list' options, the paranthese should enclose a list
+    For the 'list' options, the parentheses should enclose a list
     of fields to output for each peak or feature in the list e.g.
     'list(chr,start,dist_closest)' or 'list(feature.id)'.
 
@@ -548,7 +549,12 @@ class AnalysisReportWriter(AnalysisReporter):
             # Dispose of the temp file
             self._summary.close()
 
-def describe_fields(fields):
+#######################################################################
+# Functions
+#######################################################################
+
+def describe_fields(fields,feature="feature",
+                    source="source",target="target"):
     """
     Return list of field descriptions
 
@@ -556,7 +562,18 @@ def describe_fields(fields):
     where FIELD is the name of the field and DESC is
     its corresponding description text.
 
-    For example if the supplied fields were:
+    The following placeholders will be replaced with
+    the supplied text when the description text is
+    generated:
+
+    * <FEATURE>: will be replaced with 'feature'
+    * <SOURCE>: will be replaced with 'source'
+    * <TARGET>: will be replaced with 'target'
+
+    Example
+    -------
+
+    If the supplied fields were:
 
     "chr,start,id,dist_closest"
 
@@ -569,6 +586,12 @@ def describe_fields(fields):
 
     Arguments:
       fields (list): list of fields
+      feature (str): text to substitute into '<FEATURE>'
+        placeholders in descriptions (default: 'feature')
+      source (str): text to substitute into '<SOURCE>'
+        placeholders in descriptions (default: 'source')
+      target (str): text to substitute into '<TARGET>'
+        placeholders in descriptions (default: 'target')
 
     Returns:
       list: list of (field,description) tuples.
@@ -577,13 +600,55 @@ def describe_fields(fields):
     descriptions = []
     for attr in fields:
         try:
+            description = update_text(FIELDS[attr],
+                                      SOURCE=source,
+                                      TARGET=target,
+                                      FEATURE=feature)
             descriptions.append(("%s" % attr,
-                                 "%s" % FIELDS[attr]))
+                                 "%s" % description))
         except KeyError:
             if attr.startswith('list('):
                 descriptions.append(('For each hit:',))
                 sub_attrs = attr[:-1].split('(')[1].split(',')
                 for sub_attr in sub_attrs:
+                    description = update_text(FIELDS[sub_attr],
+                                              SOURCE=source,
+                                              TARGET=target,
+                                              FEATURE=feature)
                     descriptions.append(("%s_#" % sub_attr,
-                                         "%s" % FIELDS[sub_attr]))
+                                         "%s" % description))
     return descriptions
+
+def update_text(s,**kws):
+    """
+    Replace arbitrary placeholders in string
+
+    Placeholder names should be supplied as keywords
+    with the corresponding values being the text to
+    replace them with in the supplied string.
+
+    When placeholders appear in the string they
+    should be contained within '<...>'.
+
+    For example:
+
+    >>> text = "Hello my name is <NAME>"
+    >>> update_text(text,NAME="Joe")
+    ... "Hello my is name is Joe"
+
+    Arguments:
+      s (str): text to be updated
+      kws (mapping): keywords mapping placeholder
+        names to new values
+
+    Returns:
+      String: the original text updated by
+        substituting
+    """
+    for kw in kws:
+        placeholder = "<%s>" % kw
+        new_text = kws[kw]
+        if new_text is None:
+            continue
+        s = s.replace(placeholder,new_text)
+    return s

@@ -7,6 +7,7 @@ from itertools import izip_longest
 import rnachipintegrator.output as output
 from rnachipintegrator.output import AnalysisReporter,AnalysisReportWriter
 from rnachipintegrator.output import describe_fields
+from rnachipintegrator.output import update_text
 from rnachipintegrator.Peaks import Peak,PeakSet
 from rnachipintegrator.Features import Feature,FeatureSet
 
@@ -358,13 +359,19 @@ class TestDescribeFieldsFunction(unittest.TestCase):
         desc = describe_fields(('chr','start','end','id',
                                 'strand','TSS','TES',
                                 'differentially_expressed'))
-        self.assertEqual(desc[0],('chr',output.FIELDS['chr']))
-        self.assertEqual(desc[1],('start',output.FIELDS['start']))
-        self.assertEqual(desc[2],('end',output.FIELDS['end']))
-        self.assertEqual(desc[3],('id',output.FIELDS['id']))
-        self.assertEqual(desc[4],('strand',output.FIELDS['strand']))
-        self.assertEqual(desc[5],('TSS',output.FIELDS['TSS']))
-        self.assertEqual(desc[6],('TES',output.FIELDS['TES']))
+        expected_fields = dict()
+        for x in ('chr','start','end','id',
+                  'strand','TSS','TES',
+                  'differentially_expressed'):
+            expected_fields[x] = output.FIELDS[x].\
+                                 replace("<FEATURE>","feature")
+        self.assertEqual(desc[0],('chr',expected_fields['chr']))
+        self.assertEqual(desc[1],('start',expected_fields['start']))
+        self.assertEqual(desc[2],('end',expected_fields['end']))
+        self.assertEqual(desc[3],('id',expected_fields['id']))
+        self.assertEqual(desc[4],('strand',expected_fields['strand']))
+        self.assertEqual(desc[5],('TSS',expected_fields['TSS']))
+        self.assertEqual(desc[6],('TES',expected_fields['TES']))
 
     def test_describe_peak_fields(self):
         desc = describe_fields(('peak.chr','peak.start','peak.end'))
@@ -377,15 +384,22 @@ class TestDescribeFieldsFunction(unittest.TestCase):
                                 'feature.start','feature.end',
                                 'feature.strand',
                                 'feature.TSS','feature.TES'))
-        self.assertEqual(desc[0],('feature.chr',output.FIELDS['feature.chr']))
-        self.assertEqual(desc[1],('feature.id',output.FIELDS['feature.id']))
+        expected_fields = dict()
+        for x in ('feature.chr','feature.id',
+                  'feature.start','feature.end',
+                  'feature.strand',
+                  'feature.TSS','feature.TES'):
+            expected_fields[x] = output.FIELDS[x].\
+                                 replace("<FEATURE>","feature")
+        self.assertEqual(desc[0],('feature.chr',expected_fields['feature.chr']))
+        self.assertEqual(desc[1],('feature.id',expected_fields['feature.id']))
         self.assertEqual(desc[2],('feature.start',
-                                  output.FIELDS['feature.start']))
-        self.assertEqual(desc[3],('feature.end',output.FIELDS['feature.end']))
+                                  expected_fields['feature.start']))
+        self.assertEqual(desc[3],('feature.end',expected_fields['feature.end']))
         self.assertEqual(desc[4],('feature.strand',
-                                  output.FIELDS['feature.strand']))
-        self.assertEqual(desc[5],('feature.TSS',output.FIELDS['feature.TSS']))
-        self.assertEqual(desc[6],('feature.TES',output.FIELDS['feature.TES']))
+                                  expected_fields['feature.strand']))
+        self.assertEqual(desc[5],('feature.TSS',expected_fields['feature.TSS']))
+        self.assertEqual(desc[6],('feature.TES',expected_fields['feature.TES']))
 
     def test_describe_derived_fields(self):
         desc = describe_fields(('dist_closest',
@@ -395,38 +409,78 @@ class TestDescribeFieldsFunction(unittest.TestCase):
                                 'overlap_promoter',
                                 'in_the_feature',
                                 'order','number_of_results'))
+        expected_fields = dict()
+        for x in ('dist_closest',
+                  'dist_TSS','dist_TES',
+                  'direction',
+                  'overlap_feature',
+                  'overlap_promoter',
+                  'in_the_feature',
+                  'order','number_of_results'):
+            expected_fields[x] = output.FIELDS[x].\
+                                 replace("<FEATURE>","feature").\
+                                 replace("<SOURCE>","source").\
+                                 replace("<TARGET>","target")
         self.assertEqual(desc[0],('dist_closest',
-                                  output.FIELDS['dist_closest']))
-        self.assertEqual(desc[1],('dist_TSS',output.FIELDS['dist_TSS']))
-        self.assertEqual(desc[2],('dist_TES',output.FIELDS['dist_TES']))
-        self.assertEqual(desc[3],('direction',output.FIELDS['direction']))
+                                  expected_fields['dist_closest']))
+        self.assertEqual(desc[1],('dist_TSS',expected_fields['dist_TSS']))
+        self.assertEqual(desc[2],('dist_TES',expected_fields['dist_TES']))
+        self.assertEqual(desc[3],('direction',expected_fields['direction']))
         self.assertEqual(desc[4],('overlap_feature',
-                                  output.FIELDS['overlap_feature']))
+                                  expected_fields['overlap_feature']))
         self.assertEqual(desc[5],('overlap_promoter',
-                                  output.FIELDS['overlap_promoter']))
+                                  expected_fields['overlap_promoter']))
         self.assertEqual(desc[6],('in_the_feature',
-                                  output.FIELDS['in_the_feature']))
-        self.assertEqual(desc[7],('order',output.FIELDS['order']))
+                                  expected_fields['in_the_feature']))
+        self.assertEqual(desc[7],('order',expected_fields['order']))
         self.assertEqual(desc[8],('number_of_results',
-                                  output.FIELDS['number_of_results']))
+                                  expected_fields['number_of_results']))
 
     def test_describe_listed_fields_for_peaks(self):
         desc = describe_fields(('id','list(chr,start,end,dist_TSS)'))
-        self.assertEqual(desc[0],('id',output.FIELDS['id']))
+        expected_fields = dict()
+        for x in ('id','chr','start','end','dist_TSS'):
+            expected_fields[x] = output.FIELDS[x].\
+                                 replace("<FEATURE>","feature")
+        self.assertEqual(desc[0],('id',expected_fields['id']))
         self.assertEqual(desc[1],(('For each hit:',)))
-        self.assertEqual(desc[2],('chr_#',output.FIELDS['chr']))
-        self.assertEqual(desc[3],('start_#',output.FIELDS['start']))
-        self.assertEqual(desc[4],('end_#',output.FIELDS['end']))
-        self.assertEqual(desc[5],('dist_TSS_#',output.FIELDS['dist_TSS']))
+        self.assertEqual(desc[2],('chr_#',expected_fields['chr']))
+        self.assertEqual(desc[3],('start_#',expected_fields['start']))
+        self.assertEqual(desc[4],('end_#',expected_fields['end']))
+        self.assertEqual(desc[5],('dist_TSS_#',expected_fields['dist_TSS']))
 
     def test_describe_listed_fields_for_features(self):
         desc = describe_fields(('chr','start','list(id,TSS,strand)'))
-        self.assertEqual(desc[0],('chr',output.FIELDS['chr']))
-        self.assertEqual(desc[1],('start',output.FIELDS['start']))
+        expected_fields = dict()
+        for x in ('chr','start','id','TSS','strand'):
+            expected_fields[x] = output.FIELDS[x].\
+                                 replace("<FEATURE>","feature")
+        self.assertEqual(desc[0],('chr',expected_fields['chr']))
+        self.assertEqual(desc[1],('start',expected_fields['start']))
         self.assertEqual(desc[2],(('For each hit:',)))
-        self.assertEqual(desc[3],('id_#',output.FIELDS['id']))
-        self.assertEqual(desc[4],('TSS_#',output.FIELDS['TSS']))
-        self.assertEqual(desc[5],('strand_#',output.FIELDS['strand']))
+        self.assertEqual(desc[3],('id_#',expected_fields['id']))
+        self.assertEqual(desc[4],('TSS_#',expected_fields['TSS']))
+        self.assertEqual(desc[5],('strand_#',expected_fields['strand']))
+
+    def test_update_placeholders_in_fields(self):
+        desc = describe_fields(('chr','start','list(id,TSS,strand,direction)'),
+                               feature="gene",
+                               source="peak",
+                               target="gene")
+        expected_fields = dict()
+        for x in ('chr','start','id','TSS','strand','direction'):
+            expected_fields[x] = output.FIELDS[x].\
+                                 replace("<FEATURE>","gene").\
+                                 replace("<SOURCE>","peak").\
+                                 replace("<TARGET>","gene")
+        self.assertEqual(desc[0],('chr',expected_fields['chr']))
+        self.assertEqual(desc[1],('start',expected_fields['start']))
+        self.assertEqual(desc[2],(('For each hit:',)))
+        self.assertEqual(desc[3],('id_#',expected_fields['id']))
+        self.assertEqual(desc[4],('TSS_#',expected_fields['TSS']))
+        self.assertEqual(desc[5],('strand_#',expected_fields['strand']))
+        self.assertEqual(desc[6],('direction_#',
+                                  expected_fields['direction']))
 
 import tempfile
 class TestAnalysisReportWriter(unittest.TestCase):
@@ -554,3 +608,29 @@ class TestAnalysisReportWriter(unittest.TestCase):
         actual_output = open(summary,'r').read()
         # Check that output matches
         self.assertEqual(expected_output,actual_output)
+
+class TestUpdateTextFunction(unittest.TestCase):
+
+    def test_with_no_placeholders(self):
+        self.assertEqual(update_text("Hello you!"),
+                         "Hello you!")
+
+    def test_with_placeholder(self):
+        self.assertEqual(update_text("Hello <NAME>!",NAME="Joe"),
+                         "Hello Joe!")
+
+    def test_with_placeholder_no_value_supplied(self):
+        self.assertEqual(update_text("Hello <NAME>!"),
+                         "Hello <NAME>!")
+
+    def test_with_placeholder_value_is_None(self):
+        self.assertEqual(update_text("Hello <NAME>!",NAME=None),
+                         "Hello <NAME>!")
+
+    def test_with_multiple_placeholders(self):
+        self.assertEqual(update_text(
+            "Get <TRANSPORT_MODE> from <HERE> to <THERE>",
+            TRANSPORT_MODE="bus",
+            HERE="home",
+            THERE="town"),
+                         "Get bus from home to town")
