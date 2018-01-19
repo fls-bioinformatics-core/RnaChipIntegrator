@@ -42,5 +42,5 @@ To update an existing version of the program to a newer one, use::
     pip install -U RnaChipIntegrator
 
 For other ways of installing please refer to the ``INSTALL`` document
-included with the distribtion.
+included with the distribution.
 
