@@ -44,8 +44,8 @@ dist_closest	 closest distance between peak and gene considering
                  all edges (zero if there is overlap)
 dist_TSS	 distance between peak and gene TSS
 dist_TES	 distance between peak and gene TES
-direction        'U' if hit is upstream, 'D' if downstream, '.' if
-                 overlapped
+direction        'U' if peak is upstream (5') of gene; 'D' if peak
+                 is downstream (3') of gene; '.' if overlapping
 overlap_gene	 1 if peak overlaps the gene, 0 if not
 overlap_promoter 1 if peak overlaps the promoter region, 0 if not
 ================ ================================================
