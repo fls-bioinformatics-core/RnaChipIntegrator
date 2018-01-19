@@ -44,7 +44,7 @@ FIELDS = {
     'overlap_feature': "1 if peak overlaps the feature, 0 if not",
     'overlap_promoter': "1 if peak overlaps the promoter region, 0 if not",
     'in_the_feature': "'YES' if peak overlaps the feature, 'NO' if not",
-    'direction': "'U' if peak is upstream (5') of gene; 'D' if peak is downstream (3') of gene; '.' if overlapping",
+    'direction': "'U' if peak is upstream (5') of feature; 'D' if peak is downstream (3') of feature; '.' if overlapping",
     'differentially_expressed': "1 if feature is differentially expressed, 0 if not",
     'order': "the 'order' of the feature/peak pair (e.g. '1 of 4')",
     'number_of_results': "number of hits being reported",
