@@ -3,6 +3,8 @@
 Known problems
 ==============
 
+* :ref:`command_installed_as_lower_case`
+
 .. _command_installed_as_lower_case:
 
 Command installs as 'rnachipintegrator' not 'RnaChipIntegrator'
