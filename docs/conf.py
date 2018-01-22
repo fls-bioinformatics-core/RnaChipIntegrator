@@ -42,7 +42,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'RnaChipIntegrator'
-copyright = u'2015-2016, Peter Briggs, Ian Donaldson and Leo Zeef (University of Manchester)'
+copyright = u'2015-2018, Peter Briggs, Ian Donaldson and Leo Zeef (University of Manchester)'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
