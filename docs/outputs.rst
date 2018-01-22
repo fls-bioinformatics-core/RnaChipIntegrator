@@ -231,7 +231,7 @@ while the 'upstream' direction is the opposite, from end to start.)
 
 For the - strand this is reversed::
 
-    - strand:  5' <----Gene3-------------Peak-------------Gene4----| 3'
+    - strand:  3' <----Gene3-------------Peak-------------Gene4----| 5'
 
                           ---Upstream--->    <---Downstream---
 
@@ -248,7 +248,7 @@ of the gene i.e. for the + strand::
 
 For the - strand::
 
-    - strand:  5' <----Peak3-------------Gene-------------Peak4----| 3'
+    - strand:  3' <----Peak3-------------Gene-------------Peak4----| 5'
 
                           ---Upstream--->    <---Downstream---
 
