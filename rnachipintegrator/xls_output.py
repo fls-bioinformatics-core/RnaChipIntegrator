@@ -188,7 +188,9 @@ class XLSX:
         """
         self.append_to_notes(NOTES['peak_centric'] %
                              self._feature_type)
-        self.append_to_notes(self._field_descriptions(fields))
+        self.append_to_notes(self._field_descriptions(fields,
+                                                      source="peak",
+                                                      target=self._feature_type))
 
     def write_feature_centric(self,fields):
         """
@@ -201,9 +203,11 @@ class XLSX:
         self.append_to_notes(NOTES['feature_centric'] %
                              (self._feature_type.title(),
                               self._feature_type))
-        self.append_to_notes(self._field_descriptions(fields))
+        self.append_to_notes(self._field_descriptions(fields,
+                                                      source=self._feature_type,
+                                                      target="peak"))
 
-    def _field_descriptions(self,fields):
+    def _field_descriptions(self,fields,source=None,target=None):
         """
         Generate field (column) descriptions for XLSX notes
 
@@ -216,9 +220,10 @@ class XLSX:
 
         """
         return '\n'.join(['\t'.join(x) for x in
-                          output.describe_fields(fields)]).\
-                             replace('feature',self._feature_type).\
-                             replace('Feature',self._feature_type.title())
+                          output.describe_fields(fields,
+                                                 feature=self._feature_type,
+                                                 source=source,
+                                                 target=target)])
 
     def add_result_sheet(self,title,tsv_file):
         """

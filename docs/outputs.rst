@@ -90,8 +90,8 @@ peak.end	peak end position
 dist_closest	closest distance between peak and gene considering
                 all edges (zero if there is overlap)
 dist_TSS	distance between peak and gene TSS
-direction       'U' if hit is upstream, 'D' if downstream, '.' if
-                overlapped
+direction       'U' if gene is upstream (5') of peak; 'D' if gene
+                 is downstream (3') of peak; '.' if overlapping
 in_the_gene     'YES' if peak overlaps the gene, 'NO' if not
 =============== ====================================================
 
