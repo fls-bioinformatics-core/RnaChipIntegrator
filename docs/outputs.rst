@@ -201,3 +201,55 @@ output headers and so on.
 
    The feature type is purely cosmetic and has no effect on the
    input or output file formats, or the analyses performed.
+
+.. _upstream_and_downstream:
+
+Interpreting 'upstream' and 'downstream'
+----------------------------------------
+
+One of the attributes reported for each peak/gene pair found in the
+analyses is the 'directionality' (in the ``direction`` column),
+which can be either 'upstream' (``U``), 'downstream' (``D``) or
+overlapped.
+
+The intepretation of 'upstream' and 'downstream' for a given pairing
+depends on the 'centricity' of the analysis and the strand direction.
+
+For peak-centric analyses, the direction is from the point of view
+of the peak::
+
+                         ---Downstream-->    <---Upstream---
+
+    + strand:  5' |----Gene1-------------Peak-------------Gene2----> 3'
+
+In the example above, the peak is downstream of ``Gene1`` and upstream
+of ``Gene2``.
+
+(An analogy is that of a river which flows from the 5' to the 3' end;
+the 'downstream' direction is the direction of flow from start to end,
+while the 'upstream' direction is the opposite, from end to start.)
+
+For the - strand this is reversed::
+
+    - strand:  5' <----Gene3-------------Peak-------------Gene4----| 3'
+
+                          ---Upstream--->    <---Downstream---
+
+i.e. the peak is upstream of ``Gene3`` and downstream of ``Gene4``.
+
+For gene-centric analyses, the direction is from the point of view
+of the gene i.e. for the + strand::
+
+                         ---Downstream-->    <---Upstream---
+
+    + strand:  5' |----Peak1-------------Gene-------------Peak2----> 3'
+
+(Here the gene is downstream of ``Peak1`` and upstream of ``Peak2``).
+
+For the - strand::
+
+    - strand:  5' <----Peak3-------------Gene-------------Peak4----| 3'
+
+                          ---Upstream--->    <---Downstream---
+
+(The gene is upstream of ``Peak3`` and downstream of ``Peak 4``).
