@@ -216,21 +216,14 @@ The intepretation of 'upstream' and 'downstream' for a given pairing
 depends on the 'centricity' of the analysis and the strand direction.
 
 For peak-centric analyses, the direction is from the point of view
-of the peak: on the + strand the peak is upstream of the gene if the
-gene is located further from the 5' end (i.e. higher start position)
-than the peak, and downstream if the gene is nearer to the 5' end
-(i.e. lower start position) than the peak::
+of the peak::
 
-    + strand:  5' |--------Peak--------------Gene---------------> 3'
-                             |                 |
-                             |<----Upstream----|
+                         ---Downstream-->    <---Upstream---
 
-::
+    + strand:  5' |----Gene1-------------Peak-------------Gene2----> 3'
 
-    + strand:  5' |--------Gene--------------Peak---------------> 3'
-                             |                 |
-                             |---Downstream--->|
-
+In the example above, the peak is downstream of ``Gene1`` and upstream
+of ``Gene2``.
 
 (An analogy is that of a river which flows from the 5' to the 3' end;
 the 'downstream' direction is the direction of flow from start to end,
@@ -238,18 +231,25 @@ while the 'upstream' direction is the opposite, from end to start.)
 
 For the - strand this is reversed::
 
-    - strand:  5' <--------Peak--------------Gene---------------| 3'
-                             |                 |
-                             |---Downstream--->|
+    - strand:  5' <----Gene3-------------Peak-------------Gene4----| 3'
 
-::
+                          ---Upstream--->    <---Downstream---
 
-    - strand:  5' <--------Gene--------------Peak---------------| 3'
-                             |                 |
-                             |<----Upstream----|
+i.e. the peak is upstream of ``Gene3`` and downstream of ``Gene4``.
 
 For gene-centric analyses, the direction is from the point of view
-of the gene, so on the + strand the gene is upstream of the peak if
-the peak is further from the 5' end than the gene (and downstream
-if they are the other way around). Again this is reversed for the
-- strand.
+of the gene i.e. for the + strand::
+
+                         ---Downstream-->    <---Upstream---
+
+    + strand:  5' |----Peak1-------------Gene-------------Peak2----> 3'
+
+(Here the gene is downstream of ``Peak1`` and upstream of ``Peak2``).
+
+For the - strand::
+
+    - strand:  5' <----Peak3-------------Gene-------------Peak4----| 3'
+
+                          ---Upstream--->    <---Downstream---
+
+(The gene is upstream of ``Peak3`` and downstream of ``Peak 4``).
