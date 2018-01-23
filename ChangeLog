@@ -1,3 +1,14 @@
+2018-01-23  Peter Briggs  <peter.briggs@manchester.ac.uk>
+
+	* Version 1.0.3
+	- Update description of 'direction' in the documentation and
+	  the XLSX file, to clarify the meaning of the terms 'upstream'
+	  and downstream' in the program outputs.
+	- Update documentation to explain how comments, header lines,
+	  and lines with 'bad' data, are handled by the program when
+	  reading in the input files.
+	- Add a section on 'known problems' to the documentation.
+
 2016-08-17  Peter Briggs  <peter.briggs@manchester.ac.uk>
 
 	* Version 1.0.2
