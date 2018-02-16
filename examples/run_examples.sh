@@ -3,6 +3,136 @@
 # Run examples for RnaChipIntegrator
 #
 # Assertion functions for tests
+_PASSED=0
+_FAILED=0
+function report_tests {
+    # Report summary of tests passed and failed
+    local n_tests=$((_PASSED+_FAILED))
+    echo "---------------------------------------------------------"
+    echo "Ran $n_tests tests: $_PASSED passed, $_FAILED failed"
+    if [ $_FAILED -ne 0 ] ; then
+	return 1
+    else
+	return 0
+    fi
+}
+function run_test {
+    # Run a command and check outputs
+    # Takes following arguments:
+    # --command CMD: specify the command to execute
+    # --expected FILES: list of file names which should
+    #                have reference versions to compare
+    #                against
+    # --must_exist FILES: list of file names which should
+    #                exist after the command has run
+    # --status INT: exit code to check (if command was
+    #                run externally)
+    local test_name=$1
+    local command=
+    local expected_outputs=
+    local check_exists=
+    local exit_status=
+    local working_dir=
+    local test_status=
+    # Collect arguments
+    shift
+    while [ $# -gt 0 ] ; do
+	case $1 in
+	    --command)
+		command=$2
+		shift
+		;;
+	    --expected)
+		expected_outputs=$2
+		shift
+		;;
+	    --must_exist)
+		check_exists=$2
+		shift
+		;;
+	    --status)
+		exit_status=$2
+		shift
+		;;
+	    *)
+		echo "$test_name: SKIPPED (unrecognised test argument '$1')"
+		return
+		;;
+	esac
+	shift
+    done
+    echo "---------------------------------------------------------"
+    echo test_name: $test_name
+    echo command: $command
+    echo expected_outputs: $expected_outputs
+    echo check_exists: $check_exists
+    echo exit_status: $exit_status
+    echo PWD: $(pwd)
+    # If command supplied then run it
+    if [ ! -z "$command" ] ; then
+	working_dir=$(mktemp -d --tmpdir=$(pwd))
+	echo working_dir: $working_dir
+	cd $working_dir
+	echo "Running command"
+	$command 1>STDOUT 2>STDERR
+	exit_status=$?
+	echo "Exit status $exit_status"
+    fi
+    # Check exit status
+    if [ ! -z "$exit_status" ] ; then
+	if [ $exit_status -ne 0 ] ; then
+	    echo Failed exit status check
+	    test_status=FAILED
+	fi
+    fi
+    # Compare expected outputs
+    for f in $expected_outputs ; do
+	assert_equal $REF_DATA/ref_$f $f
+	if [ $? -ne 0 ] ; then
+	    echo Failed output comparison check
+	    test_status=FAILED
+	fi
+    done
+    # Check existence
+    for f in $check_exists ; do
+	if [ ! -e $f ] ; then
+	    echo "$f: missing"
+	    echo Failed output existence check
+	    test_status=FAILED
+	fi
+    done
+    # Set test status if no failures
+    if [ -z "$test_status" ] ; then
+	test_status=OK
+    fi
+    echo test_status: $test_status
+    # Report logs from failed job
+    if [ $test_status == FAILED ] ; then
+	for f in STDOUT STDERR ; do
+	    if [ -e $f ] ; then
+		echo "===== $test_name: $f ====="
+		cat $f
+	    fi
+	done
+    fi
+    # Clean up any working area
+    if [ ! -z "$working_dir" ] ; then
+	cd ..
+	#rm -rf $working_dir
+    fi
+    # Test counts
+    case $test_status in
+	OK)
+	    _PASSED=$((_PASSED+1))
+	    ;;
+	FAILED)
+	    _FAILED=$((_FAILED+1))
+	    ;;
+    esac
+    # Finish
+    echo "---------------------------------------------------------"
+    echo "TEST: $test_name: $test_status"
+}
 function assert_equal {
     # Check two files are the same
     if [ ! -e $1 ] ; then
@@ -28,82 +158,53 @@ REF_DATA=$TEST_DIR/ref-data
 if [ ! -d test-output ] ; then
     mkdir test-output
 else
-    rm -f test-output/*
+    rm -rf test-output/*
 fi
 cd test-output
 #
 # Summits
 SUMMIT_OUTPUTS="summits_peak_centric.txt summits_gene_centric.txt"
-RnaChipIntegrator --name=summits \
-    --cutoff=130000 \
-    --number=4 \
-    $TEST_DIR/ExpressionData.txt \
-    $TEST_DIR/ChIP_summits.txt
-for f in $SUMMIT_OUTPUTS ; do
-    assert_equal $REF_DATA/ref_$f $f
-    if [ $? -ne 0 ] ; then
-	echo "'Summit' test: FAILED"
-	exit 1
-    fi
-done
-echo "'Summit' test: OK"
+run_test "Input summits" \
+	 --expected "$SUMMIT_OUTPUTS" \
+	 --command "RnaChipIntegrator --name=summits --cutoff=130000 --number=4 $TEST_DIR/ExpressionData.txt $TEST_DIR/ChIP_summits.txt"
+#
 # Regions
 REGION_OUTPUTS="regions_peak_centric.txt regions_gene_centric.txt"
-RnaChipIntegrator --name=regions \
-    --number=4 \
-    $TEST_DIR/ExpressionData.txt \
-    $TEST_DIR/ChIP_regions.txt
-for f in $REGION_OUTPUTS ; do
-    assert_equal $REF_DATA/ref_$f $f
-    if [ $? -ne 0 ] ; then
-	echo "'Region' test: FAILED"
-	exit 1
-    fi
-done
-echo "'Region' test: OK"
+run_test "Input regions" \
+	 --expected "$REGION_OUTPUTS" \
+	 --command "RnaChipIntegrator --name=regions --number=4 $TEST_DIR/ExpressionData.txt $TEST_DIR/ChIP_regions.txt"
+#
 # Check XLSX file is produced by --xlsx
-RnaChipIntegrator --name=test_xls \
-    --xlsx --compact \
-    $TEST_DIR/ExpressionData.txt \
-    $TEST_DIR/ChIP_regions.txt
-if [ $? -ne 0 ] || [ ! -f test_xls.xlsx ] ; then
-    echo "XLS test: FAILED"
-    exit 1
-fi
-echo "XLSX test: OK"
+run_test "XLSX output" \
+	 --must_exist "test_xls.xlsx" \
+	 --command "RnaChipIntegrator --name=test_xls --xlsx --compact $TEST_DIR/ExpressionData.txt $TEST_DIR/ChIP_regions.txt"
+#
 # Check single line output from --compact
-RnaChipIntegrator --name=compact \
-    --compact \
-    $TEST_DIR/ExpressionData.txt \
-    $TEST_DIR/ChIP_regions.txt
 COMPACT_OUTPUTS="compact_peak_centric.txt compact_gene_centric.txt"
-for f in $COMPACT_OUTPUTS ; do
-    assert_equal $REF_DATA/ref_$f $f
-    if [ $? -ne 0 ] ; then
-	echo "'Compact' test: FAILED"
-	exit 1
-    fi
-done
-echo "'Compact' test: OK"
+run_test "Compact output" \
+	 --expected "$COMPACT_OUTPUTS" \
+	 --command "RnaChipIntegrator --name=compact --compact $TEST_DIR/ExpressionData.txt $TEST_DIR/ChIP_regions.txt"
+#
 # Check --cutoff=0 works
-RnaChipIntegrator --name=zero_cutoff \
-    --cutoff=0 \
-    --xlsx \
-    $TEST_DIR/ExpressionData.txt \
-    $TEST_DIR/ChIP_regions.txt
-if [ $? -ne 0 ] ; then
-    echo "'Zero cutoff' test: FAILED"
-    exit 1
-fi
 ZERO_CUTOFF_OUTPUTS="zero_cutoff_peak_centric.txt zero_cutoff_gene_centric.txt"
-for f in $ZERO_CUTOFF_OUTPUTS ; do
-    assert_equal $REF_DATA/ref_$f $f
-    if [ $? -ne 0 ] ; then
-	echo "'Zero cutoff' test: FAILED"
-	exit 1
-    fi
-done
-echo "'Zero cutoff' test: OK"
-exit 0
+run_test "Zero cutoff" \
+	 --expected "$ZERO_CUTOFF_OUTPUTS" \
+	 --command "RnaChipIntegrator --name=zero_cutoff --cutoff=0 --xlsx $TEST_DIR/ExpressionData.txt $TEST_DIR/ChIP_regions.txt"
+#
+# Check using --analyses=peak_centric
+PEAK_CENTRIC_OUTPUTS="test_peakcentric_peak_centric.txt"
+run_test "Peak-centric-only" \
+	 --expected "$PEAK_CENTRIC_OUTPUTS" \
+	 --command "RnaChipIntegrator --name=test_peakcentric --number=4 --analyses=peak_centric --number=4 $TEST_DIR/ExpressionData.txt $TEST_DIR/ChIP_regions.txt"
+#
+# Check using --analyses=gene_centric
+GENE_CENTRIC_OUTPUTS="test_genecentric_gene_centric.txt"
+run_test "Gene-centric-only" \
+	 --expected "$GENE_CENTRIC_OUTPUTS" \
+	 --command "RnaChipIntegrator --name=test_genecentric --number=4 --analyses=gene_centric $TEST_DIR/ExpressionData.txt $TEST_DIR/ChIP_regions.txt"
+#
+# Finished
+report_tests
+exit $?
 ##
 #
