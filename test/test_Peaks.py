@@ -51,6 +51,17 @@ class TestPeakSet(unittest.TestCase):
         self.assertEqual(peaks[3],Peak('chr3L',14983597,14983598))
         self.assertEqual(peaks[4],Peak('chr3L',17004143,17004144))
 
+    def test_reading_in_ChIPseq_with_id_column(self):
+        peaks = PeakSet('ChIP_peaks_multi_columns-ex1.txt',
+                        columns=(2,4,5),id_column=1)
+        self.assertEqual(len(peaks),5,
+                         "Wrong number of lines read from ChIP-seq file")
+        self.assertEqual(peaks[0],Peak('chr3L',4252919,4252920,id="peak1"))
+        self.assertEqual(peaks[1],Peak('chr3L',9502640,9502641,id="peak2"))
+        self.assertEqual(peaks[2],Peak('chr3L',12139192,12139193,id="peak3"))
+        self.assertEqual(peaks[3],Peak('chr3L',14983597,14983598,id="peak4"))
+        self.assertEqual(peaks[4],Peak('chr3L',17004143,17004144,id="peak5"))
+
     def test_populate_from_list_of_peaks(self):
         peaks = PeakSet(
             peaks_list=(
@@ -177,6 +188,20 @@ class TestPeak(unittest.TestCase):
         self.assertRaises(PeakRangeError,Peak,'chr2L','66811','66811')
     def test_peak_end_before_start(self):
         self.assertRaises(PeakRangeError,Peak,'chr2L','66812','66811')
+    def test_peak_properties(self):
+        peak = Peak('chr2L','66811','66812')
+        self.assertEqual(peak.chrom,'chr2L')
+        self.assertEqual(peak.start,66811)
+        self.assertEqual(peak.end,66812)
+        self.assertEqual(peak.id,None)
+        self.assertEqual(str(peak),"chr2L\t66811\t66812")
+    def test_peak_with_id(self):
+        peak = Peak('chr2L','66811','66812',id='Peak001')
+        self.assertEqual(peak.chrom,'chr2L')
+        self.assertEqual(peak.start,66811)
+        self.assertEqual(peak.end,66812)
+        self.assertEqual(peak.id,'Peak001')
+        self.assertEqual(str(peak),"Peak001\tchr2L\t66811\t66812")
 
 class TestFeatureSetWithChIPSeqData(unittest.TestCase):
     def setUp(self):
