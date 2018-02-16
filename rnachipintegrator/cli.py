@@ -72,12 +72,6 @@ def main(args=None):
 
     # Analysis options
     analysis_opts = optparse.OptionGroup(p,"Analysis options")
-    analysis_opts.add_option('--analyses',action='store',dest="analyses",
-                             type='choice',default="all",
-                             choices=('all','gene_centric','peak_centric',),
-                             help="Select analyses to run: can be one of "
-                             "'all' (default, runs all available "
-                             "analyses), 'peak_centric' or 'gene_centric'")
     analysis_opts.add_option('--cutoff',action='store',dest='max_distance',
                              type='int',default=max_distance,
                              help="Maximum distance allowed between peaks "
@@ -139,11 +133,17 @@ def main(args=None):
 
     # Advanced options
     advanced_opts = optparse.OptionGroup(p,"Advanced options")
+    advanced_opts.add_option('--analyses',action='store',dest="analyses",
+                             type='choice',default="all",
+                             choices=('all','gene_centric','peak_centric',),
+                             help="Select which analyses to run: can be one "
+                             "of 'all' (default, runs all available "
+                             "analyses), 'peak_centric' or 'gene_centric'")
     advanced_opts.add_option('--feature',action="store",dest="feature_type",
-                             help="rename '%s' to FEATURE_TYPE in output (e.g. "
+                             help="Rename '%s' to FEATURE_TYPE in output (e.g. "
                              "'transcript' etc)" % DEFAULT_FEATURE_TYPE)
     advanced_opts.add_option('--peak_cols',action="store",dest="peak_cols",
-                             help="list of 3 column indices (e.g. '1,4,5') "
+                             help="List of 3 column indices (e.g. '1,4,5') "
                              "indicating columns to use for chromosome, "
                              "start and end from the input peak file (if not "
                              "first three columns).")
