@@ -139,6 +139,29 @@ For example::
 would define a promoter region starting 1500 bp upstream of the
 TSS and ending 200 bp downstream.
 
+.. _analyses_option:
+
+Running either peak-centric or gene-centric analysis only (``--analyses``)
+--------------------------------------------------------------------------
+
+By default ``RnaChipIntegrator`` runs both peak-centric and
+gene-centric analyses.
+
+However it is possible to restrict the program to just one or
+other of these, by using the ``--analyses`` option.
+
+For example to run only the peak-centric analyses::
+
+    --analyses=peak_centric
+
+Or, to run only the gene-centric analyses::
+
+    --analyses=gene_centric
+
+The advantage of restricting the analyses is that it reduces the
+program run time, and limits the outputs to only those specifically
+requested.
+
 Changing the output files and formats
 -------------------------------------
 
