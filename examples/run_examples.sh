@@ -191,6 +191,12 @@ run_test "Zero cutoff" \
 	 --expected "$ZERO_CUTOFF_OUTPUTS" \
 	 --command "RnaChipIntegrator --name=zero_cutoff --cutoff=0 --xlsx $TEST_DIR/ExpressionData.txt $TEST_DIR/ChIP_regions.txt"
 #
+# Check inclusion of peak IDs
+PEAK_ID_OUTPUTS="peak_id_peak_centric.txt peak_id_gene_centric.txt"
+run_test "Peak IDs" \
+	 --expected "$PEAK_ID_OUTPUTS" \
+	 --command "RnaChipIntegrator --name=peak_id --number=4 --peak_id=1 --peak_cols=2,3,4 --number=4 $TEST_DIR/ExpressionData.txt $TEST_DIR/ChIP_regions_with_IDs.txt"
+#
 # Check using --analyses=peak_centric
 PEAK_CENTRIC_OUTPUTS="test_peakcentric_peak_centric.txt"
 run_test "Peak-centric-only" \
