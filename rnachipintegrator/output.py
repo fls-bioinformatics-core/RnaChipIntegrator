@@ -28,6 +28,7 @@ FIELDS = {
     'strand': "<FEATURE> strand direction",
     'TSS': "<FEATURE> TSS position",
     'TES': "<FEATURE> TES position",
+    'peak.id': "peak ID",
     'peak.chr': "chromosome of the peak",
     'peak.start': "peak start position",
     'peak.end': "peak end position",
@@ -69,6 +70,7 @@ class AnalysisReporter:
     For each method a list of the fields to be reported can be
     specified. Available fields are:
 
+    - (peak.)id: peak ID
     - (peak.)chr: chromosome for the peak
     - (peak.)start: peak start position
     - (peak.)end: peak end position
@@ -320,7 +322,9 @@ class AnalysisReporter:
         peak = self._context_peak
         feature = self._context_feature
         is_features = self._is_features
-        if attr == 'chr' or attr == 'peak.chr':
+        if attr == 'peak.id':
+            return peak.id
+        elif attr == 'chr' or attr == 'peak.chr':
             return peak.chrom
         elif attr == 'peak.start' or attr == 'start':
             return peak.start
