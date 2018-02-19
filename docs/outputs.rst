@@ -33,6 +33,8 @@ columns of data for each:
 ================ ================================================
 Name             Description
 ================ ================================================
+peak.id          (Optional) peak ID (if ``--peak_id`` option was
+                 used)
 peak.chr	 chromosome of the peak
 peak.start	 peak start position
 peak.end	 peak end position
@@ -84,6 +86,8 @@ gene.chr	chromosome of the gene
 gene.start	gene start position
 gene.end	gene end position
 gene.strand	gene strand direction
+peak.id         (Optional) peak ID (if ``--peak_id`` option was
+                used)
 peak.chr	chromosome of the peak
 peak.start	peak start position
 peak.end	peak end position
@@ -201,6 +205,38 @@ output headers and so on.
 
    The feature type is purely cosmetic and has no effect on the
    input or output file formats, or the analyses performed.
+
+.. _peak_id:
+
+Specifying an ID for input peaks (``--peak_id``)
+------------------------------------------------
+
+If the ``--peak_id`` option is specified on the command line
+then this indicates a column in the input peaks file which
+should be used as names for each of the peaks in that file.
+
+For example, if the input peaks file looks like::
+
+    #Chrom	Start	End	Name
+    chr1	9619046	9619167	P0001
+    chr1	9619175	9619382	P0002
+    chr1	10617233	10617437	P0003
+    ...
+
+then using::
+
+    --peak_id=4
+
+will associate the names ``P0001``, ``P0002``, ``P0003``...
+with the corresponding peaks.
+
+When specified, this ID is carried through to the output file
+as an additional field, for example::
+
+    ...
+    P0001	chr1	9619046	9619167	NM_021511_Rrs1	+	9535513	9537532	81514	83533	81514	D	0	0
+    P0002	chr1	9619175	9619382	NM_178399_3110035E14Rik	+	9591248	96172221953	27927	1953	D	0	0
+    ...
 
 .. _upstream_and_downstream:
 

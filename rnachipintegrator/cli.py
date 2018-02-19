@@ -142,11 +142,17 @@ def main(args=None):
     advanced_opts.add_option('--feature',action="store",dest="feature_type",
                              help="Rename '%s' to FEATURE_TYPE in output (e.g. "
                              "'transcript' etc)" % DEFAULT_FEATURE_TYPE)
+    advanced_opts.add_option('--peak_id',action="store",dest="peak_id",
+                             help="Column to use as an ID for each peak "
+                             "from the input peak file (first column is "
+                             "column 1). If specified then IDs will be "
+                             "transferred to the output files when peaks "
+                             "are reported")
     advanced_opts.add_option('--peak_cols',action="store",dest="peak_cols",
                              help="List of 3 column indices (e.g. '1,4,5') "
                              "indicating columns to use for chromosome, "
                              "start and end from the input peak file (if not "
-                             "first three columns).")
+                             "first three columns)")
     p.add_option_group(advanced_opts)
 
     # Process command line
@@ -190,34 +196,6 @@ def main(args=None):
     else:
         tss_only = False
 
-    # Reporting formats
-    if options.compact:
-        mode = output.SINGLE_LINE
-        peak_fields = ('peak.chr','peak.start','peak.end',
-                       'list(feature.id,strand,TSS,TES,dist_closest,'
-                       'dist_TSS,dist_TES,direction,overlap_feature,'
-                       'overlap_promoter)')
-        gene_fields = ('feature.id','feature.chr','feature.start',
-                       'feature.end','feature.strand',
-                       'list(chr,start,end,dist_closest,dist_TSS,'
-                       'direction,in_the_feature)')
-        placeholder = '.'
-        if options.summary:
-            options.summary = False
-            logging.error("--summary option not compatible with --compact")
-            sys.exit(1)
-    else:
-        mode = output.MULTI_LINE
-        peak_fields = ('peak.chr','peak.start','peak.end',
-                       'feature.id','strand','TSS','TES',
-                       'dist_closest','dist_TSS','dist_TES',
-                       'direction','overlap_feature','overlap_promoter')
-        gene_fields = ('feature.id','feature.chr','feature.start',
-                       'feature.end','feature.strand',
-                       'chr','start','end','dist_closest','dist_TSS',
-                       'direction','in_the_feature')
-        placeholder = '---'
-
     # Feature type
     if options.feature_type is None:
         feature_type = 'gene'
@@ -233,6 +211,60 @@ def main(args=None):
                                for x in options.peak_cols.split(',')])
         except Exception, ex:
             p.error("Bad column assignment for --peak_cols")
+
+    # Handle peak IDs, if specified
+    if options.peak_id is not None:
+        peak_id_col = int(options.peak_id)
+    else:
+        peak_id_col = None
+
+    # Reporting formats
+    if options.compact:
+        mode = output.SINGLE_LINE
+        if peak_id_col is None:
+            peak_fields = ('peak.chr','peak.start','peak.end',
+                           'list(feature.id,strand,TSS,TES,dist_closest,'
+                           'dist_TSS,dist_TES,direction,overlap_feature,'
+                           'overlap_promoter)')
+            gene_fields = ('feature.id','feature.chr','feature.start',
+                           'feature.end','feature.strand',
+                           'list(chr,start,end,dist_closest,dist_TSS,'
+                           'direction,in_the_feature)')
+        else:
+            peak_fields = ('peak.id','peak.chr','peak.start','peak.end',
+                           'list(feature.id,strand,TSS,TES,dist_closest,'
+                           'dist_TSS,dist_TES,direction,overlap_feature,'
+                           'overlap_promoter)')
+            gene_fields = ('feature.id','feature.chr','feature.start',
+                           'feature.end','feature.strand',
+                           'list(peak.id,chr,start,end,dist_closest,dist_TSS,'
+                           'direction,in_the_feature)')
+        placeholder = '.'
+        if options.summary:
+            options.summary = False
+            logging.error("--summary option not compatible with --compact")
+            sys.exit(1)
+    else:
+        mode = output.MULTI_LINE
+        if peak_id_col is None:
+            peak_fields = ('peak.chr','peak.start','peak.end',
+                           'feature.id','strand','TSS','TES',
+                           'dist_closest','dist_TSS','dist_TES',
+                           'direction','overlap_feature','overlap_promoter')
+            gene_fields = ('feature.id','feature.chr','feature.start',
+                           'feature.end','feature.strand',
+                           'chr','start','end','dist_closest','dist_TSS',
+                           'direction','in_the_feature')
+        else:
+            peak_fields = ('peak.id','peak.chr','peak.start','peak.end',
+                           'feature.id','strand','TSS','TES',
+                           'dist_closest','dist_TSS','dist_TES',
+                           'direction','overlap_feature','overlap_promoter')
+            gene_fields = ('feature.id','feature.chr','feature.start',
+                           'feature.end','feature.strand',
+                           'peak.id','chr','start','end','dist_closest','dist_TSS',
+                           'direction','in_the_feature')
+        placeholder = '---'
 
     # Analyses to run
     peak_centric = (options.analyses in ("all","peak_centric",))
@@ -292,8 +324,11 @@ def main(args=None):
     # Read in peak data
     print "Using columns %s from peaks file as chrom, start, end" % \
         (peak_cols,)
+    if peak_id_col is not None:
+        print "Using column %s from peaks file as peak ID" % peak_id_col
     try:
-        peaks = PeakSet(peak_file,columns=peak_cols)
+        peaks = PeakSet(peak_file,columns=peak_cols,
+                        id_column=peak_id_col)
     except Exception,ex:
         logging.critical("Failed to read peak data (%s)" % ex)
         print "Please fix errors in input file before running again"

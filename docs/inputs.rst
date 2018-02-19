@@ -77,7 +77,10 @@ where:
    ``start`` and ``end`` positions must differ by at least 1bp,
    and the ``end`` must come after the ``start``.
 
-Any additional columns found in the file are ignored.
+Any additional columns found in the file are ignored (unless
+the ``--peak_id`` option is used to specify an additional
+column with names to associate with each peak - see
+:ref:`peak_id`.)
 
 Note that lines in the input file are ignored in any of the
 following cases:

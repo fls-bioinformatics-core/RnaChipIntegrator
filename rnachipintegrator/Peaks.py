@@ -25,7 +25,7 @@ class PeakSet:
 
     """
     def __init__(self,peaks_file=None,peaks_list=None,
-                 columns=None):
+                 columns=None,id_column=None):
         """Create a new PeakSet instance
         
         Arguments:
@@ -38,16 +38,21 @@ class PeakSet:
             ``peaks_file`` for the chromosome, start and end
             columns (if not the first three columns). The
             columns should be numbered from 1.
+          id_column (int): (optional) specify a column in the
+            file which contains the ID for the peak. The
+            columns are assumed to be numbered from 1.
 
         """
         self.peaks = []
         if peaks_file:
-            self.loadPeaksFromFile(peaks_file,columns=columns)
+            self.loadPeaksFromFile(peaks_file,
+                                   columns=columns,
+                                   id_column=id_column)
         elif peaks_list:
             for peak in peaks_list:
                 self.addPeak(peak)
 
-    def loadPeaksFromFile(self,peaks_file,columns=None):
+    def loadPeaksFromFile(self,peaks_file,columns=None,id_column=None):
         """Read peaks data from a file and populate the object
 
         Arguments:
@@ -58,6 +63,9 @@ class PeakSet:
             ``peaks_file`` for the chromosome, start and end
             columns (if not the first three columns). The
             columns should be numbered from 1.
+          id_column (int): (optional) specify a column in the
+            file which contains the ID for the peak. The
+            columns are assumed to be numbered from 1.
 
         """
         # Handle columns
@@ -67,6 +75,10 @@ class PeakSet:
         start = columns[1] - 1
         end = columns[2] - 1
         ncols = max(chrom,start,end) + 1
+        # Include optional ID column
+        if id_column is not None:
+            ncols = max(ncols,id_column)
+            id_column = id_column - 1
         # Read in from file
         fp = open(peaks_file,'rU')
         for line in fp:
@@ -93,11 +105,17 @@ class PeakSet:
                                 make_errline(line,bad_fields))
                 logging.warning("Expected integer at indicated positions")
                 continue
+            # Optional ID
+            try:
+                id_ = items[id_column]
+            except TypeError:
+                id_ = None
             # Store in a new Peak object
             try:
                 peak = Peak(items[chrom],
                             items[start],
-                            items[end])
+                            items[end],
+                            id=id_)
             except PeakRangeError,ex:
                 logging.error("Peaks file: bad line: %s" % line.strip())
                 logging.error("                      %s" %
@@ -238,16 +256,22 @@ class Peak:
       start
       end
 
+    Optionally a peak can also have an ID associated with it,
+    which is set via the 'id' keyword and which is accessed
+    via the 'id' property. It will be None if no ID has been
+    specified.
+
     There are also convenience methods (e.g. insideRegion).
 
     Raises a PeakRangeError exception if the peak start and end
     positions don't differ by at least 1bp.
 
     """
-    def __init__(self,chrom,start,end):
+    def __init__(self,chrom,start,end,id=None):
         self.chrom = chrom.strip('"\'')
         self.start = int(start)
         self.end = int(end)
+        self.id = id
         if self.start == self.end:
             raise PeakRangeError("'start' and 'end' positions should "
                                  "differ by at least 1bp")
@@ -256,9 +280,12 @@ class Peak:
                                  "'start'")
 
     def __repr__(self):
-        return "%s\t%s\t%s" % (self.chrom,
-                               self.start,
-                               self.end)
+        return "%s%s\t%s\t%s" % (''
+                                 if self.id is None
+                                 else "%s\t" % self.id,
+                                 self.chrom,
+                                 self.start,
+                                 self.end)
 
     def __eq__(self,other):
         return \
