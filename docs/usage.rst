@@ -166,13 +166,14 @@ Changing the output files and formats
 -------------------------------------
 
 There are a number of options to produce additional output files, and
-to modify the format depending on requirements:
+to modify the format and output content depending on requirements:
 
  * :ref:`xlsx_file`
  * :ref:`summary_files`
  * :ref:`compact_output`
  * :ref:`output_padding`
  * :ref:`feature_type`
+ * :ref:`peak_id`
 
 Using RnaChipIntegrator in Galaxy
 ---------------------------------
