@@ -1,8 +1,8 @@
 #!/bin/env python
 #
 #     output.py: functions for outputting analysis results
-#     Copyright (C) University of Manchester 2015 Peter Briggs, Leo Zeef
-#     & Ian Donaldson
+#     Copyright (C) University of Manchester 2015-2018 Peter Briggs,
+#     Leo Zeef & Ian Donaldson
 #
 """
 output.py
@@ -32,6 +32,7 @@ FIELDS = {
     'peak.chr': "chromosome of the peak",
     'peak.start': "peak start position",
     'peak.end': "peak end position",
+    'peak.file': "file the peak was loaded from",
     'feature.id': "<FEATURE> ID",
     'feature.chr': "chromosome of the <FEATURE>",
     'feature.start': "<FEATURE> start position",
@@ -70,10 +71,11 @@ class AnalysisReporter:
     For each method a list of the fields to be reported can be
     specified. Available fields are:
 
-    - (peak.)id: peak ID
+    - peak.id: peak ID
     - (peak.)chr: chromosome for the peak
     - (peak.)start: peak start position
     - (peak.)end: peak end position
+    - peak.file: file the peak was loaded from
     - (feature.)id: feature ID
     - feature.chr: chromosome for the feature
     - feature.start: feature start position
@@ -330,6 +332,8 @@ class AnalysisReporter:
             return peak.start
         elif attr == 'peak.end' or attr == 'end':
             return peak.end
+        elif attr == 'peak.file':
+            return peak.source_file
         elif attr == 'id' or attr == 'feature.id':
             return feature.id
         elif attr == 'feature.chr':

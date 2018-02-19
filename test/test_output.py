@@ -1,6 +1,6 @@
 #
 #     test_ouptut.py: unit tests for output module
-#     Copyright (C) University of Manchester 2011-5 Peter Briggs
+#     Copyright (C) University of Manchester 2011-2018 Peter Briggs
 
 import unittest
 from itertools import izip_longest
@@ -374,11 +374,13 @@ class TestDescribeFieldsFunction(unittest.TestCase):
         self.assertEqual(desc[6],('TES',expected_fields['TES']))
 
     def test_describe_peak_fields(self):
-        desc = describe_fields(('peak.id','peak.chr','peak.start','peak.end'))
+        desc = describe_fields(('peak.id','peak.chr','peak.start','peak.end',
+                                'peak.file'))
         self.assertEqual(desc[0],('peak.id',output.FIELDS['peak.id']))
         self.assertEqual(desc[1],('peak.chr',output.FIELDS['peak.chr']))
         self.assertEqual(desc[2],('peak.start',output.FIELDS['peak.start']))
         self.assertEqual(desc[3],('peak.end',output.FIELDS['peak.end']))
+        self.assertEqual(desc[4],('peak.file',output.FIELDS['peak.file']))
 
     def test_describe_feature_fields(self):
         desc = describe_fields(('feature.chr','feature.id',

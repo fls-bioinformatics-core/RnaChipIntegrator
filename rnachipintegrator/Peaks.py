@@ -1,7 +1,7 @@
 #!/bin/env python
 #
 #     Peaks.py: classes for handling peak data
-#     Copyright (C) University of Manchester 2011-16 Peter Briggs, Leo Zeef
+#     Copyright (C) University of Manchester 2011-2018 Peter Briggs, Leo Zeef
 #     & Ian Donaldson
 #
 """
@@ -115,7 +115,8 @@ class PeakSet:
                 peak = Peak(items[chrom],
                             items[start],
                             items[end],
-                            id=id_)
+                            id=id_,
+                            source_file=peaks_file)
             except PeakRangeError,ex:
                 logging.error("Peaks file: bad line: %s" % line.strip())
                 logging.error("                      %s" %
@@ -256,10 +257,15 @@ class Peak:
       start
       end
 
-    Optionally a peak can also have an ID associated with it,
-    which is set via the 'id' keyword and which is accessed
-    via the 'id' property. It will be None if no ID has been
-    specified.
+    A peak can also have the following optional data
+    associated with it:
+
+    - An ID, which is set via the 'id' keyword and which is
+      accessed via the 'id' property. It will be None if no
+      ID has been specified.
+    - A source file name, which is set via the 'source_file'
+      keyword and accessed via the 'source_file' property.
+      It will be None if no filename has been specified.
 
     There are also convenience methods (e.g. insideRegion).
 
@@ -267,11 +273,12 @@ class Peak:
     positions don't differ by at least 1bp.
 
     """
-    def __init__(self,chrom,start,end,id=None):
+    def __init__(self,chrom,start,end,id=None,source_file=None):
         self.chrom = chrom.strip('"\'')
         self.start = int(start)
         self.end = int(end)
         self.id = id
+        self.source_file = source_file
         if self.start == self.end:
             raise PeakRangeError("'start' and 'end' positions should "
                                  "differ by at least 1bp")

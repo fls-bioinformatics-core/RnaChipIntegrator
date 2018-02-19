@@ -62,6 +62,14 @@ class TestPeakSet(unittest.TestCase):
         self.assertEqual(peaks[3],Peak('chr3L',14983597,14983598,id="peak4"))
         self.assertEqual(peaks[4],Peak('chr3L',17004143,17004144,id="peak5"))
 
+    def test_source_file_is_stored(self):
+        peaks1 = PeakSet('ChIP_peaks-ex1.txt')
+        peaks2 = PeakSet('ChIP_peaks-ex2.txt')
+        for peak in peaks1:
+            self.assertEqual(peak.source_file,'ChIP_peaks-ex1.txt')
+        for peak in peaks2:
+            self.assertEqual(peak.source_file,'ChIP_peaks-ex2.txt')
+
     def test_populate_from_list_of_peaks(self):
         peaks = PeakSet(
             peaks_list=(
@@ -194,6 +202,7 @@ class TestPeak(unittest.TestCase):
         self.assertEqual(peak.start,66811)
         self.assertEqual(peak.end,66812)
         self.assertEqual(peak.id,None)
+        self.assertEqual(peak.source_file,None)
         self.assertEqual(str(peak),"chr2L\t66811\t66812")
     def test_peak_with_id(self):
         peak = Peak('chr2L','66811','66812',id='Peak001')
@@ -202,6 +211,15 @@ class TestPeak(unittest.TestCase):
         self.assertEqual(peak.end,66812)
         self.assertEqual(peak.id,'Peak001')
         self.assertEqual(str(peak),"Peak001\tchr2L\t66811\t66812")
+        self.assertEqual(peak.source_file,None)
+    def test_peak_with_source_file(self):
+        peak = Peak('chr2L','66811','66812',source_file="Peaks1.txt")
+        self.assertEqual(peak.chrom,'chr2L')
+        self.assertEqual(peak.start,66811)
+        self.assertEqual(peak.end,66812)
+        self.assertEqual(peak.id,None)
+        self.assertEqual(str(peak),"chr2L\t66811\t66812")
+        self.assertEqual(peak.source_file,"Peaks1.txt")
 
 class TestFeatureSetWithChIPSeqData(unittest.TestCase):
     def setUp(self):
