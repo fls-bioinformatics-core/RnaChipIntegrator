@@ -148,8 +148,9 @@ class AnalysisReporter:
         self._is_features = None
         self._feature_type = feature_type
         self._max_pairs = 0
+        self._extra_data = None
 
-    def report_nearest(self,reference,results):
+    def report_nearest(self,reference,results,**extra_data):
         """
         Return details of nearest objects to a reference
 
@@ -166,6 +167,8 @@ class AnalysisReporter:
           results (Object): list of corresponding results
             i.e. FeatureSet (for reference Peak) or
             PeakSet (reference Feature)
+          extra_data (mapping): optional mapping defining
+            arbitrary data items
 
         Yields:
           string: line(s) of text reporting the results
@@ -178,6 +181,7 @@ class AnalysisReporter:
         else:
             self._context_feature = reference
             self._is_features = False
+        self._extra_data = extra_data
         is_features = self._is_features
         # Store largest number of pairs reported
         self._max_pairs = max(self._max_pairs,len(results))
@@ -242,8 +246,9 @@ class AnalysisReporter:
         self._context_peak = None
         self._context_feature = None
         self._is_features = None
+        self._extra_data = None
 
-    def report_nearest_features(self,peak,features):
+    def report_nearest_features(self,peak,features,**extra_data):
         """
         Return details of nearest features for a peak
 
@@ -252,15 +257,17 @@ class AnalysisReporter:
         Arguments:
           peak (Peak): peak of interest
           features (FeatureSet): list of nearest features
+          extra_data (mapping): optional mapping defining
+            arbitrary data items
 
         Yields:
           string: line(s) of text reporting the results
 
         """
-        for line in self.report_nearest(peak,features):
+        for line in self.report_nearest(peak,features,**extra_data):
             yield line
 
-    def report_nearest_peaks(self,feature,peaks):
+    def report_nearest_peaks(self,feature,peaks,**extra_data):
         """
         Return details of nearest peaks for a feature
 
@@ -274,7 +281,7 @@ class AnalysisReporter:
           string: block of text reporting the results
 
         """
-        for line in self.report_nearest(feature,peaks):
+        for line in self.report_nearest(feature,peaks,**extra_data):
             yield line
 
     def value_for(self,attr):
@@ -323,6 +330,7 @@ class AnalysisReporter:
         """
         peak = self._context_peak
         feature = self._context_feature
+        extra_data = self._extra_data
         is_features = self._is_features
         if attr == 'peak.id':
             return peak.id
@@ -391,7 +399,11 @@ class AnalysisReporter:
         elif attr == 'features_inbetween':
             raise NotImplementedError("'features_inbetween' not implemented")
         else:
-            raise KeyError("Unrecognised report field: '%s'" % attr)
+            # Check extra data items
+            try:
+                return extra_data[attr]
+            except KeyError:
+                raise KeyError("Unrecognised report field: '%s'" % attr)
 
     def make_header(self):
         """
@@ -484,31 +496,37 @@ class AnalysisReportWriter(AnalysisReporter):
         else:
             self._summary = None
 
-    def write_nearest_features(self,peak,features):
+    def write_nearest_features(self,peak,features,**extra_data):
         """
         Write a set of features to the output file(s)
 
         Arguments:
           peak (Peak): peak of interest
           features (FeatureSet): list of nearest features
+          extra_data (mapping): additional arbitrary data
+            items and associated values, to use in output
 
         """
-        lines = list(self.report_nearest_features(peak,features))
+        lines = list(self.report_nearest_features(peak,features,
+                                                  **extra_data))
         if self._fp is not None:
             self._fp.write("%s\n" % '\n'.join(lines))
         if self._summary is not None:
             self._summary.write("%s\n" % lines[0])
 
-    def write_nearest_peaks(self,feature,peaks):
+    def write_nearest_peaks(self,feature,peaks,**extra_data):
         """
         Write a set of peaks to the output file(s)
 
         Arguments:
           feature (Feature): feature of interest
           peaks (PeakSet): list of nearest peaks
+          extra_data (mapping): additional arbitrary data
+            items and associated values, to use in output
 
         """
-        lines = list(self.report_nearest_peaks(feature,peaks))
+        lines = list(self.report_nearest_peaks(feature,peaks,
+                                               **extra_data))
         if self._fp is not None:
             self._fp.write("%s\n" % '\n'.join(lines))
         if self._summary is not None:
