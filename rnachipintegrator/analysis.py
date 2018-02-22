@@ -38,8 +38,6 @@ def find_nearest_features(peaks,features,distance=None,tss_only=False,
       features (FeatureList): list of features
       peaks (PeakList): list of peaks
       distance (int): optional cut-off distance to apply
-      max_closest (int): optional maximum number of peaks
-        to find per feature
       tss_only (bool): only consider distances from the
         feature TSS (default is to consider distances from
         both the TSS and TES)
