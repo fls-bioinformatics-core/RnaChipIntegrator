@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #
 #     RnaChipIntegrator.py: analyse genomic features (genes) with peak data
-#     Copyright (C) University of Manchester 2011-16 Peter Briggs, Leo Zeef
+#     Copyright (C) University of Manchester 2011-18 Peter Briggs, Leo Zeef
 #     & Ian Donaldson
 #
 #     This code is free software; you can redistribute it and/or modify it
@@ -28,7 +28,6 @@ Analyse genomic features (genes) with peak data.
 import sys
 import os
 import optparse
-import time,datetime
 from .Features import FeatureSet
 from .Peaks import PeakSet
 import analysis
@@ -41,7 +40,33 @@ logging.basicConfig(format='%(levelname)s: %(message)s')
 from . import get_version
 __version__ = get_version()
 
-DEFAULT_FEATURE_TYPE = 'gene'
+#######################################################################
+# Data
+#######################################################################
+
+# Default values
+class _DEFAULTS(object):
+    PROMOTER_REGION = (1000,100)
+    CUTOFF = 1000000
+    MAX_CLOSEST = None
+    PAD_OUTPUT = False
+    FEATURE_TYPE = 'gene'
+
+# Front matter
+_PROGRAM_INFO = """
+Find nearest peaks to genes (and vice versa)
+
+University of Manchester
+Faculty of Biology Medicine and Health
+Bioinformatics Core Facility
+Authors: Peter Briggs, Ian Donaldson and Leo Zeef
+
+If you use this program in your published work then please cite:
+
+   Briggs PJ, Donaldson IJ, Zeef LAH. RnaChipIntegrator
+   (version %s). Available at:
+   https://github.com/fls-bioinformatics-core/RnaChipIntegrator
+""" % __version__
 
 #######################################################################
 # Main program
@@ -50,16 +75,11 @@ DEFAULT_FEATURE_TYPE = 'gene'
 def main(args=None):
     """
     Implements the 'RnaChipIntegrator' CLI
-
     """
 
     # Command line arguments
     if args is None:
         args = sys.argv[1:]
-    
-    # Defaults
-    promoter = (1000,100)
-    max_distance = 1000000
     
     # Parse command line
     p = optparse.OptionParser(usage="%prog [options] GENES PEAKS",
@@ -73,11 +93,11 @@ def main(args=None):
     # Analysis options
     analysis_opts = optparse.OptionGroup(p,"Analysis options")
     analysis_opts.add_option('--cutoff',action='store',dest='max_distance',
-                             type='int',default=max_distance,
+                             type='int',default=_DEFAULTS.CUTOFF,
                              help="Maximum distance allowed between peaks "
                              "and genes before being omitted from the "
                              "analyses (default %dbp; set to zero for no "
-                             "cutoff)" % max_distance)
+                             "cutoff)" % _DEFAULTS.CUTOFF)
     analysis_opts.add_option('--edge',action='store',dest="edge",
                              type="choice",choices=('tss','both'),
                              default='tss',
@@ -96,17 +116,18 @@ def main(args=None):
     # Reporting options
     reporting_opts = optparse.OptionGroup(p,"Reporting options")
     reporting_opts.add_option('--number',action='store',dest='max_closest',
-                              type='int',default=None,
+                              type='int',default=_DEFAULTS.MAX_CLOSEST,
                               help="Filter results after applying --cutoff "
                               "to report only the nearest MAX_CLOSEST number "
                               "of pairs for each gene/peak from the analyses "
                               "(default is to report all results)")
     reporting_opts.add_option('--promoter_region',action="store",
                               dest="promoter_region",
-                              default="%d,%d" % promoter,
+                              default="%d,%d" % _DEFAULTS.PROMOTER_REGION,
                               help="Define promoter region with respect to "
                               "gene TSS in the form UPSTREAM,DOWNSTREAM "
-                              "(default -%d to %dbp of TSS)" %  promoter)
+                              "(default -%d to %dbp of TSS)" %
+                              _DEFAULTS.PROMOTER_REGION)
     p.add_option_group(reporting_opts)
 
     # Output options
@@ -141,7 +162,7 @@ def main(args=None):
                              "analyses), 'peak_centric' or 'gene_centric'")
     advanced_opts.add_option('--feature',action="store",dest="feature_type",
                              help="Rename '%s' to FEATURE_TYPE in output (e.g. "
-                             "'transcript' etc)" % DEFAULT_FEATURE_TYPE)
+                             "'transcript' etc)" % _DEFAULTS.FEATURE_TYPE)
     advanced_opts.add_option('--peak_id',action="store",dest="peak_id",
                              help="Column to use as an ID for each peak "
                              "from the input peak file (first column is "
@@ -165,20 +186,7 @@ def main(args=None):
 
     # Report version and authors
     p.print_version()
-    print
-    print "Find nearest peaks to genes (and vice versa)"
-    print
-    print "University of Manchester"
-    print "Faculty of Life Sciences"
-    print "Bioinformatics Core Facility"
-    print "Authors: Peter Briggs, Ian Donaldson and Leo Zeef"
-    print
-    print "If you use this program in your published work then please cite:"
-    print
-    print "   Briggs PJ, Donaldson IJ, Zeef LAH. RnaChipIntegrator"
-    print "   (version %s). Available at:" % __version__
-    print "   https://github.com/fls-bioinformatics-core/RnaChipIntegrator"
-    print
+    print _PROGRAM_INFO
 
     # Promoter region
     promoter = (abs(int(options.promoter_region.split(',')[0])),
@@ -209,7 +217,7 @@ def main(args=None):
         try:
             peak_cols = tuple([int(x)
                                for x in options.peak_cols.split(',')])
-        except Exception, ex:
+        except Exception as ex:
             p.error("Bad column assignment for --peak_cols")
 
     # Handle peak IDs, if specified
@@ -296,7 +304,7 @@ def main(args=None):
     # Read in gene data
     try:
         genes = FeatureSet(gene_file)
-    except Exception, ex:
+    except Exception as ex:
         logging.critical("Failed to read in gene data: %s" % ex)
         print "Please fix errors in input file before running again"
         sys.exit(1)
@@ -329,7 +337,7 @@ def main(args=None):
     try:
         peaks = PeakSet(peak_file,columns=peak_cols,
                         id_column=peak_id_col)
-    except Exception,ex:
+    except Exception as ex:
         logging.critical("Failed to read peak data (%s)" % ex)
         print "Please fix errors in input file before running again"
         sys.exit(1)
