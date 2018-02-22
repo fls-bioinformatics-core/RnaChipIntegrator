@@ -221,6 +221,47 @@ class FeatureSet:
                     feature_subset.addFeature(feature)
         return feature_subset
 
+    def filterByPosition(self,limit1,limit2,exclude_limits=False,
+                         tss_only=False):
+        """Return a subset of features filtered by position
+
+        Returns a new FeatureSet object containing only the data
+        from the current object where the start positions fall
+        within a region defined by upper and lower limits.
+
+        limits can be supplied in either order (i.e. highest/lowest
+        or lowest/highest).
+
+        If exclude_limits is False (the default) then start positions
+        that fall exactly on one of the boundaries are counted as
+        being within the region; if it is True then these start
+        positions will not be considered to lie inside the region.
+
+        """
+        # Sort out upper and lower limits
+        if limit1 > limit2:
+            upper,lower = limit1,limit2
+        else:
+            upper,lower = limit2,limit1
+        # Make a new (empty) FeatureSet object
+        feature_subset = FeatureSet()
+        # Populate with only the matching data lines
+        for feature in self.features:
+            if tss_only:
+                positions = (feature.tss,)
+            else:
+                positions = (feature.tss,feature.tes)
+            for position in positions:
+                if exclude_limits:
+                    if lower < position and position < upper:
+                        feature_subset.addFeature(feature)
+                        break
+                else:
+                    if lower <= position and position <= upper:
+                        feature_subset.addFeature(feature)
+                        break
+        return feature_subset
+
     def sortByDistanceFrom(self,position):
         """Sort the features into order based on distance from a position
     

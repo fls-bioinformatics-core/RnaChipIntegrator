@@ -193,6 +193,19 @@ class TestFeatureSet(unittest.TestCase):
                              rna_data.getTSS() <= upper),
                             "Transcript outside range")
 
+    def test_filter_on_position(self):
+        rna_seq = FeatureSet('Transcripts-ex1.txt')
+        lower,upper = 5000000,10000000
+        rna_position = rna_seq.filterByPosition(upper,lower)
+        self.assertEqual(len(rna_position),3,
+                         "Wrong number of transcripts filtered by "
+                         "position")
+        for rna_data in rna_position:
+            print str(rna_data)
+            self.assertTrue((rna_data.tss >= lower and
+                             rna_data.tes <= upper),
+                            "Feature should have been filtered out")
+
     def test_sort_by_distance(self):
         rna_sort = FeatureSet('Transcripts-ex1.txt')
         position = 4250000
