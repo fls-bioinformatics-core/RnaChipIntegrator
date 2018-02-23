@@ -35,7 +35,8 @@ setup(
     maintainer_email = 'peter.briggs@manchester.ac.uk',
     packages = ['rnachipintegrator'],
     entry_points = { 'console_scripts': [
-        'RnaChipIntegrator = rnachipintegrator.cli:main',]
+        'RnaChipIntegrator = rnachipintegrator.cli:main',
+        'RnaChipIntegrator-batch = rnachipintegrator.batch:main']
     },
     license = 'Artistic License',
     keywords = ['RnaChipIntegrator',],
