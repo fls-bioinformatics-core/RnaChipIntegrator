@@ -634,6 +634,7 @@ def describe_fields(fields,feature="feature",
                                  "%s" % description))
         except KeyError:
             if attr.startswith('list('):
+                # List of fields
                 descriptions.append(('For each hit:',))
                 sub_attrs = attr[:-1].split('(')[1].split(',')
                 for sub_attr in sub_attrs:
@@ -643,6 +644,10 @@ def describe_fields(fields,feature="feature",
                                               FEATURE=feature)
                     descriptions.append(("%s_#" % sub_attr,
                                          "%s" % description))
+            else:
+                # Field name not in list of descriptions
+                descriptions.append(("%s" % attr,
+                                    "%s" % attr))
     return descriptions
 
 def update_text(s,**kws):

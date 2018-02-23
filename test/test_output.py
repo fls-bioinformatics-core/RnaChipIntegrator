@@ -562,6 +562,10 @@ class TestDescribeFieldsFunction(unittest.TestCase):
         self.assertEqual(desc[6],('direction_#',
                                   expected_fields['direction']))
 
+    def test_field_with_no_description(self):
+        desc = describe_fields(('missing_desc',))
+        self.assertEqual(desc[0],('missing_desc','missing_desc'))
+
 import tempfile
 class TestAnalysisReportWriter(unittest.TestCase):
 
