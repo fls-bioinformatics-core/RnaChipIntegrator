@@ -1571,3 +1571,29 @@ class TestFindNearestPeaksForRegions(unittest.TestCase):
         expected = PeakSet()
         expected.addPeak(peaks_[2])
         self.assertEqual(peaks,expected)
+
+    def test_find_nearest_peaks_regions_inside_feature_with_distance_cutoff(self):
+        # Set up feature data
+        self.features = FeatureSet()
+        self.features.addFeature(Feature('ENSG00000170776',
+                                         'chr15',
+                                         '85923802',
+                                         '86292586',
+                                         '+'))
+        # Set up peak data
+        self.peaks = PeakSet()
+        for region in (('85874449','85874837'),
+                       ('85956796','85956966'),
+                       ('86021073','86021230'),
+                       ('86106704','86106936')):
+            self.peaks.addPeak(Peak('chr15',region[0],region[1]))
+        # Run the analysis
+        results = list(find_nearest_peaks(self.features,
+                                          self.peaks,
+                                          distance=50000))
+        # Correct number of results (one gene)
+        self.assertEqual(len(results),1)
+        # Check list of peaks
+        # nb result is tuple (feature,peaks)
+        peaks = results[0][1]
+        self.assertEqual(len(peaks),4)
