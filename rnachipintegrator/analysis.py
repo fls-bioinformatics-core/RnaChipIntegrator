@@ -101,6 +101,13 @@ def find_nearest_peaks(features,peaks,distance=None,tss_only=False,
         FeatureSet
 
     """
+    # Set functions according to edges
+    if tss_only:
+        sort_peaks = sort_peaks_by_tss_distances
+        get_distance = distances.distance_tss
+    else:
+        sort_peaks = sort_peaks_by_edge_distances
+        get_distance = distances.distance_closest_edge
     # Reduce to set of differentially expressed features
     if only_differentially_expressed:
         features = features.filterByFlag(1)
@@ -109,15 +116,12 @@ def find_nearest_peaks(features,peaks,distance=None,tss_only=False,
         # Only consider peaks on same chromosome
         peak_list = peaks.filterByChr(feature.chrom)
         # Sort into distance order
-        if tss_only:
-            sort_peaks_by_tss_distances(feature,peak_list)
-        else:
-            sort_peaks_by_edge_distances(feature,peak_list)
+        sort_peaks(feature,peak_list)
         # Apply distance cut-off
         if distance is not None:
             closest = PeakSet()
             for peak in peak_list:
-                if distances.distance_tss(peak,feature) > distance:
+                if get_distance(peak,feature) > distance:
                     break
                 closest.addPeak(peak)
             peak_list = closest
