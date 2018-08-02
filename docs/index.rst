@@ -17,5 +17,5 @@ genes or features to each peak, and vice versa.
    outputs
    known_problems
    citing
-   changes
    additional_info
+   changes
