@@ -59,7 +59,7 @@ setup(
                     ['README.rst',
                      'LICENSE',
                      'INSTALL',
-                     'ChangeLog']),],
+                     'CHANGELOG.rst']),],
     include_package_data=True,
     zip_safe = False
 )
