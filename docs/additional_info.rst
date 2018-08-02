@@ -63,3 +63,8 @@ Licensing
 This software is licensed under the Artistic License 2.0; see
 the ``LICENSE`` document.
 
+
+Version history and changes
+---------------------------
+
+See the :doc:`CHANGELOG <changes>`.

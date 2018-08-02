@@ -18,4 +18,3 @@ genes or features to each peak, and vice versa.
    known_problems
    citing
    additional_info
-   changes
