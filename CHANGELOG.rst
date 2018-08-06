@@ -2,6 +2,23 @@ Version History and Changes
 ===========================
 
 --------------------------
+Version 1.1.0 (2018-08-06)
+--------------------------
+
+* Fix bug in gene-centric analysis when using ``--edge=both``,
+  which meant valid peaks could sometimes be dropped from the
+  results
+  (`PR #60 <https://github.com/fls-bioinformatics-core/RnaChipIntegrator/pull/60>`_).
+* New ``--peak_id`` option enables peak names to be read from
+  an ``ID`` column in the peaks file, which will be carried
+  through to the output files
+  (`PR #56 <https://github.com/fls-bioinformatics-core/RnaChipIntegrator/pull/56>`_).
+* New ``--analyses`` option enables specific analyses to be
+  selected (i.e. either peak-centric only, gene-centric only,
+  or both peak- and gene-centric)
+  (`PR #46 <https://github.com/fls-bioinformatics-core/RnaChipIntegrator/pull/46>`_).
+
+--------------------------
 Version 1.0.3 (2018-01-23)
 --------------------------
 
