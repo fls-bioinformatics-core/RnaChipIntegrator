@@ -1,16 +1,16 @@
 #
-#     test_ouptut.py: unit tests for batch module
-#     Copyright (C) University of Manchester 2018 Peter Briggs
+#     test_ouptut.py: unit tests for cli module
+#     Copyright (C) University of Manchester 2019 Peter Briggs
 
 import unittest
 import tempfile
 import shutil
 import os
-from rnachipintegrator.batch import CLI
-from rnachipintegrator.batch import OutputFiles
-from rnachipintegrator.batch import AnalysisParams
-from rnachipintegrator.batch import read_feature_file
-from rnachipintegrator.batch import read_peak_file
+from rnachipintegrator.cli import CLI
+from rnachipintegrator.cli import OutputFiles
+from rnachipintegrator.cli import AnalysisParams
+from rnachipintegrator.cli import read_feature_file
+from rnachipintegrator.cli import read_peak_file
 
 class TestCLI(unittest.TestCase):
     def test_get_version(self):
