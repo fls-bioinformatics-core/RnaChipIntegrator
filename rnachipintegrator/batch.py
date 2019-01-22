@@ -55,7 +55,7 @@ logging.basicConfig(format='%(levelname)s: %(message)s')
 # Functions
 #######################################################################
 
-def run_analysis(params):
+def find_nearest_features_as_list(params):
     """
     Wrapper to fetch results from 'find_nearest_features' as a list
     """
@@ -291,7 +291,7 @@ def main(args=None):
         # Version of multiprocessing which can also
         # handle ctrl-C terminating the program
         # See http://bryceboe.com/2010/08/26/python-multiprocessing-and-keyboardinterrupt/
-        p = pool.map_async(run_analysis,params)
+        p = pool.map_async(find_nearest_features_as_list,params)
         try:
             results = p.get(0xFFFF)
         except KeyboardInterrupt:
