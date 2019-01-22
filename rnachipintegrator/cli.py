@@ -594,9 +594,6 @@ def find_nearest_features(params):
     Wrapper for 'find_nearest_features' using AnalysisParams
 
     Arguments:
-      peaks (PeakSet): list of Peak instances to find
-        nearest genes for
-      genes (FeatureSet): list of Feature instances
       params (AnalysisParams): params controlling how the
         nearest genes are determined
 
@@ -611,6 +608,26 @@ def find_nearest_features(params):
             only_differentially_expressed=\
             params.only_differentially_expressed):
         yield (peak,genes,params)
+
+def find_nearest_peaks(params):
+    """
+    Wrapper for 'find_nearest_peaks' using AnalysisParams
+
+    Arguments:
+      params (AnalysisParams): params controlling how the
+        nearest peaks are determined
+
+    Yields:
+      Tuple: tuple of (gene,nearest_peaks,params)
+    """
+    for gene,peaks in analysis.find_nearest_peaks(
+            params.genes,
+            params.peaks,
+            tss_only=params.tss_only,
+            distance=params.cutoff,
+            only_differentially_expressed=\
+            params.only_differentially_expressed):
+        yield (gene,peaks,params)
 
 #######################################################################
 # Main program
@@ -861,9 +878,13 @@ def main(args=None):
             summary=(outputs.gene_centric_summary
                      if options.summary else None),
             feature_type=feature_type)
-        for gene,nearest_peaks in analysis.find_nearest_peaks(
-                genes,peaks,tss_only=tss_only,distance=max_distance,
-                only_differentially_expressed=options.only_diff_expressed):
+        params = AnalysisParams(genes=genes,
+                                peaks=peaks,
+                                cutoff=max_distance,
+                                tss_only=tss_only,
+                                only_differentially_expressed=
+                                options.only_diff_expressed)
+        for gene,nearest_peaks,prms in find_nearest_peaks(params):
             reporter.write_nearest_peaks(gene,nearest_peaks)
         reporter.close()
         print "Results written to %s" % outputs.gene_centric_out
