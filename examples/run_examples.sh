@@ -27,6 +27,9 @@ function run_test {
     #                exist after the command has run
     # --status INT: exit code to check (if command was
     #                run externally)
+    # --strip-paths: strip leading paths found inside
+    #                reference and output files when
+    #                checking content matches
     local test_name=$1
     local command=
     local expected_outputs=
@@ -34,6 +37,7 @@ function run_test {
     local exit_status=
     local working_dir=
     local test_status=
+    local strip_paths=
     # Collect arguments
     shift
     while [ $# -gt 0 ] ; do
@@ -54,6 +58,9 @@ function run_test {
 		exit_status=$2
 		shift
 		;;
+	    --strip-paths)
+		strip_paths=$1
+		;;
 	    *)
 		echo "$test_name: SKIPPED (unrecognised test argument '$1')"
 		return
@@ -67,6 +74,7 @@ function run_test {
     echo expected_outputs: $expected_outputs
     echo check_exists: $check_exists
     echo exit_status: $exit_status
+    echo strip_paths: $strip_paths
     echo PWD: $(pwd)
     # If command supplied then run it
     if [ ! -z "$command" ] ; then
@@ -87,7 +95,7 @@ function run_test {
     fi
     # Compare expected outputs
     for f in $expected_outputs ; do
-	assert_equal $REF_DATA/ref_$f $f
+	assert_equal $REF_DATA/ref_$f $f $strip_paths
 	if [ $? -ne 0 ] ; then
 	    echo Failed output comparison check
 	    test_status=FAILED
@@ -135,6 +143,10 @@ function run_test {
 }
 function assert_equal {
     # Check two files are the same
+    local strip_paths=
+    if [ "$3" == "--strip-paths" ] ; then
+	strip_paths=yes
+    fi
     if [ ! -e $1 ] ; then
 	echo "$1: missing reference data"
 	return 1
@@ -142,7 +154,17 @@ function assert_equal {
 	echo "$2: missing"
 	return 1
     fi
-    diff -q $1 $2
+    if [ -z "$strip_paths" ] ; then
+	old=$1
+	new=$2
+    else
+	tmpdir=$(mktemp -d)
+	old=$tmpdir/old
+	sed 's,/.*/,,g' $1 >$old
+	new=$tmpdir/new
+	sed 's,/.*/,,g' $2 >$new
+    fi
+    diff -q $old $new
     if [ $? -ne 0 ] ; then
 	echo "$2: doesn't match reference data:"
 	diff $1 $2
@@ -213,12 +235,14 @@ run_test "Gene-centric-only" \
 BATCH_MULTIPLE_CUTOFFS="test_batch_multi_cutoff_peak_centric.txt"
 run_test "Batch mode: multiple cutoffs" \
 	 --expected "$BATCH_MULTIPLE_CUTOFFS" \
-	 --command "RnaChipIntegrator-batch --name=test_batch_multi_cutoff --number=4 --cutoffs=50000,100000,150000 $TEST_DIR/ExpressionData.txt $TEST_DIR/ChIP_regions.txt"
+	 --command "RnaChipIntegrator-batch --name=test_batch_multi_cutoff --number=4 --cutoffs=50000,100000,150000 $TEST_DIR/ExpressionData.txt $TEST_DIR/ChIP_regions.txt" \
+	 --strip-paths
 #
 # Batch mode with multiple peak files (peak-centric only)
 run_test "Batch mode: multiple peak files" \
 	 --expected "$BATCH_MULTIPLE_PEAKS" \
-	 --command "RnaChipIntegrator-batch --name=test_batch_multi_peaks --number=4 $TEST_DIR/ExpressionData.txt $TEST_DIR/peaks1.txt $TEST_DIR/peaks2.txt"
+	 --command "RnaChipIntegrator-batch --name=test_batch_multi_peaks --number=4 $TEST_DIR/ExpressionData.txt $TEST_DIR/peaks1.txt $TEST_DIR/peaks2.txt" \
+	 --strip-paths
 #
 # Finished
 report_tests
