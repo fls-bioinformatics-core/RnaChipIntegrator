@@ -44,6 +44,7 @@ from .cli import AnalysisParams
 from .cli import read_feature_file
 from .cli import read_peak_file
 from .cli import find_nearest_features
+from .cli import find_nearest_peaks
 
 from . import get_version
 __version__ = get_version()
@@ -60,6 +61,12 @@ def find_nearest_features_as_list(params):
     Wrapper to fetch results from 'find_nearest_features' as a list
     """
     return list(find_nearest_features(params))
+
+def find_nearest_peaks_as_list(params):
+    """
+    Wrapper to fetch results from 'find_nearest_peaks' as a list
+    """
+    return list(find_nearest_peaks(params))
 
 #######################################################################
 # Main program
@@ -95,7 +102,7 @@ def main(args=None):
     p.add_only_de_option(group="Analysis options")
     p.add_option('-n','--nprocessors',action='store',
                  type=int,dest='nprocs',default=1,
-                 help="Number of processors/core to run the "
+                 help="Number of processors/cores to run the "
                  "program using (default: 1)",
                  group="Analysis options")
 
@@ -111,6 +118,13 @@ def main(args=None):
     p.add_xlsx_option(group="Output options")
 
     p.add_option_group("Advanced options")
+    p.add_option('--analyses',action='store',dest="analyses",
+                 type='choice',default="all",
+                 choices=('all','gene_centric','peak_centric',),
+                 help="Select which analyses to run: can be one "
+                 "of 'all' (default, runs all available "
+                 "analyses), 'peak_centric' or 'gene_centric'",
+                 group="Advanced options")
     p.add_feature_option(group="Advanced options")
     p.add_peak_cols_option(group="Advanced options")
     p.add_peak_id_option(group="Advanced options")
@@ -228,6 +242,10 @@ def main(args=None):
         peak_fields = tuple(['peak.file']+list(peak_fields))
         gene_fields = tuple(['peak.file']+list(gene_fields))
 
+    # Analyses to run
+    peak_centric = (options.analyses in ("all","peak_centric",))
+    gene_centric = (options.analyses in ("all","gene_centric",))
+
     # Report inputs
     print "Genes files    : %s" % gene_files[0]
     for gene_file in gene_files[1:]:
@@ -247,11 +265,8 @@ def main(args=None):
     print "Feature type   : %s" % options.feature_type
     print
     print "Analyses:"
-    print "- Peak-centric: %s" % 'yes'
-    print "- Gene-centric: %s" % 'no (not implemented)'
-    ##print "- Peak-centric: %s" % ('yes' if peak_centric else 'no')
-    ##print "- Gene-centric: %s" % ('yes' if gene_centric else 'no')
-    print
+    print "- Peak-centric: %s" % ('yes' if peak_centric else 'no')
+    print "- Gene-centric: %s" % ('yes' if gene_centric else 'no')
 
     # Read in gene data
     gene_lists = list()
@@ -278,58 +293,107 @@ def main(args=None):
     outputs = OutputFiles(basename)
     outputs.remove_files()
 
-    # Assemble inputs over cutoffs and peak lists
-    params = []
+    # Assemble inputs over cutoffs and peak and gene lists
+    # The same parameters can be used for both peak- and
+    # gene-centric analyses
+    analysis_params = []
     for peaks in peak_lists:
         for genes in gene_lists:
             for cutoff in cutoffs:
-                params.append(AnalysisParams(
-                    genes=genes,
-                    peaks=peaks,
-                    cutoff=cutoff,
-                    tss_only=tss_only,
-                    only_differentially_expressed=
-                    options.only_diff_expressed))
+                analysis_params.append(
+                    AnalysisParams(
+                        genes=genes,
+                        peaks=peaks,
+                        cutoff=cutoff,
+                        tss_only=tss_only,
+                        only_differentially_expressed=
+                        options.only_diff_expressed
+                    ))
 
     # Run the analyses
-    if options.nprocs > 1:
-        # Multiple cores
-        pool = Pool(options.nprocs)
-        # Version of multiprocessing which can also
-        # handle ctrl-C terminating the program
-        # See http://bryceboe.com/2010/08/26/python-multiprocessing-and-keyboardinterrupt/
-        p = pool.map_async(find_nearest_features_as_list,params)
-        try:
-            results = p.get(0xFFFF)
-        except KeyboardInterrupt:
-            print "KeyboardInterrupt"
-            sys.exit(1)
-    else:
-        # Single core
-        results = map(lambda p: list(find_nearest_features(p)),params)
+    if peak_centric:
+        print "**** Peak-centric analysis: nearest genes to each peak ****"
+        # Build reporter
+        reporter = output.AnalysisReportWriter(
+            mode,peak_fields,
+            promoter_region=promoter,
+            null_placeholder=placeholder,
+            max_hits=options.max_closest,
+            pad=options.pad_output,
+            outfile=outputs.peak_centric_out,
+            summary=(outputs.peak_centric_summary
+                     if options.summary else None),
+            feature_type=options.feature_type)
+        # Run the analyses
+        if options.nprocs > 1:
+            # Multiple cores
+            pool = Pool(options.nprocs)
+            # Version of multiprocessing which can also
+            # handle ctrl-C terminating the program
+            # See http://bryceboe.com/2010/08/26/python-multiprocessing-and-keyboardinterrupt/
+            p = pool.map_async(find_nearest_features_as_list,
+                               analysis_params)
+            try:
+                results = p.get(0xFFFF)
+            except KeyboardInterrupt:
+                print "KeyboardInterrupt"
+                sys.exit(1)
+        else:
+            # Single core
+            results = map(lambda p: list(find_nearest_features(p)),
+                          analysis_params)
+        # Output the results
+        for result in results:
+            for peak,nearest_genes,params in result:
+                reporter.write_nearest_features(peak,nearest_genes,
+                                                cutoff=params.cutoff)
+        reporter.close()
+        print "Results written to %s" % outputs.peak_centric_out
+        if options.summary:
+            print "Summary written to %s" % outputs.peak_centric_summary
+        print
 
-    # Build reporter
-    reporter = output.AnalysisReportWriter(
-        mode,peak_fields,
-        promoter_region=promoter,
-        null_placeholder=placeholder,
-        max_hits=options.max_closest,
-        pad=options.pad_output,
-        outfile=outputs.peak_centric_out,
-        summary=(outputs.peak_centric_summary
-                 if options.summary else None),
-        feature_type=options.feature_type)
-
-    # Output the results
-    for result in results:
-        for peak,nearest_genes,params in result:
-            reporter.write_nearest_features(peak,nearest_genes,
-                                            cutoff=params.cutoff)
-    reporter.close()
-    print "Results written to %s" % outputs.peak_centric_out
-    if options.summary:
-        print "Summary written to %s" % outputs.peak_centric_summary
-    print
+    # Run the analyses
+    if gene_centric:
+        print "**** Gene-centric analysis: nearest peaks to each gene ****"
+        # Build reporter
+        reporter = output.AnalysisReportWriter(
+            mode,gene_fields,
+            null_placeholder=placeholder,
+            max_hits=options.max_closest,
+            pad=options.pad_output,
+            outfile=outputs.gene_centric_out,
+            summary=(outputs.gene_centric_summary
+                     if options.summary else None),
+            feature_type=options.feature_type)
+        # Run the analyses
+        if options.nprocs > 1:
+            # Multiple cores
+            pool = Pool(options.nprocs)
+            # Version of multiprocessing which can also
+            # handle ctrl-C terminating the program
+            # See http://bryceboe.com/2010/08/26/python-multiprocessing-and-keyboardinterrupt/
+            p = pool.map_async(find_nearest_peaks_as_list,
+                               analysis_params)
+            try:
+                results = p.get(0xFFFF)
+            except KeyboardInterrupt:
+                print "KeyboardInterrupt"
+                sys.exit(1)
+        else:
+            # Single core
+            results = map(lambda p: list(find_nearest_peaks(p)),
+                          analysis_params)
+        # Output the results
+        for result in results:
+            for gene,nearest_peaks,params in result:
+                reporter.write_nearest_features(gene,nearest_peaks,
+                                                cutoff=params.cutoff)
+        reporter.close()
+        print "Results written to %s" % outputs.gene_centric_out
+        if options.summary:
+            print "Summary written to %s" % outputs.gene_centric_summary
+        print
 
     # Make XLSX file
     if options.xlsx_output:
@@ -339,7 +403,9 @@ def main(args=None):
                                options.feature_type)
         # Write the settings
         xlsx.append_to_notes("Input %ss file\t%s" % (options.feature_type,
-                                                     gene_file))
+                                                     gene_files[0]))
+        for gene_file in gene_files[1:]:
+            xlsx.append_to_notes("\t%s" % gene_file)
         xlsx.append_to_notes("Input peaks file\t%s" % peak_files[0])
         for peak_file in peak_files[1:]:
             xlsx.append_to_notes("\t%s" % peak_file)
@@ -361,15 +427,31 @@ def main(args=None):
                               "Yes" if options.only_diff_expressed
                               else "No"))
         # Add features to peaks
-        xlsx.write_peak_centric(peak_fields)
-        xlsx.add_result_sheet('Peak-centric',outputs.peak_centric_out)
-        if options.summary:
-            xlsx.append_to_notes("\n'Peak-centric (summary)' lists the "
-                                 "'top' result (i.e. closest peak/%s "
-                                 "pair) for each peak" %
-                                 options.feature_type)
-            xlsx.add_result_sheet('Peak-centric (summary)',
-                                  outputs.peak_centric_summary)
+        if peak_centric:
+            xlsx.write_peak_centric(peak_fields)
+            xlsx.add_result_sheet('Peak-centric',outputs.peak_centric_out)
+            if options.summary:
+                xlsx.append_to_notes("\n'Peak-centric (summary)' lists the "
+                                     "'top' result (i.e. closest peak/%s "
+                                     "pair) for each peak" %
+                                     options.feature_type)
+                xlsx.add_result_sheet('Peak-centric (summary)',
+                                      outputs.peak_centric_summary)
+        # Add peaks to features
+        if gene_centric:
+            xlsx.write_feature_centric(gene_fields)
+            xlsx.add_result_sheet('%s-centric' % feature_type.title(),
+                                  outputs.gene_centric_out)
+            if options.summary:
+                xlsx.append_to_notes("\n'%s-centric (summary)' lists the "
+                                     "'top' result (i.e. closest %s/peak "
+                                     "pair) for each %s" %
+                                     (feature_type.title(),
+                                      feature_type,
+                                      feature_type))
+                xlsx.add_result_sheet('%s-centric (summary)' %
+                                      feature_type.title(),
+                                      outputs.gene_centric_summary)
         xlsx.write()
         print "Wrote %s" % outputs.xlsx_out
         print

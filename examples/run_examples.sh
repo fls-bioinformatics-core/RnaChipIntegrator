@@ -232,14 +232,13 @@ run_test "Gene-centric-only" \
 	 --command "RnaChipIntegrator --name=test_genecentric --number=4 --analyses=gene_centric $TEST_DIR/ExpressionData.txt $TEST_DIR/ChIP_regions.txt"
 #
 # Batch mode with multiple cutoffs
-BATCH_MULTIPLE_CUTOFFS="test_batch_multi_cutoff_peak_centric.txt"
+BATCH_MULTIPLE_CUTOFFS="test_batch_multi_cutoff_peak_centric.txt test_batch_multi_cutoff_gene_centric.txt"
 run_test "Batch mode: multiple cutoffs" \
 	 --expected "$BATCH_MULTIPLE_CUTOFFS" \
-	 --command "RnaChipIntegrator-batch --name=test_batch_multi_cutoff --number=4 --cutoffs=50000,100000,150000 $TEST_DIR/ExpressionData.txt $TEST_DIR/ChIP_regions.txt" \
-	 --strip-paths
+	 --command "RnaChipIntegrator-batch --name=test_batch_multi_cutoff --number=4 --cutoffs=50000,100000,150000 $TEST_DIR/ExpressionData.txt $TEST_DIR/ChIP_regions.txt"
 #
 # Batch mode with multiple peak files (peak-centric only)
-BATCH_MULTIPLE_PEAKS="test_batch_multi_peaks_peak_centric.txt"
+BATCH_MULTIPLE_PEAKS="test_batch_multi_peaks_peak_centric.txt test_batch_multi_peaks_gene_centric.txt"
 run_test "Batch mode: multiple peak files" \
 	 --expected "$BATCH_MULTIPLE_PEAKS" \
 	 --command "RnaChipIntegrator-batch --name=test_batch_multi_peaks --number=4 $TEST_DIR/ExpressionData.txt $TEST_DIR/peaks1.txt $TEST_DIR/peaks2.txt" \
