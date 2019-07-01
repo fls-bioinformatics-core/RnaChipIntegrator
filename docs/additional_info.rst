@@ -6,7 +6,7 @@ Additional information
 Technical details
 -----------------
 
-``RnaChipIntegrator`` is known to work with Python 2.6 and 2.7, and
+``RnaChipIntegrator`` is known to work with Python 2.7, and
 requires the external ``xlsxwriter`` library in order to generate the
 ``.xlsx`` Excel spreadsheets:
 
