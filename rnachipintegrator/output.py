@@ -40,6 +40,7 @@ FIELDS = {
     'feature.TSS': "<FEATURE> TSS position",
     'feature.TES': "<FEATURE> TES position",
     'feature.strand': "<FEATURE> strand direction",
+    'feature.file': "file the <FEATURE> was loaded from",
     'dist_closest': "closest distance between peak and <FEATURE> considering all edges (zero if there is overlap)",
     'dist_TSS': "distance between peak and <FEATURE> TSS",
     'dist_TES': "distance between peak and <FEATURE> TES",
@@ -83,6 +84,7 @@ class AnalysisReporter:
     - (feature.)TSS: feature TSS
     - (feature.)TES: feature TES
     - (feature.)strand: feature strand
+    - feature.file: file the feature was loaded from
     - dist_closest: closest distance between peak and feature
     - dist_TSS: distance between peak and feature TSS
     - dist_TES: distance between peak and feature TES
@@ -350,6 +352,8 @@ class AnalysisReporter:
             return feature.start
         elif attr == 'feature.end':
             return feature.end
+        elif attr == 'feature.file':
+            return feature.source_file
         elif attr == 'TSS':
             return feature.tss
         elif attr == 'TES':

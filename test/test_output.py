@@ -463,12 +463,14 @@ class TestDescribeFieldsFunction(unittest.TestCase):
         desc = describe_fields(('feature.chr','feature.id',
                                 'feature.start','feature.end',
                                 'feature.strand',
-                                'feature.TSS','feature.TES'))
+                                'feature.TSS','feature.TES',
+                                'feature.file'))
         expected_fields = dict()
         for x in ('feature.chr','feature.id',
                   'feature.start','feature.end',
                   'feature.strand',
-                  'feature.TSS','feature.TES'):
+                  'feature.TSS','feature.TES',
+                  'feature.file'):
             expected_fields[x] = output.FIELDS[x].\
                                  replace("<FEATURE>","feature")
         self.assertEqual(desc[0],('feature.chr',expected_fields['feature.chr']))
@@ -480,6 +482,7 @@ class TestDescribeFieldsFunction(unittest.TestCase):
                                   expected_fields['feature.strand']))
         self.assertEqual(desc[5],('feature.TSS',expected_fields['feature.TSS']))
         self.assertEqual(desc[6],('feature.TES',expected_fields['feature.TES']))
+        self.assertEqual(desc[7],('feature.file',expected_fields['feature.file']))
 
     def test_describe_derived_fields(self):
         desc = describe_fields(('dist_closest',
