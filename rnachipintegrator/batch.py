@@ -171,30 +171,25 @@ def main(args=None):
     # Set up reporting
     if options.compact:
         mode = output.SINGLE_LINE
+        placeholder = '.'
         if peak_id_col is None:
-            peak_fields = ('peak.file','cutoff',
-                           'peak.chr','peak.start','peak.end',
-                           'list(feature.id,strand,TSS,TES,dist_closest,'
-                           'dist_TSS,dist_TES,direction,overlap_feature,'
-                           'overlap_promoter)')
-            gene_fields = ('peak.file','cutoff',
-                           'feature.id','feature.chr','feature.start',
-                           'feature.end','feature.strand',
-                           'list(chr,start,end,dist_closest,dist_TSS,'
-                           'direction,in_the_feature)')
-        else:
-            peak_fields = ('peak.file','cutoff',
-                           'peak.id','peak.chr','peak.start','peak.end',
+            peak_fields = ('peak.chr','peak.start','peak.end',
                            'list(feature.id,strand,TSS,TES,dist_closest,'
                            'dist_TSS,dist_TES,direction,overlap_feature,'
                            'overlap_promoter)')
             gene_fields = ('feature.id','feature.chr','feature.start',
                            'feature.end','feature.strand',
-                           'cutoff',
-                           'list(peak.file,peak.id,chr,start,end,'
-                           'dist_closest,dist_TSS,direction,'
-                           'in_the_feature)')
-        placeholder = '.'
+                           'list(chr,start,end,dist_closest,dist_TSS,'
+                           'direction,in_the_feature)')
+        else:
+            peak_fields = ('peak.id','peak.chr','peak.start','peak.end',
+                           'list(feature.id,strand,TSS,TES,dist_closest,'
+                           'dist_TSS,dist_TES,direction,overlap_feature,'
+                           'overlap_promoter)')
+            gene_fields = ('feature.id','feature.chr','feature.start',
+                           'feature.end','feature.strand',
+                           'list(peak.id,chr,start,end,dist_closest,dist_TSS,'
+                           'direction,in_the_feature)')
         if options.summary:
             options.summary = False
             logging.error("--summary option not compatible with --compact")
@@ -203,29 +198,35 @@ def main(args=None):
         mode = output.MULTI_LINE
         placeholder = '---'
         if peak_id_col is None:
-            peak_fields = ('peak.file','cutoff',
-                           'peak.chr','peak.start','peak.end',
+            peak_fields = ('peak.chr','peak.start','peak.end',
                            'feature.id','strand','TSS','TES',
                            'dist_closest','dist_TSS','dist_TES',
                            'direction','overlap_feature','overlap_promoter')
-            gene_fields = ('peak.file','cutoff',
-                           'feature.id','feature.chr','feature.start',
+            gene_fields = ('feature.id','feature.chr','feature.start',
                            'feature.end','feature.strand',
-                           'chr','start','end',
-                           'dist_closest','dist_TSS','direction',
-                           'in_the_feature')
+                           'chr','start','end','dist_closest','dist_TSS',
+                           'direction','in_the_feature')
         else:
-            peak_fields = ('peak.file','cutoff','peak.id',
-                           'peak.chr','peak.start','peak.end',
+            peak_fields = ('peak.id','peak.chr','peak.start','peak.end',
                            'feature.id','strand','TSS','TES',
                            'dist_closest','dist_TSS','dist_TES',
                            'direction','overlap_feature','overlap_promoter')
-            gene_fields = ('peak.file','cutoff',
-                           'feature.id','feature.chr','feature.start',
+            gene_fields = ('feature.id','feature.chr','feature.start',
                            'feature.end','feature.strand',
                            'peak.id','chr','start','end',
                            'dist_closest','dist_TSS','direction',
                            'in_the_feature')
+
+    # Update fields for batch mode
+    if len(cutoffs) > 1:
+        peak_fields = tuple(['cutoff']+list(peak_fields))
+        gene_fields = tuple(['cutoff']+list(gene_fields))
+    if len(gene_files) > 1:
+        peak_fields = tuple(['feature.file']+list(peak_fields))
+        gene_fields = tuple(['feature.file']+list(gene_fields))
+    if len(peak_files) > 1:
+        peak_fields = tuple(['peak.file']+list(peak_fields))
+        gene_fields = tuple(['peak.file']+list(gene_fields))
 
     # Report inputs
     print "Genes files    : %s" % gene_files[0]

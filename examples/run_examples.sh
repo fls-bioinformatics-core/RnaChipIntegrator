@@ -239,6 +239,7 @@ run_test "Batch mode: multiple cutoffs" \
 	 --strip-paths
 #
 # Batch mode with multiple peak files (peak-centric only)
+BATCH_MULTIPLE_PEAKS="test_batch_multi_peaks_peak_centric.txt"
 run_test "Batch mode: multiple peak files" \
 	 --expected "$BATCH_MULTIPLE_PEAKS" \
 	 --command "RnaChipIntegrator-batch --name=test_batch_multi_peaks --number=4 $TEST_DIR/ExpressionData.txt $TEST_DIR/peaks1.txt $TEST_DIR/peaks2.txt" \
