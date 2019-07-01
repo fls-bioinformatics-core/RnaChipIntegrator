@@ -108,7 +108,8 @@ class FeatureSet:
                               items[1],
                               items[2],
                               items[3],
-                              items[4])
+                              items[4],
+                              source_file=features_file)
             # Additional flag
             if len(items) >= 6:
                 # Is column 6 a flag?
@@ -330,17 +331,25 @@ class Feature:
       tss
       tes
 
+    A feature can also have the following optional data
+    associated with it:
+
+    - A source file name, which is set via the 'source_file'
+      keyword and accessed via the 'source_file' property.
+      It will be None if no filename has been specified.
+
     There are also convenience methods (getTSS, getTES, getPromoterRegion)
     and methods for calculating various distances.
 
     """
-    def __init__(self,feature_id,chrom,start,end,strand):
+    def __init__(self,feature_id,chrom,start,end,strand,source_file=None):
         self.id = feature_id
         self.chrom = chrom
         self.start = int(start)
         self.end = int(end)
         self.strand = strand
         self.flag = None
+        self.source_file = source_file
         # Set the TSS and TES
         if self.strand == '+':
             self.tss = self.start
