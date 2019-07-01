@@ -121,7 +121,7 @@ def main(args=None):
     # Input files
     if len(args) < 2:
         p.error("need to supply at least 2 files (genes and peaks)")
-    gene_file = args[0]
+    gene_files = [args[0],]
     peak_files = args[1:]
 
     # Report version and authors
@@ -228,7 +228,9 @@ def main(args=None):
                            'in_the_feature')
 
     # Report inputs
-    print "Genes file     : %s" % gene_file
+    print "Genes files    : %s" % gene_files[0]
+    for gene_file in gene_files[1:]:
+        print "                 %s" % gene_file
     print "Peaks files    : %s" % peak_files[0]
     for peak_file in peak_files[1:]:
         print "                 %s" % peak_file
@@ -251,11 +253,14 @@ def main(args=None):
     print
 
     # Read in gene data
-    genes = read_feature_file(gene_file)
-    if options.only_diff_expressed and not genes.isFlagged():
-        logging.fatal("--only-DE flag needs input genes flagged as "
-                      "differentially expressed")
-        sys.exit(1)
+    gene_lists = list()
+    for gene_file in gene_files:
+        genes = read_feature_file(gene_file)
+        if options.only_diff_expressed and not genes.isFlagged():
+            logging.fatal("--only-DE flag needs input genes flagged as "
+                          "differentially expressed")
+            sys.exit(1)
+        gene_lists.append(genes)
 
     # Read in peak data
     peak_lists = list()
@@ -268,21 +273,22 @@ def main(args=None):
     if options.name is not None:
         basename = options.name
     else:
-        basename = os.path.splitext(os.path.basename(gene_file))[0]
+        basename = os.path.splitext(os.path.basename(gene_files[0]))[0]
     outputs = OutputFiles(basename)
     outputs.remove_files()
 
     # Assemble inputs over cutoffs and peak lists
     params = []
     for peaks in peak_lists:
-        for cutoff in cutoffs:
-            params.append(AnalysisParams(
-                genes=genes,
-                peaks=peaks,
-                cutoff=cutoff,
-                tss_only=tss_only,
-                only_differentially_expressed=
-                options.only_diff_expressed))
+        for genes in gene_lists:
+            for cutoff in cutoffs:
+                params.append(AnalysisParams(
+                    genes=genes,
+                    peaks=peaks,
+                    cutoff=cutoff,
+                    tss_only=tss_only,
+                    only_differentially_expressed=
+                    options.only_diff_expressed))
 
     # Run the analyses
     if options.nprocs > 1:
