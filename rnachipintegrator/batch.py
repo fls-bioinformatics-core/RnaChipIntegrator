@@ -89,15 +89,6 @@ def main(args=None):
             "to each peak (and vice versa)")
 
     p.add_option_group("Analysis options")
-    p.add_option('--cutoffs',action='store',dest='cutoffs',
-                 default=None,
-                 help="Comma-separated list of one or more "
-                 "maximum distances allowed between peaks "
-                 "and genes (bp). An analysis will be "
-                 "performed for each GENES-PEAKS pair at "
-                 "each cutoff distance (default %dbp; set "
-                 "to zero for no cutoff)" % _DEFAULTS.CUTOFF,
-                 group="Analysis options")
     p.add_edge_option(group="Analysis options")
     p.add_only_de_option(group="Analysis options")
     p.add_option('-n','--nprocessors',action='store',
@@ -117,6 +108,29 @@ def main(args=None):
     p.add_pad_option(group="Output options")
     p.add_xlsx_option(group="Output options")
 
+    p.add_option_group("Batch options")
+    p.add_option('--cutoffs',action='store',dest='cutoffs',
+                 default=None,
+                 help="Comma-separated list of one or more "
+                 "maximum distances allowed between peaks "
+                 "and genes (bp). An analysis will be "
+                 "performed for each GENES-PEAKS pair at "
+                 "each cutoff distance (default %dbp; set "
+                 "to zero for no cutoff)" % _DEFAULTS.CUTOFF,
+                 group="Batch options")
+    p.add_option('--genes',action='store',dest="genes",nargs="+",
+                 metavar="GENES_FILE",
+                 help="Specify multiple genes files (if used then "
+                 "peaks file(s) must be specified using --peaks "
+                 "option)",
+                 group="Batch options")
+    p.add_option('--peaks',action='store',dest="peaks",nargs="+",
+                 metavar="PEAKS_FILE",
+                 help="Specify multiple peaks files (if used then "
+                 "genes file(s) must be specified using --genes "
+                 "option)",
+                 group="Batch options")
+
     p.add_option_group("Advanced options")
     p.add_analyses_option(group="Advanced options")
     p.add_feature_option(group="Advanced options")
@@ -127,10 +141,28 @@ def main(args=None):
     options,args = p.parse_args()
 
     # Input files
-    if len(args) < 2:
-        p.error("need to supply at least 2 files (genes and peaks)")
-    gene_files = [args[0],]
-    peak_files = args[1:]
+    peak_files = []
+    gene_files = []
+    if options.peaks:
+        peak_files = [f for f in options.peaks]
+    if options.genes:
+        gene_files = [f for f in options.genes]
+    if peak_files and gene_files:
+        if len(args) > 0:
+            p.error("too many arguments: files already supplied via "
+                    "--peaks and --genes")
+    elif peak_files:
+        p.error("must supply GENES file(s) via --genes when using "
+                "--peaks option")
+    elif gene_files:
+        p.error("must supply PEAKS file(s) via --peaks when using "
+                "--genes option")
+    elif len(args) == 2:
+        gene_files.append(args[0])
+        peak_files.append(args[1])
+    else:
+        p.error("need to supply genes and peaks via command line "
+                "or via --genes and --peaks options")
 
     # Report version and authors
     print p.get_version()
