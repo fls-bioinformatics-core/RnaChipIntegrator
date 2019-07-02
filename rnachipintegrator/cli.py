@@ -136,6 +136,19 @@ class CLI(object):
             args = sys.argv[1:]
         return self.parser.parse_args(args)
 
+    def error(self,*args):
+        """
+        Raise an error from within the parser
+
+        Wrapper for the 'error' method of the underlying
+        parser object
+
+        Arguments:
+          args (list): arguments to be passed to the
+            'error' method.
+        """
+        return self.parser.error(*args)
+
     def add_option_group(self,name):
         """
         Add an option group to the parser
