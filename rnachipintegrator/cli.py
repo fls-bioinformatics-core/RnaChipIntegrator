@@ -26,7 +26,7 @@ Analyse genomic features (genes) with peak data.
 
 import sys
 import os
-import optparse
+import argparse
 from .Features import FeatureSet
 from .Peaks import PeakSet
 import analysis
@@ -106,11 +106,16 @@ class CLI(object):
             describing the utility which is displayed
             by the '--help' option
         """
+        self._prog = os.path.basename(sys.argv[0])
         if version is None:
-            version = "%prog "+__version__
-        self.parser = optparse.OptionParser(
+            self._version = "%(prog)s "+__version__
+        else:
+            self._version = version
+        self._version = self._version % { 'prog': self._prog }
+        self.parser = argparse.ArgumentParser(
+            prog=self._prog,
             usage=usage,
-            version=version,
+            version=self._version,
             description=description)
         self.option_groups = dict()
 
@@ -118,7 +123,7 @@ class CLI(object):
         """
         Return the version string from the parser
         """
-        return self.parser.get_version()
+        return self._version
 
     def parse_args(self,args=None):
         """
@@ -134,7 +139,7 @@ class CLI(object):
         """
         if args is None:
             args = sys.argv[1:]
-        return self.parser.parse_args(args)
+        return self.parser.parse_known_args(args)
 
     def error(self,*args):
         """
@@ -156,8 +161,7 @@ class CLI(object):
         Arguments:
           name (str): name/title text for the group
         """
-        group = optparse.OptionGroup(self.parser,name)
-        self.parser.add_option_group(group)
+        group = self.parser.add_argument_group(name)
         self.option_groups[name] = group
 
     def add_option(self,*args,**kws):
@@ -187,7 +191,7 @@ class CLI(object):
             p = self.option_groups[group]
         else:
             p = self.parser
-        p.add_option(*args,**kws)
+        p.add_argument(*args,**kws)
 
     def add_edge_option(self,group=None):
         """
@@ -199,7 +203,7 @@ class CLI(object):
         """
         self.add_option('--edge',
                         action='store',dest="edge",
-                        type="choice",choices=('tss','both'),
+                        choices=('tss','both'),
                         default='tss',
                         help="Gene edges to consider when calculating "
                         "distances between genes and peaks, either: "
@@ -234,7 +238,7 @@ class CLI(object):
         """
         self.add_option('--number',
                         action='store',dest='max_closest',
-                        type='int',default=_DEFAULTS.MAX_CLOSEST,
+                        type=int,default=_DEFAULTS.MAX_CLOSEST,
                         help="Filter results after applying --cutoff "
                         "to report only the nearest MAX_CLOSEST number "
                         "of pairs for each gene/peak from the analyses "
@@ -337,8 +341,8 @@ class CLI(object):
         """
         self.add_option('--analyses',
                         action='store',dest="analyses",
-                        type='choice',default="all",
                         choices=('all','gene_centric','peak_centric',),
+                        default="all",
                         help="Select which analyses to run: can be one "
                         "of 'all' (default, runs all available "
                         "analyses), 'peak_centric' or 'gene_centric'")
@@ -369,7 +373,7 @@ class CLI(object):
         """
         self.add_option('--peak_id',
                         action="store",dest="peak_id",
-                        type='int',
+                        type=int,
                         help="Column to use as an ID for each peak "
                         "from the input peak file (first column is "
                         "column 1). If specified then IDs will be "
@@ -655,7 +659,7 @@ def main(args=None):
     if args is None:
         args = sys.argv[1:]
 
-    p = CLI(usage="%prog [options] GENES PEAKS",
+    p = CLI(usage="%(prog)s [options] GENES PEAKS",
             description=
             "Analyse GENES (any set of genes or genomic "
             "features) against one or more sets of PEAKS "
@@ -665,7 +669,7 @@ def main(args=None):
     # Analysis options
     p.add_option_group("Analysis options")
     p.add_option('--cutoff',action='store',dest='max_distance',
-                 type='int',default=_DEFAULTS.CUTOFF,
+                 type=int,default=_DEFAULTS.CUTOFF,
                  help="Maximum distance allowed between peaks "
                  "and genes before being omitted from the "
                  "analyses (default %dbp; set to zero for no "
@@ -690,8 +694,8 @@ def main(args=None):
     # Advanced options
     p.add_option_group("Advanced options")
     p.add_option('--analyses',action='store',dest="analyses",
-                 type='choice',default="all",
                  choices=('all','gene_centric','peak_centric',),
+                 default="all",
                  help="Select which analyses to run: can be one "
                  "of 'all' (default, runs all available "
                  "analyses), 'peak_centric' or 'gene_centric'",

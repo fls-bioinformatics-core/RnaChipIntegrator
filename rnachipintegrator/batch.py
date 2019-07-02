@@ -81,7 +81,7 @@ def main(args=None):
     if args is None:
         args = sys.argv[1:]
 
-    p = CLI(usage="%prog [options] GENES PEAKS [PEAKS...]",
+    p = CLI(usage="%(prog)s [options] [GENES PEAKS]",
             description=
             "Analyse GENES (any set of genes or genomic "
             "features) against one or more sets of PEAKS "
@@ -119,8 +119,8 @@ def main(args=None):
 
     p.add_option_group("Advanced options")
     p.add_option('--analyses',action='store',dest="analyses",
-                 type='choice',default="all",
                  choices=('all','gene_centric','peak_centric',),
+                 default="all",
                  help="Select which analyses to run: can be one "
                  "of 'all' (default, runs all available "
                  "analyses), 'peak_centric' or 'gene_centric'",
