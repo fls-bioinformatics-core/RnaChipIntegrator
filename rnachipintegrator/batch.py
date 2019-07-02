@@ -118,13 +118,7 @@ def main(args=None):
     p.add_xlsx_option(group="Output options")
 
     p.add_option_group("Advanced options")
-    p.add_option('--analyses',action='store',dest="analyses",
-                 choices=('all','gene_centric','peak_centric',),
-                 default="all",
-                 help="Select which analyses to run: can be one "
-                 "of 'all' (default, runs all available "
-                 "analyses), 'peak_centric' or 'gene_centric'",
-                 group="Advanced options")
+    p.add_analyses_option(group="Advanced options")
     p.add_feature_option(group="Advanced options")
     p.add_peak_cols_option(group="Advanced options")
     p.add_peak_id_option(group="Advanced options")
