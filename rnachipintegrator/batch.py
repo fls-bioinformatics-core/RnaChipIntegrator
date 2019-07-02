@@ -84,9 +84,9 @@ def main(args=None):
     p = CLI(usage="%(prog)s [options] [GENES PEAKS]",
             description=
             "Analyse GENES (any set of genes or genomic "
-            "features) against one or more sets of PEAKS "
-            "(a set of regions) and report nearest genes "
-            "to each peak (and vice versa)")
+            "features) against PEAKS (a set of regions) "
+            "and report nearest genes to each peak (and "
+            "vice versa)")
 
     p.add_option_group("Analysis options")
     p.add_edge_option(group="Analysis options")
