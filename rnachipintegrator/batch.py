@@ -434,17 +434,17 @@ def main(args=None):
         # Add peaks to features
         if gene_centric:
             xlsx.write_feature_centric(gene_fields)
-            xlsx.add_result_sheet('%s-centric' % feature_type.title(),
+            xlsx.add_result_sheet('%s-centric' % options.feature_type.title(),
                                   outputs.gene_centric_out)
             if options.summary:
                 xlsx.append_to_notes("\n'%s-centric (summary)' lists the "
                                      "'top' result (i.e. closest %s/peak "
                                      "pair) for each %s" %
-                                     (feature_type.title(),
-                                      feature_type,
-                                      feature_type))
+                                     (options.feature_type.title(),
+                                      options.feature_type,
+                                      options.feature_type))
                 xlsx.add_result_sheet('%s-centric (summary)' %
-                                      feature_type.title(),
+                                      options.feature_type.title(),
                                       outputs.gene_centric_summary)
         xlsx.write()
         print "Wrote %s" % outputs.xlsx_out
