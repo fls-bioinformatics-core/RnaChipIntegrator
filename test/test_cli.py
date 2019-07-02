@@ -22,7 +22,7 @@ class TestCLI(unittest.TestCase):
         cli.add_option('--attempts',
                        dest='attempts',
                        default=0,
-                       type='int',
+                       type=int,
                        help="Number of attempts")
         options,args = cli.parse_args(list())
         self.assertEqual(options.attempts,0)
@@ -35,7 +35,7 @@ class TestCLI(unittest.TestCase):
         cli.add_option('--attempts',
                        dest='attempts',
                        default=0,
-                       type='int',
+                       type=int,
                        help="Number of attempts",
                        group="Example options")
         options,args = cli.parse_args(list())
