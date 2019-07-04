@@ -32,6 +32,7 @@ class TestPeakSet(unittest.TestCase):
 
     def test_reading_in_ChIPseq_data(self):
         peaks = PeakSet('ChIP_peaks-ex1.txt')
+        self.assertEqual(peaks.source_file,'ChIP_peaks-ex1.txt')
         self.assertEqual(len(peaks),5,
                          "Wrong number of lines read from ChIP-seq file")
         self.assertEqual(peaks[0],Peak('chr3L',4252919,4252920))
@@ -43,6 +44,7 @@ class TestPeakSet(unittest.TestCase):
     def test_reading_in_ChIPseq_data_custom_columns(self):
         peaks = PeakSet('ChIP_peaks_multi_columns-ex1.txt',
                         columns=(2,4,5))
+        self.assertEqual(peaks.source_file,'ChIP_peaks_multi_columns-ex1.txt')
         self.assertEqual(len(peaks),5,
                          "Wrong number of lines read from ChIP-seq file")
         self.assertEqual(peaks[0],Peak('chr3L',4252919,4252920))
@@ -54,6 +56,7 @@ class TestPeakSet(unittest.TestCase):
     def test_reading_in_ChIPseq_with_id_column(self):
         peaks = PeakSet('ChIP_peaks_multi_columns-ex1.txt',
                         columns=(2,4,5),id_column=1)
+        self.assertEqual(peaks.source_file,'ChIP_peaks_multi_columns-ex1.txt')
         self.assertEqual(len(peaks),5,
                          "Wrong number of lines read from ChIP-seq file")
         self.assertEqual(peaks[0],Peak('chr3L',4252919,4252920,id="peak1"))
@@ -65,8 +68,10 @@ class TestPeakSet(unittest.TestCase):
     def test_source_file_is_stored(self):
         peaks1 = PeakSet('ChIP_peaks-ex1.txt')
         peaks2 = PeakSet('ChIP_peaks-ex2.txt')
+        self.assertEqual(peaks1.source_file,'ChIP_peaks-ex1.txt')
         for peak in peaks1:
             self.assertEqual(peak.source_file,'ChIP_peaks-ex1.txt')
+        self.assertEqual(peaks2.source_file,'ChIP_peaks-ex2.txt')
         for peak in peaks2:
             self.assertEqual(peak.source_file,'ChIP_peaks-ex2.txt')
 
@@ -76,6 +81,7 @@ class TestPeakSet(unittest.TestCase):
                 Peak('chr2L',66711,66911),
                 Peak('chr2L',605850,606050),
                 Peak('chr3L',2258089,2258289)))
+        self.assertEqual(peaks.source_file,None)
         self.assertEqual(peaks[0],Peak('chr2L',66711,66911))
         self.assertEqual(peaks[1],Peak('chr2L',605850,606050))
         self.assertEqual(peaks[2],Peak('chr3L',2258089,2258289))

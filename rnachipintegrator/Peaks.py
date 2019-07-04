@@ -44,6 +44,7 @@ class PeakSet:
 
         """
         self.peaks = []
+        self.source_file = None
         if peaks_file:
             self.loadPeaksFromFile(peaks_file,
                                    columns=columns,
@@ -125,6 +126,8 @@ class PeakSet:
                 raise ex
             self.peaks.append(peak)
         fp.close()
+        # Store the source file
+        self.source_file = peaks_file
         # Return a reference to this object
         return self
 
