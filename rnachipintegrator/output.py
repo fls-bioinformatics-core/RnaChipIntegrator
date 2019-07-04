@@ -84,7 +84,7 @@ class AnalysisReporter:
     - (feature.)TSS: feature TSS
     - (feature.)TES: feature TES
     - (feature.)strand: feature strand
-    - feature.file: file the feature was loaded from
+    - (feature).file: file the feature was loaded from
     - dist_closest: closest distance between peak and feature
     - dist_TSS: distance between peak and feature TSS
     - dist_TES: distance between peak and feature TES
