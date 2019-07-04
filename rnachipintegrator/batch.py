@@ -181,6 +181,9 @@ def main(args=None):
                 sys.exit(1)
     cutoffs.sort()
 
+    # Deal with zero cutoff distance meaning 'no cutoff'
+    cutoffs = [d if d != 0 else None for d in cutoffs]
+
     # Gene edge to use
     if options.edge == 'tss':
         tss_only = True
@@ -279,7 +282,9 @@ def main(args=None):
     print "Peaks files    : %s" % peak_files[0]
     for peak_file in peak_files[1:]:
         print "                 %s" % peak_file
-    print "Cutoffs (bp)   : %s" % ','.join([str(d) for d in cutoffs])
+    print "Cutoffs (bp)   : %s" % ','.join([str(d) if d != 0
+                                            else "no cutoff"
+                                            for d in cutoffs])
     print "Edge           : %s" % ('TSS only' if tss_only
                                    else 'TSS or TES')
     print "DE only        : %s" % ('yes' if options.only_diff_expressed
