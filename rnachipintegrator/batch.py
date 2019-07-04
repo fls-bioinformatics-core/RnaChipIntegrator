@@ -89,13 +89,17 @@ def main(args=None):
             "vice versa)")
 
     p.add_option_group("Analysis options")
+    p.add_option('--cutoffs',action='store',dest='cutoffs',
+                 default=None,
+                 help="Comma-separated list of one or more "
+                 "maximum distances allowed between peaks "
+                 "and genes (bp). An analysis will be "
+                 "performed for each GENES-PEAKS pair at "
+                 "each cutoff distance (default %dbp; set "
+                 "to zero for no cutoff)" % _DEFAULTS.CUTOFF,
+                 group="Analysis options")
     p.add_edge_option(group="Analysis options")
     p.add_only_de_option(group="Analysis options")
-    p.add_option('-n','--nprocessors',action='store',
-                 type=int,dest='nprocs',default=1,
-                 help="Number of processors/cores to run the "
-                 "program using (default: 1)",
-                 group="Analysis options")
 
     p.add_option_group("Reporting options")
     p.add_number_option(group="Reporting options")
@@ -109,15 +113,6 @@ def main(args=None):
     p.add_xlsx_option(group="Output options")
 
     p.add_option_group("Batch options")
-    p.add_option('--cutoffs',action='store',dest='cutoffs',
-                 default=None,
-                 help="Comma-separated list of one or more "
-                 "maximum distances allowed between peaks "
-                 "and genes (bp). An analysis will be "
-                 "performed for each GENES-PEAKS pair at "
-                 "each cutoff distance (default %dbp; set "
-                 "to zero for no cutoff)" % _DEFAULTS.CUTOFF,
-                 group="Batch options")
     p.add_option('--genes',action='store',dest="genes",nargs="+",
                  metavar="GENES_FILE",
                  help="Specify multiple genes files (if used then "
@@ -129,6 +124,11 @@ def main(args=None):
                  help="Specify multiple peaks files (if used then "
                  "genes file(s) must be specified using --genes "
                  "option)",
+                 group="Batch options")
+    p.add_option('-n','--nprocessors',action='store',
+                 type=int,dest='nprocs',default=1,
+                 help="Number of processors/cores to run the "
+                 "program using (default: 1)",
                  group="Batch options")
 
     p.add_option_group("Advanced options")
