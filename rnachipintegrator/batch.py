@@ -207,7 +207,7 @@ def main(args=None):
 
     # Use IDs for peaks?
     try:
-        peak_id_col = int(options.peak_id) - 1
+        peak_id_col = int(options.peak_id)
     except TypeError:
         peak_id_col = None
 
