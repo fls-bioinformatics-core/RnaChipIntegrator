@@ -141,6 +141,7 @@ class TestFeatureSet(unittest.TestCase):
                 Feature('CG2674-RC','chr2L',107926,114433,'+'),
                 Feature('CG2674-RE','chr2L',106903,114433,'+'),
                 Feature('CG2674-RA','chr2L',107760,114433,'+')))
+        self.assertEqual(features.source_file,None)
         self.assertEqual(features[0],
                          Feature('CG31973','chr2L',25402,59243,'-'))
         self.assertEqual(features[1],
@@ -152,6 +153,7 @@ class TestFeatureSet(unittest.TestCase):
 
     def test_reading_in_RNAseq_data(self):
         rna_seq = FeatureSet('Transcripts-ex1.txt')
+        self.assertEqual(rna_seq.source_file,'Transcripts-ex1.txt')
         self.assertEqual(len(rna_seq),10,
                          "Wrong number of lines from RNA-seq file")
         self.assertTrue(rna_seq.isFlagged(),
@@ -159,6 +161,7 @@ class TestFeatureSet(unittest.TestCase):
 
     def test_source_file_is_stored(self):
         features = FeatureSet('Transcripts-ex1.txt')
+        self.assertEqual(features.source_file,'Transcripts-ex1.txt')
         for feature in features:
             self.assertEqual(feature.source_file,'Transcripts-ex1.txt')
 

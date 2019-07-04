@@ -40,6 +40,7 @@ class FeatureSet:
 
         """
         self.features = []
+        self.source_file = None
         if features_file:
             self.loadFeaturesFromFile(features_file)
         elif features_list:
@@ -128,6 +129,8 @@ class FeatureSet:
         # Deal with postponed critical errors
         if critical_error:
             raise Exception, "critical error(s) in '%s'" % features_file
+        # Store the source file
+        self.source_file = features_file
         # Return a reference to this object
         return self
 
