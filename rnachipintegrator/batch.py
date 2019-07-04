@@ -262,11 +262,11 @@ def main(args=None):
         peak_fields = tuple(['cutoff']+list(peak_fields))
         gene_fields = tuple(['cutoff']+list(gene_fields))
     if len(gene_files) > 1:
-        peak_fields = tuple(['feature.file']+list(peak_fields))
-        gene_fields = tuple(['feature.file']+list(gene_fields))
+        peak_fields = tuple(['feature_file']+list(peak_fields))
+        gene_fields = tuple(['feature_file']+list(gene_fields))
     if len(peak_files) > 1:
-        peak_fields = tuple(['peak.file']+list(peak_fields))
-        gene_fields = tuple(['peak.file']+list(gene_fields))
+        peak_fields = tuple(['peak_file']+list(peak_fields))
+        gene_fields = tuple(['peak_file']+list(gene_fields))
 
     # Analyses to run
     peak_centric = (options.analyses in ("all","peak_centric",))
@@ -295,21 +295,21 @@ def main(args=None):
     print "- Gene-centric: %s" % ('yes' if gene_centric else 'no')
 
     # Read in gene data
-    gene_lists = list()
+    gene_lists = dict()
     for gene_file in gene_files:
         genes = read_feature_file(gene_file)
         if options.only_diff_expressed and not genes.isFlagged():
             logging.fatal("--only-DE flag needs input genes flagged as "
                           "differentially expressed")
             sys.exit(1)
-        gene_lists.append(genes)
+        gene_lists[gene_file] = genes
 
     # Read in peak data
-    peak_lists = list()
+    peak_lists = dict()
     for peak_file in peak_files:
-        peak_lists.append(read_peak_file(peak_file,
-                                         peak_cols=peak_cols,
-                                         peak_id_col=peak_id_col))
+        peak_lists[peak_file] = read_peak_file(peak_file,
+                                               peak_cols=peak_cols,
+                                               peak_id_col=peak_id_col)
 
     # Output files
     if options.name is not None:
@@ -323,13 +323,13 @@ def main(args=None):
     # The same parameters can be used for both peak- and
     # gene-centric analyses
     analysis_params = []
-    for peaks in peak_lists:
-        for genes in gene_lists:
+    for peaks in peak_files:
+        for genes in gene_files:
             for cutoff in cutoffs:
                 analysis_params.append(
                     AnalysisParams(
-                        genes=genes,
-                        peaks=peaks,
+                        genes=gene_lists[genes],
+                        peaks=peak_lists[peaks],
                         cutoff=cutoff,
                         tss_only=tss_only,
                         only_differentially_expressed=
@@ -371,8 +371,11 @@ def main(args=None):
         # Output the results
         for result in results:
             for peak,nearest_genes,params in result:
-                reporter.write_nearest_features(peak,nearest_genes,
-                                                cutoff=params.cutoff)
+                reporter.write_nearest_features(
+                    peak,nearest_genes,
+                    peak_file=params.peaks.source_file,
+                    feature_file=params.genes.source_file,
+                    cutoff=params.cutoff)
         reporter.close()
         print "Results written to %s" % outputs.peak_centric_out
         if options.summary:
@@ -413,8 +416,11 @@ def main(args=None):
         # Output the results
         for result in results:
             for gene,nearest_peaks,params in result:
-                reporter.write_nearest_features(gene,nearest_peaks,
-                                                cutoff=params.cutoff)
+                reporter.write_nearest_features(
+                    gene,nearest_peaks,
+                    peak_file=params.peaks.source_file,
+                    feature_file=params.genes.source_file,
+                    cutoff=params.cutoff)
         reporter.close()
         print "Results written to %s" % outputs.gene_centric_out
         if options.summary:
