@@ -871,7 +871,7 @@ def main(args=None):
     # Report inputs
     print("Genes files    : %s" % gene_files[0])
     for gene_file in gene_files[1:]:
-        print "                 %s" % gene_file
+        print("                 %s" % gene_file)
     print("Peaks files    : %s" % peak_files[0])
     for peak_file in peak_files[1:]:
         print("                 %s" % peak_file)

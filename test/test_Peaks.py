@@ -117,7 +117,7 @@ class TestPeakSet(unittest.TestCase):
         self.assertEqual(len(peaks_pos),2,
                          "Wrong number of peaks filtered")
         for peak in peaks_pos:
-            print str(peak)
+            print(str(peak))
             self.assertTrue((peak.start >= lower and
                              peak.start <= upper),
                             "Peak should have been filtered out")
