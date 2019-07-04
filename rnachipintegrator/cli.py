@@ -89,8 +89,8 @@ class CLI(object):
     >>> p.add_cutoff_option()
     >>> p.add_option('--force',action='store_true',dest='force')
     >>> p.parse_args()
-    >>> print options.cutoff
-    >>> print options.force
+    >>> print(options.cutoff)
+    >>> print(options.force)
 
     """
     def __init__(self,usage,version=None,description=None):
@@ -471,12 +471,12 @@ class OutputFiles(object):
         """
         Remove output files which already exist
         """
-        print "Removing pre-existing output files"
+        print("Removing pre-existing output files")
         for f in self.files:
             if os.path.isfile(f):
-                print "\tRemoving %s" % f
+                print("\tRemoving %s" % f)
                 os.remove(f)
-        print
+        print("")
 
 class AnalysisParams(object):
     """
@@ -551,24 +551,24 @@ def read_feature_file(feature_file,feature_type='gene'):
       FeatureSet: features read in from the file.
     """
 
-    print "Reading in data from '%s'" % feature_file
+    print("Reading in data from '%s'" % feature_file)
     try:
         features = FeatureSet(feature_file)
     except Exception as ex:
         logging.fatal("Failed to read in %s data: %s" % (feature_type,
                                                          ex))
-        print "Please fix errors in input file before running again"
+        print("Please fix errors in input file before running again")
         sys.exit(1)
     if not len(features):
         logging.fatal("No %s data read in" % feature_type)
         sys.exit(1)
-    print "%d %s records read in" % (len(features),
-                                     feature_type)
+    print("%d %s records read in" % (len(features),
+                                     feature_type))
     if features.isFlagged():
-        print "\tData include differential expression flag"
-        print "\t%d records flagged as differentially expressed" % \
-            len(features.filterByFlag(1))
-    print
+        print("\tData include differential expression flag")
+        print("\t%d records flagged as differentially expressed" %
+              len(features.filterByFlag(1)))
+    print("")
     return features
 
 def read_peak_file(peak_file,peak_cols=None,peak_id_col=None):
@@ -587,26 +587,26 @@ def read_peak_file(peak_file,peak_cols=None,peak_id_col=None):
       PeakSet: peaks read in from the file.
     """
     # Read in peak data
-    print "Reading in data from '%s'" % peak_file
-    print "Using columns %s from peaks file as chrom, start, end" % \
-        (peak_cols,)
+    print("Reading in data from '%s'" % peak_file)
+    print("Using columns %s from peaks file as chrom, start, end" %
+          (peak_cols,))
     if peak_id_col is not None:
         peak_id_col = int(peak_id_col)
-        print "Using column %s from peaks file as peak ID" % peak_id_col
+        print("Using column %s from peaks file as peak ID" % peak_id_col)
     try:
         peaks = PeakSet(peak_file,columns=peak_cols,
                         id_column=peak_id_col)
     except Exception as ex:
         logging.fatal("Failed to read peak data (%s)" % ex)
-        print "Please fix errors in input file before running again"
+        print("Please fix errors in input file before running again")
         sys.exit(1)
     if not len(peaks):
         logging.error("No peak data read in")
         sys.exit(1)
-    print "%d peak records read in (%s)" % (len(peaks),
+    print("%d peak records read in (%s)" % (len(peaks),
                                             'summits' if peaks.isSummit()
-                                            else 'regions')
-    print
+                                            else 'regions'))
+    print("")
     return peaks
 
 def find_nearest_features(params):
@@ -758,8 +758,8 @@ def main(args=None):
                 "or via --genes and --peaks options")
 
     # Report version and authors
-    print p.get_version()
-    print _PROGRAM_INFO
+    print(p.get_version())
+    print(_PROGRAM_INFO)
 
     # Process cutoffs
     if options.cutoffs is None:
@@ -869,28 +869,28 @@ def main(args=None):
     gene_centric = (options.analyses in ("all","gene_centric",))
 
     # Report inputs
-    print "Genes files    : %s" % gene_files[0]
+    print("Genes files    : %s" % gene_files[0])
     for gene_file in gene_files[1:]:
         print "                 %s" % gene_file
-    print "Peaks files    : %s" % peak_files[0]
+    print("Peaks files    : %s" % peak_files[0])
     for peak_file in peak_files[1:]:
-        print "                 %s" % peak_file
-    print "Cutoffs (bp)   : %s" % ','.join([str(d) if d != 0
+        print("                 %s" % peak_file)
+    print("Cutoffs (bp)   : %s" % ','.join([str(d) if d is not None
                                             else "no cutoff"
-                                            for d in cutoffs])
-    print "Edge           : %s" % ('TSS only' if tss_only
-                                   else 'TSS or TES')
-    print "DE only        : %s" % ('yes' if options.only_diff_expressed
-                                   else 'no')
-    print "Nprocs         : %s" % options.nprocs
-    print "Max no. of hits: %s" % ('All' if options.max_closest is None
-                                   else "%d" % options.max_closest)
-    print "Promoter region: -%d to %d (bp from TSS)" % promoter
-    print "Feature type   : %s" % options.feature_type
-    print
-    print "Analyses:"
-    print "- Peak-centric: %s" % ('yes' if peak_centric else 'no')
-    print "- Gene-centric: %s" % ('yes' if gene_centric else 'no')
+                                            for d in cutoffs]))
+    print("Edge           : %s" % ('TSS only' if tss_only
+                                   else 'TSS or TES'))
+    print("DE only        : %s" % ('yes' if options.only_diff_expressed
+                                   else 'no'))
+    print("Nprocs         : %s" % options.nprocs)
+    print("Max no. of hits: %s" % ('All' if options.max_closest is None
+                                   else "%d" % options.max_closest))
+    print("Promoter region: -%d to %d (bp from TSS)" % promoter)
+    print("Feature type   : %s" % options.feature_type)
+    print("")
+    print("Analyses:")
+    print("- Peak-centric: %s" % ('yes' if peak_centric else 'no'))
+    print("- Gene-centric: %s" % ('yes' if gene_centric else 'no'))
 
     # Read in gene data
     gene_lists = dict()
@@ -936,7 +936,7 @@ def main(args=None):
 
     # Run the analyses
     if peak_centric:
-        print "**** Peak-centric analysis: nearest genes to each peak ****"
+        print("**** Peak-centric analysis: nearest genes to each peak ****")
         # Build reporter
         reporter = output.AnalysisReportWriter(
             mode,peak_fields,
@@ -960,7 +960,7 @@ def main(args=None):
             try:
                 results = p.get(0xFFFF)
             except KeyboardInterrupt:
-                print "KeyboardInterrupt"
+                print("KeyboardInterrupt")
                 sys.exit(1)
         else:
             # Single core
@@ -975,14 +975,14 @@ def main(args=None):
                     feature_file=params.genes.source_file,
                     cutoff=params.cutoff)
         reporter.close()
-        print "Results written to %s" % outputs.peak_centric_out
+        print("Results written to %s" % outputs.peak_centric_out)
         if options.summary:
-            print "Summary written to %s" % outputs.peak_centric_summary
-        print
+            print("Summary written to %s" % outputs.peak_centric_summary)
+        print("")
 
     # Run the analyses
     if gene_centric:
-        print "**** Gene-centric analysis: nearest peaks to each gene ****"
+        print("**** Gene-centric analysis: nearest peaks to each gene ****")
         # Build reporter
         reporter = output.AnalysisReportWriter(
             mode,gene_fields,
@@ -1005,7 +1005,7 @@ def main(args=None):
             try:
                 results = p.get(0xFFFF)
             except KeyboardInterrupt:
-                print "KeyboardInterrupt"
+                print("KeyboardInterrupt")
                 sys.exit(1)
         else:
             # Single core
@@ -1020,14 +1020,14 @@ def main(args=None):
                     feature_file=params.genes.source_file,
                     cutoff=params.cutoff)
         reporter.close()
-        print "Results written to %s" % outputs.gene_centric_out
+        print("Results written to %s" % outputs.gene_centric_out)
         if options.summary:
-            print "Summary written to %s" % outputs.gene_centric_summary
+            print("Summary written to %s" % outputs.gene_centric_summary)
         print
 
     # Make XLSX file
     if options.xlsx_output:
-        print "**** Writing XLSX file ****"
+        print("**** Writing XLSX file ****")
         xlsx = xls_output.XLSX(outputs.xlsx_out,
                                p.get_version(),
                                options.feature_type)
@@ -1083,8 +1083,8 @@ def main(args=None):
                                       options.feature_type.title(),
                                       outputs.gene_centric_summary)
         xlsx.write()
-        print "Wrote %s" % outputs.xlsx_out
-        print
+        print("Wrote %s" % outputs.xlsx_out)
+        print("")
 
     # Finished
-    print "Done"
+    print("Done")
