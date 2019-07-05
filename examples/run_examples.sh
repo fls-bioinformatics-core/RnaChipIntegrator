@@ -265,6 +265,14 @@ run_test "Batch mode: multiple peaks and gene files over multiple cutoffs" \
 	 --command "RnaChipIntegrator --name=test_batch_all --number=4 --peaks $TEST_DIR/peaks1.txt $TEST_DIR/peaks2.txt --genes $TEST_DIR/genes1.txt $TEST_DIR/genes2.txt --cutoffs=50000,100000" \
 	 --strip-paths
 #
+# Batch mode with multiple peaks and gene files over multiple cutoffs
+# with multiple cores
+BATCH_ALL_MULTICORE="test_batch_all_peak_centric.txt test_batch_all_gene_centric.txt"
+run_test "Batch mode: multiple peaks and gene files over multiple cutoffs (multicore)" \
+	 --expected "$BATCH_ALL_MULTICORE" \
+	 --command "RnaChipIntegrator --name=test_batch_all --number=4 --peaks $TEST_DIR/peaks1.txt $TEST_DIR/peaks2.txt --genes $TEST_DIR/genes1.txt $TEST_DIR/genes2.txt --cutoffs=50000,100000 --nprocessors=2" \
+	 --strip-paths
+#
 # Finished
 report_tests
 exit $?
