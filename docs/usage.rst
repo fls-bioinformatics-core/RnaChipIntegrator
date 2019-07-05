@@ -239,6 +239,21 @@ for each gene/peak pair in the output files (see
    :ref:`multiple_distance_cutoffs`), to repeat each set of
    analyses at various cutoff distances.
 
+.. _multicore_for_batch_modes:
+
+Specifying multiple cores in batch modes (``--nprocessors``)
+------------------------------------------------------------
+
+``RnaChipIntegrator`` can use multiple cores in 'batch' modes (that
+is, any run which performs more than one analysis because multiple
+distance cutoffs and/or multiple peaks or genes files were specified
+on the command line).
+
+In these modes the number of cores to use can be supplied via
+the ``--nprocessors`` option, for example::
+
+    RnaChipIntegrator --cutoffs=50000,100000,150000 --nprocessors=2 GENES PEAKS
+
 Changing the output files and formats
 -------------------------------------
 
