@@ -241,7 +241,7 @@ class CLI(object):
         self.add_option('--number',
                         action='store',dest='max_closest',
                         type=int,default=_DEFAULTS.MAX_CLOSEST,
-                        help="Filter results after applying --cutoff "
+                        help="Filter results after applying --cutoff[s] "
                         "to report only the nearest MAX_CLOSEST number "
                         "of pairs for each gene/peak from the analyses "
                         "(default is to report all results)",
@@ -682,14 +682,13 @@ def main(args=None):
             "vice versa)")
 
     p.add_option_group("Analysis options")
-    p.add_option('--cutoffs',action='store',dest='cutoffs',
-                 default=None,
-                 help="Comma-separated list of one or more "
-                 "maximum distances allowed between peaks "
-                 "and genes (bp). An analysis will be "
-                 "performed for each GENES-PEAKS pair at "
-                 "each cutoff distance (default %dbp; set "
-                 "to zero for no cutoff)" % _DEFAULTS.CUTOFF,
+    p.add_option('--cutoff',action='store',
+                 dest='max_distance',default=None,
+                 help="Maximum distance allowed between peaks "
+                 "and genes before being omitted from the "
+                 "analyses (default %dbp; set to zero for no "
+                 "cutoff, use --cutoffs instead to specify "
+                 "multiple distances)" % _DEFAULTS.CUTOFF,
                  group="Analysis options")
     p.add_edge_option(group="Analysis options")
     p.add_only_de_option(group="Analysis options")
@@ -706,6 +705,17 @@ def main(args=None):
     p.add_xlsx_option(group="Output options")
 
     p.add_option_group("Batch options")
+    p.add_option('--cutoffs',action='store',dest='cutoffs',
+                 default=None,
+                 help="Comma-separated list of one or more "
+                 "maximum distances allowed between peaks "
+                 "and genes (bp). An analysis will be "
+                 "performed for each GENES-PEAKS pair at "
+                 "each cutoff distance (default %dbp; set "
+                 "to zero for no cutoff NB cannot be used "
+                 "in conjunction with the --cutoff option)"
+                 % _DEFAULTS.CUTOFF,
+                 group="Batch options")
     p.add_option('--genes',action='store',dest="genes",nargs="+",
                  metavar="GENES_FILE",
                  help="Specify multiple genes files (if used then "
@@ -762,16 +772,22 @@ def main(args=None):
     print(_PROGRAM_INFO)
 
     # Process cutoffs
-    if options.cutoffs is None:
-        cutoffs = [_DEFAULTS.CUTOFF,]
-    else:
+    if options.max_distance and options.cutoffs:
+        p.error("can't use --cutoff and --cutoffs together")
+    if options.max_distance:
+        try:
+            cutoffs = [int(options.max_distance),]
+        except ValueError:
+            p.error("bad cutoff value: '%s'" % options.max_distance)
+    elif options.cutoffs:
         cutoffs = list()
         for cutoff in str(options.cutoffs).split(','):
             try:
                 cutoffs.append(int(cutoff))
             except ValueError:
-                logging.critical("Bad cutoff value: '%s'" % cutoff)
-                sys.exit(1)
+                p.error("Bad cutoff value: '%s'" % cutoff)
+    else:
+        cutoffs = [_DEFAULTS.CUTOFF,]
     cutoffs.sort()
 
     # Deal with zero cutoff distance meaning 'no cutoff'
