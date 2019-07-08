@@ -737,8 +737,9 @@ def main(args=None):
     p.add_option('--split-outputs',action='store_true',
                  dest='multiple_outputs',
                  help="In batch mode write results of each "
-                 "analysis to seperate file (default is to "
-                 "write all results to single file)")
+                 "analysis to separate file (default is to "
+                 "write all results to single file)",
+                 group="Batch options")
 
     p.add_option_group("Advanced options")
     p.add_analyses_option(group="Advanced options")
