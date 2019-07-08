@@ -471,7 +471,8 @@ class OutputFiles(object):
         """
         Remove output files which already exist
         """
-        print("Removing pre-existing output files")
+        print("Removing pre-existing output files for '%s'" %
+              self._basename)
         for f in self.files:
             if os.path.isfile(f):
                 print("\tRemoving %s" % f)
@@ -733,6 +734,11 @@ def main(args=None):
                  help="Number of processors/cores to run the "
                  "program using (default: 1)",
                  group="Batch options")
+    p.add_option('--split-outputs',action='store_true',
+                 dest='multiple_outputs',
+                 help="In batch mode write results of each "
+                 "analysis to seperate file (default is to "
+                 "write all results to single file)")
 
     p.add_option_group("Advanced options")
     p.add_analyses_option(group="Advanced options")
@@ -869,6 +875,14 @@ def main(args=None):
                            'dist_closest','dist_TSS','direction',
                            'in_the_feature')
 
+    # Split output files
+    if options.multiple_outputs:
+        multiple_outputs = (len(gene_files) > 1) or \
+                           (len(peak_files) > 1) or \
+                           (len(cutoffs) > 1)
+    else:
+        multiple_outputs = False
+
     # Update fields for batch mode
     if len(cutoffs) > 1:
         peak_fields = tuple(['cutoff']+list(peak_fields))
@@ -930,8 +944,23 @@ def main(args=None):
         basename = options.name
     else:
         basename = os.path.splitext(os.path.basename(gene_files[0]))[0]
-    outputs = OutputFiles(basename)
-    outputs.remove_files()
+    if multiple_outputs:
+        # Split outputs into multiple files
+        for peak_file in peak_files:
+            for gene_file in gene_files:
+                for cutoff in cutoffs:
+                    name = "%s%s%s%s" % (basename,
+                                         (".%s" % os.path.basename(peak_file)
+                                          if len(peak_files) > 1 else ""),
+                                         (".%s" % os.path.basename(gene_file)
+                                          if len(gene_files) > 1 else ""),
+                                         (".d%s" % cutoff
+                                          if len(cutoffs) > 1 else ""))
+                    # Remove existing files
+                    OutputFiles(name).remove_files()
+    else:
+        # All outputs into same files
+        OutputFiles(basename).remove_files()
 
     # Assemble inputs over cutoffs and peak and gene lists
     # The same parameters can be used for both peak- and
@@ -950,20 +979,9 @@ def main(args=None):
                         options.only_diff_expressed
                     ))
 
-    # Run the analyses
+    # Run the peak-centric analyses
     if peak_centric:
         print("**** Peak-centric analysis: nearest genes to each peak ****")
-        # Build reporter
-        reporter = output.AnalysisReportWriter(
-            mode,peak_fields,
-            promoter_region=promoter,
-            null_placeholder=placeholder,
-            max_hits=options.max_closest,
-            pad=options.pad_output,
-            outfile=outputs.peak_centric_out,
-            summary=(outputs.peak_centric_summary
-                     if options.summary else None),
-            feature_type=options.feature_type)
         # Run the analyses
         if options.nprocs > 1:
             # Multiple cores
@@ -983,32 +1001,59 @@ def main(args=None):
             results = map(lambda p: list(find_nearest_features(p)),
                           analysis_params)
         # Output the results
+        peak_centric_outputs = dict()
+        peak_centric_summary = dict()
+        append_outputs = False
         for result in results:
+            # Deal with output files
+            if multiple_outputs:
+                peak,nearest_genes,params = result[0]
+                name = "%s%s%s%s" % (
+                    basename,
+                    (".%s" % os.path.basename(params.peaks.source_file)
+                     if len(peak_files) > 1 else ""),
+                    (".%s" % os.path.basename(params.genes.source_file)
+                     if len(gene_files) > 1 else ""),
+                    (".d%s" % params.cutoff
+                     if len(cutoffs) > 1 else ""))
+            else:
+                name = basename
+            outputs = OutputFiles(name)
+            # Set up reporter
+            reporter = output.AnalysisReportWriter(
+                mode,peak_fields,
+                promoter_region=promoter,
+                null_placeholder=placeholder,
+                max_hits=options.max_closest,
+                pad=options.pad_output,
+                outfile=outputs.peak_centric_out,
+                summary=(outputs.peak_centric_summary
+                         if options.summary else None),
+                feature_type=options.feature_type,
+                append=append_outputs)
+            # Write results
             for peak,nearest_genes,params in result:
                 reporter.write_nearest_features(
                     peak,nearest_genes,
                     peak_file=params.peaks.source_file,
                     feature_file=params.genes.source_file,
                     cutoff=params.cutoff)
-        reporter.close()
-        print("Results written to %s" % outputs.peak_centric_out)
-        if options.summary:
-            print("Summary written to %s" % outputs.peak_centric_summary)
-        print("")
+            if not append_outputs:
+                print("Results written to %s" % outputs.peak_centric_out)
+                peak_centric_outputs[name] = outputs.peak_centric_out
+                if options.summary:
+                    print("Summary written to %s" %
+                          outputs.peak_centric_summary)
+                    peak_centric_summary[name] = outputs.peak_centric_summary
+            print("")
+            if not multiple_outputs and not append_outputs:
+                append_outputs = True
+            # Close reporter
+            reporter.close()
 
-    # Run the analyses
+    # Run the gene/feature-centric analyses
     if gene_centric:
         print("**** Gene-centric analysis: nearest peaks to each gene ****")
-        # Build reporter
-        reporter = output.AnalysisReportWriter(
-            mode,gene_fields,
-            null_placeholder=placeholder,
-            max_hits=options.max_closest,
-            pad=options.pad_output,
-            outfile=outputs.gene_centric_out,
-            summary=(outputs.gene_centric_summary
-                     if options.summary else None),
-            feature_type=options.feature_type)
         # Run the analyses
         if options.nprocs > 1:
             # Multiple cores
@@ -1028,23 +1073,59 @@ def main(args=None):
             results = map(lambda p: list(find_nearest_peaks(p)),
                           analysis_params)
         # Output the results
+        gene_centric_outputs = dict()
+        gene_centric_summary = dict()
+        append_outputs = False
         for result in results:
+            # Deal with output files
+            if multiple_outputs:
+                gene,nearest_peaks,params = result[0]
+                name = "%s%s%s%s" % (
+                    basename,
+                    (".%s" % os.path.basename(params.peaks.source_file)
+                     if len(peak_files) > 1 else ""),
+                    (".%s" % os.path.basename(params.genes.source_file)
+                     if len(gene_files) > 1 else ""),
+                    (".d%s" % params.cutoff
+                     if len(cutoffs) > 1 else ""))
+            else:
+                name = basename
+            outputs = OutputFiles(name)
+            # Set up reporter
+            reporter = output.AnalysisReportWriter(
+                mode,gene_fields,
+                null_placeholder=placeholder,
+                max_hits=options.max_closest,
+                pad=options.pad_output,
+                outfile=outputs.gene_centric_out,
+                summary=(outputs.gene_centric_summary
+                         if options.summary else None),
+                feature_type=options.feature_type,
+                append=append_outputs)
+            # Write results
             for gene,nearest_peaks,params in result:
                 reporter.write_nearest_features(
                     gene,nearest_peaks,
                     peak_file=params.peaks.source_file,
                     feature_file=params.genes.source_file,
                     cutoff=params.cutoff)
-        reporter.close()
-        print("Results written to %s" % outputs.gene_centric_out)
-        if options.summary:
-            print("Summary written to %s" % outputs.gene_centric_summary)
-        print
+            if not append_outputs:
+                print("Results written to %s" % outputs.gene_centric_out)
+                gene_centric_outputs[name] = outputs.gene_centric_out
+                if options.summary:
+                    print("Summary written to %s" %
+                          outputs.gene_centric_summary)
+                    gene_centric_summary[name] = outputs.gene_centric_summary
+            print("")
+            if not multiple_outputs and not append_outputs:
+                append_outputs = True
+            # Close reporter
+            reporter.close()
 
     # Make XLSX file
     if options.xlsx_output:
         print("**** Writing XLSX file ****")
-        xlsx = xls_output.XLSX(outputs.xlsx_out,
+        xlsx = xls_output.XLSX(OutputFiles(basename).xlsx_out,
                                p.get_version(),
                                options.feature_type)
         # Write the settings
@@ -1074,20 +1155,28 @@ def main(args=None):
                               else "No"))
         # Add features to peaks
         if peak_centric:
+            names = sorted(peak_centric_outputs.keys())
             xlsx.write_peak_centric(peak_fields)
-            xlsx.add_result_sheet('Peak-centric',outputs.peak_centric_out)
             if options.summary:
                 xlsx.append_to_notes("\n'Peak-centric (summary)' lists the "
                                      "'top' result (i.e. closest peak/%s "
                                      "pair) for each peak" %
                                      options.feature_type)
-                xlsx.add_result_sheet('Peak-centric (summary)',
-                                      outputs.peak_centric_summary)
+            for i,name in enumerate(names):
+                title = "Peak-centric"
+                if multiple_outputs:
+                    title += " #%d" % (i+1)
+                xlsx.add_result_sheet(title,peak_centric_outputs[name])
+                if options.summary:
+                    title = "Peak-centric (summary)"
+                    if multiple_outputs:
+                        title += " #%d" % (i+1)
+                    xlsx.add_result_sheet(title,
+                                          peak_centric_summary[name])
         # Add peaks to features
         if gene_centric:
+            names = sorted(gene_centric_outputs.keys())
             xlsx.write_feature_centric(gene_fields)
-            xlsx.add_result_sheet('%s-centric' % options.feature_type.title(),
-                                  outputs.gene_centric_out)
             if options.summary:
                 xlsx.append_to_notes("\n'%s-centric (summary)' lists the "
                                      "'top' result (i.e. closest %s/peak "
@@ -1095,11 +1184,20 @@ def main(args=None):
                                      (options.feature_type.title(),
                                       options.feature_type,
                                       options.feature_type))
-                xlsx.add_result_sheet('%s-centric (summary)' %
-                                      options.feature_type.title(),
-                                      outputs.gene_centric_summary)
+            for i,name in enumerate(names):
+                title = "%s-centric" % options.feature_type.title()
+                if multiple_outputs:
+                    title += " #%d" % (i+1)
+                xlsx.add_result_sheet(title,gene_centric_outputs[name])
+                if options.summary:
+                    title = "%s-centric (summary)" % \
+                            options.feature_type.title()
+                    if multiple_outputs:
+                        title += " #%d" % (i+1)
+                    xlsx.add_result_sheet(title,
+                                          gene_centric_summary[name])
         xlsx.write()
-        print("Wrote %s" % outputs.xlsx_out)
+        print("Wrote %s" % xlsx.xlsx_file)
         print("")
 
     # Finished
