@@ -667,6 +667,53 @@ class TestAnalysisReportWriter(unittest.TestCase):
         # Check that output matches
         self.assertEqual(expected_output,actual_output)
 
+    def test_write_features_append(self):
+        # Set up some test data
+        peak = Peak('chr2L',66811,66812)
+        features1 = FeatureSet(
+            features_list=(
+                Feature('CG31973','chr2L',25402,59243,'-'),
+                Feature('CG2674-RE','chr2L',106903,114433,'+'),))
+        features2 = FeatureSet(
+            features_list=(
+                Feature('CG2674-RC','chr2L',107926,114433,'+'),))
+        # Temp output file
+        fp,outfile = tempfile.mkstemp()
+        # Write first set of nearest features
+        ap = AnalysisReportWriter(output.MULTI_LINE,
+                                  fields=('peak.chr',
+                                          'peak.start',
+                                          'peak.end',
+                                          'order',
+                                          'feature.id',
+                                          'dist_closest',
+                                          'dist_TSS'),
+                                  outfile=outfile)
+        ap.write_nearest_features(peak,features1)
+        ap.close()
+        # Write second set of nearest features
+        ap = AnalysisReportWriter(output.MULTI_LINE,
+                                  fields=('peak.chr',
+                                          'peak.start',
+                                          'peak.end',
+                                          'order',
+                                          'feature.id',
+                                          'dist_closest',
+                                          'dist_TSS'),
+                                  outfile=outfile,
+                                  append=True)
+        ap.write_nearest_features(peak,features2)
+        ap.close()
+        # Expected and actual output
+        expected_output = \
+            "#peak.chr\tpeak.start\tpeak.end\torder\tfeature.id\tdist_closest\tdist_TSS\n" \
+            "chr2L\t66811\t66812\t1 of 2\tCG31973\t7568\t7568\n" \
+            "chr2L\t66811\t66812\t2 of 2\tCG2674-RE\t40091\t40091\n" \
+            "chr2L\t66811\t66812\t1 of 1\tCG2674-RC\t41114\t41114\n"
+        actual_output = open(outfile,'r').read()
+        # Check that output matches
+        self.assertEqual(expected_output,actual_output)
+
     def test_write_peaks(self):
         # Set up some test data
         feature = Feature('CG31973','chr2L','25402','59243','-')

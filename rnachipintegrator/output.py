@@ -460,7 +460,7 @@ class AnalysisReportWriter(AnalysisReporter):
     def __init__(self,mode,fields,promoter_region=None,
                  null_placeholder='.',feature_type=None,
                  max_hits=None,pad=None,
-                 outfile=None,summary=None):
+                 outfile=None,summary=None,append=False):
         """
         Create new AnalysisReportWriter instance
 
@@ -480,6 +480,8 @@ class AnalysisReportWriter(AnalysisReporter):
           outfile (str): name of output file to write results to
           summary (str): optional, name of file to write summary
             results to
+          append (bool): optional, if True then append to
+            output file (default is to overwrite)
 
         """
         AnalysisReporter.__init__(self,mode,fields,
@@ -499,6 +501,7 @@ class AnalysisReportWriter(AnalysisReporter):
             self._summary = tempfile.TemporaryFile()
         else:
             self._summary = None
+        self._append = bool(append)
 
     def write_nearest_features(self,peak,features,**extra_data):
         """
@@ -545,14 +548,20 @@ class AnalysisReportWriter(AnalysisReporter):
         write and close the final 'visible' output files.
 
         """
+        # Set the mode
+        if self._append:
+            mode = 'a'
+        else:
+            mode = 'w'
         # Full output file
         if self.outfile:
             # Rewind to the start of the temp file
             self._fp.seek(0)
             # Write the final output file
-            with open(self.outfile,'w') as fp:
-                # Write the header
-                fp.write("#%s\n" % self.make_header())
+            with open(self.outfile,mode) as fp:
+                if not self._append:
+                    # Write the header
+                    fp.write("#%s\n" % self.make_header())
                 # Write the content
                 nitems = len(self.make_header().split('\t'))
                 for line in self._fp:
@@ -570,9 +579,10 @@ class AnalysisReportWriter(AnalysisReporter):
             # Rewind to the start of the temp file
             self._summary.seek(0)
             # Write the final summary file
-            with open(self.summary,'w') as fp:
-                # Write the header
-                fp.write("#%s\n" % self.make_header())
+            with open(self.summary,mode) as fp:
+                if not self._append:
+                    # Write the header
+                    fp.write("#%s\n" % self.make_header())
                 # Write the content
                 for line in self._summary:
                     fp.write(line)
