@@ -535,6 +535,55 @@ class AnalysisParams(object):
     def only_differentially_expressed(self):
         return self._params['only_differentially_expressed']
 
+class Namer(object):
+    """
+    Class for generating names for multiple outputs
+
+    Names will be of the form:
+
+    {BASENAME}[_{PEAK_FILE}][_{GENE_FILE}][_d{CUTOFF}]
+
+    where elements in square braces are only included if
+    there are multiple values across all analyses.
+
+    """
+    def __init__(self,basename,peak_files,gene_files,cutoffs):
+        """
+        Create new Namer instance
+
+        Arguments:
+          basename (str): basename for the generated names
+          peak_files (list): list of peak files across all
+            analyses
+          gene_files (list): list of gene files across all
+            analyses
+          cutoffs (list): list of cutoffs across all analyses
+        """
+        self._basename = basename
+        self._multi_peaks = len(peak_files) > 1
+        self._multi_genes = len(gene_files) > 1
+        self._multi_cutoffs = len(cutoffs) > 1
+        self._delim = '_'
+
+    def get_name(self,peak_file,gene_file,cutoff):
+        """
+        Return a name based on the supplied arguments
+
+        Arguments:
+          peak_file (str): name/path for peak file
+          gene_file (str): name/path for gene file
+          cutoff (int): cutoff distance used
+        """
+        peak_file = os.path.splitext(os.path.basename(peak_file))[0]
+        gene_file = os.path.splitext(os.path.basename(gene_file))[0]
+        return "%s%s%s%s" % (self._basename,
+                             ("%s%s" % (self._delim,peak_file)
+                              if self._multi_peaks else ""),
+                             ("%s%s" % (self._delim,gene_file)
+                              if self._multi_genes else ""),
+                             ("%sd%s" % (self._delim,cutoff)
+                              if self._multi_cutoffs else ""))
+
 #######################################################################
 # Functions
 #######################################################################
@@ -947,16 +996,11 @@ def main(args=None):
         basename = os.path.splitext(os.path.basename(gene_files[0]))[0]
     if multiple_outputs:
         # Split outputs into multiple files
+        namer = Namer(basename,peak_files,gene_files,cutoffs)
         for peak_file in peak_files:
             for gene_file in gene_files:
                 for cutoff in cutoffs:
-                    name = "%s%s%s%s" % (basename,
-                                         (".%s" % os.path.basename(peak_file)
-                                          if len(peak_files) > 1 else ""),
-                                         (".%s" % os.path.basename(gene_file)
-                                          if len(gene_files) > 1 else ""),
-                                         (".d%s" % cutoff
-                                          if len(cutoffs) > 1 else ""))
+                    name = namer.get_name(peak_file,gene_file,cutoff)
                     # Remove existing files
                     OutputFiles(name).remove_files()
     else:
@@ -1009,14 +1053,9 @@ def main(args=None):
             # Deal with output files
             if multiple_outputs:
                 peak,nearest_genes,params = result[0]
-                name = "%s%s%s%s" % (
-                    basename,
-                    (".%s" % os.path.basename(params.peaks.source_file)
-                     if len(peak_files) > 1 else ""),
-                    (".%s" % os.path.basename(params.genes.source_file)
-                     if len(gene_files) > 1 else ""),
-                    (".d%s" % params.cutoff
-                     if len(cutoffs) > 1 else ""))
+                name = namer.get_name(params.peaks.source_file,
+                                      params.genes.source_file,
+                                      params.cutoff)
             else:
                 name = basename
             outputs = OutputFiles(name)
@@ -1081,14 +1120,9 @@ def main(args=None):
             # Deal with output files
             if multiple_outputs:
                 gene,nearest_peaks,params = result[0]
-                name = "%s%s%s%s" % (
-                    basename,
-                    (".%s" % os.path.basename(params.peaks.source_file)
-                     if len(peak_files) > 1 else ""),
-                    (".%s" % os.path.basename(params.genes.source_file)
-                     if len(gene_files) > 1 else ""),
-                    (".d%s" % params.cutoff
-                     if len(cutoffs) > 1 else ""))
+                name = namer.get_name(params.peaks.source_file,
+                                      params.genes.source_file,
+                                      params.cutoff)
             else:
                 name = basename
             outputs = OutputFiles(name)
