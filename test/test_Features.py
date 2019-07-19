@@ -20,7 +20,19 @@ class TestFeature(unittest.TestCase):
 
     def test_properties(self):
         self.assertEqual(self.rna_data.chrom,'chr3L')
+        self.assertEqual(self.rna_data.source_file,None)
         self.assertEqual(self.rna_data_2.chrom,'chr3L')
+        self.assertEqual(self.rna_data_2.source_file,None)
+
+    def test_with_source_file(self):
+        feature = Feature('CG9130-RB','chr3L','1252012','1255989','+',
+                          source_file="Features1.txt")
+        self.assertEqual(feature.chrom,'chr3L')
+        self.assertEqual(feature.id,'CG9130-RB')
+        self.assertEqual(feature.start,1252012)
+        self.assertEqual(feature.end,1255989)
+        self.assertEqual(feature.strand,'+')
+        self.assertEqual(feature.source_file,"Features1.txt")
 
     def test__eq__(self):
         self.assertEqual(self.rna_data,Feature('CG9130-RB',
@@ -129,6 +141,7 @@ class TestFeatureSet(unittest.TestCase):
                 Feature('CG2674-RC','chr2L',107926,114433,'+'),
                 Feature('CG2674-RE','chr2L',106903,114433,'+'),
                 Feature('CG2674-RA','chr2L',107760,114433,'+')))
+        self.assertEqual(features.source_file,None)
         self.assertEqual(features[0],
                          Feature('CG31973','chr2L',25402,59243,'-'))
         self.assertEqual(features[1],
@@ -140,10 +153,17 @@ class TestFeatureSet(unittest.TestCase):
 
     def test_reading_in_RNAseq_data(self):
         rna_seq = FeatureSet('Transcripts-ex1.txt')
+        self.assertEqual(rna_seq.source_file,'Transcripts-ex1.txt')
         self.assertEqual(len(rna_seq),10,
                          "Wrong number of lines from RNA-seq file")
         self.assertTrue(rna_seq.isFlagged(),
                         "Data should be flagged")
+
+    def test_source_file_is_stored(self):
+        features = FeatureSet('Transcripts-ex1.txt')
+        self.assertEqual(features.source_file,'Transcripts-ex1.txt')
+        for feature in features:
+            self.assertEqual(feature.source_file,'Transcripts-ex1.txt')
 
     def test_filter_on_chromosome(self):
         rna_seq = FeatureSet('Transcripts-ex1.txt')

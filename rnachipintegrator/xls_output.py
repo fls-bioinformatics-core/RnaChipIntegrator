@@ -65,6 +65,7 @@ class XLSX:
 
         """
         self._xlsx = xlsxwriter.Workbook(xlsx_file)
+        self._xlsx_file = xlsx_file
         self._sheets = {}
         self._rows = {}
         self._widths = {}
@@ -75,6 +76,13 @@ class XLSX:
         self.append_to_notes(NOTES['preamble'] % (program_version,
                                                   self._feature_type,
                                                   datetime.date.today()))
+
+    @property
+    def xlsx_file(self):
+        """
+        Return the supplied output file name/path
+        """
+        return self._xlsx_file
 
     def add_sheet(self,name):
         """

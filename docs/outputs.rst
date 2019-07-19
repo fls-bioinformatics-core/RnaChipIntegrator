@@ -238,6 +238,59 @@ as an additional field, for example::
     P0002	chr1	9619175	9619382	NM_178399_3110035E14Rik	+	9591248	96172221953	27927	1953	D	0	0
     ...
 
+.. _split_outputs:
+
+Writing results to separate files in batch mode (``--split-outputs``)
+---------------------------------------------------------------------
+
+By default in 'batch' mode (i.e. when multiple cutoff distances and/or
+multiple peak or genes files are supplied) all results for the
+gene-centric analyses will be written to a single file (and similarly
+for the peak-centric analyses).
+
+To force ``RnaChipIntegrator`` to write the results of each batch to
+a separate file, use the ``--split-outputs`` option. When this option
+is specified a set of files will be generated for each peak, gene
+and cutoff with appropriate names to indicate which files and cutoff
+were used.
+
+.. _additional_fields_for_batch_operation:
+
+Additional fields for batch operation
+-------------------------------------
+
+When ``RnaChipIntegrator`` is run in 'batch' mode (that is, any mode
+where multiple cutoffs have been supplied via the ``--cutoffs`` option,
+and/or multiple input files have been supplied the ``--peaks`` and
+``genes`` options), extra fields will be added for each reported
+peak/gene pair to distinguish which analysis the result came from:
+
+========== =====================================================
+Name       Description
+========== =====================================================
+peak_file  Source file for the peak (if more than one peaks file
+           was supplied via ``--peaks``)
+gene_file  Source file for the gene (if more than one genes file
+           was supplied via ``--genes``)
+cutoff     maximum cutoff distance (if more than one cutoff
+           distance was supplied via ``--cutoffs``)
+========== =====================================================
+
+For example::
+
+    #peak_file       gene_file        cutoff  gene.id         gene.chr gene.start gene.end gene.strand ...
+    /data/peaks1.txt /data/genes1.txt 50000   AF064749_Col6a3 chr1     92566771   92800755 -           ...
+
+See the :ref:`multiple_distance_cutoffs` and :ref:`multiple_input_files`
+sections for more information on these options.
+
+.. note::
+
+   Each of the additional fields will only appear if it is required
+   in order to distinguish between the different analyses. For
+   example, ``cutoff`` will only appear if more than one maxium
+   cutoff distance was supplied.
+
 .. _upstream_and_downstream:
 
 Interpreting 'upstream' and 'downstream'

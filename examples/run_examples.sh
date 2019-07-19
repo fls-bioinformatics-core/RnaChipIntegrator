@@ -27,6 +27,9 @@ function run_test {
     #                exist after the command has run
     # --status INT: exit code to check (if command was
     #                run externally)
+    # --strip-paths: strip leading paths found inside
+    #                reference and output files when
+    #                checking content matches
     local test_name=$1
     local command=
     local expected_outputs=
@@ -34,6 +37,7 @@ function run_test {
     local exit_status=
     local working_dir=
     local test_status=
+    local strip_paths=
     # Collect arguments
     shift
     while [ $# -gt 0 ] ; do
@@ -54,6 +58,9 @@ function run_test {
 		exit_status=$2
 		shift
 		;;
+	    --strip-paths)
+		strip_paths=$1
+		;;
 	    *)
 		echo "$test_name: SKIPPED (unrecognised test argument '$1')"
 		return
@@ -67,6 +74,7 @@ function run_test {
     echo expected_outputs: $expected_outputs
     echo check_exists: $check_exists
     echo exit_status: $exit_status
+    echo strip_paths: $strip_paths
     echo PWD: $(pwd)
     # If command supplied then run it
     if [ ! -z "$command" ] ; then
@@ -87,7 +95,7 @@ function run_test {
     fi
     # Compare expected outputs
     for f in $expected_outputs ; do
-	assert_equal $REF_DATA/ref_$f $f
+	assert_equal $REF_DATA/ref_$f $f $strip_paths
 	if [ $? -ne 0 ] ; then
 	    echo Failed output comparison check
 	    test_status=FAILED
@@ -135,6 +143,10 @@ function run_test {
 }
 function assert_equal {
     # Check two files are the same
+    local strip_paths=
+    if [ "$3" == "--strip-paths" ] ; then
+	strip_paths=yes
+    fi
     if [ ! -e $1 ] ; then
 	echo "$1: missing reference data"
 	return 1
@@ -142,7 +154,17 @@ function assert_equal {
 	echo "$2: missing"
 	return 1
     fi
-    diff -q $1 $2
+    if [ -z "$strip_paths" ] ; then
+	old=$1
+	new=$2
+    else
+	tmpdir=$(mktemp -d)
+	old=$tmpdir/old
+	sed 's,/.*/,,g' $1 >$old
+	new=$tmpdir/new
+	sed 's,/.*/,,g' $2 >$new
+    fi
+    diff -q $old $new
     if [ $? -ne 0 ] ; then
 	echo "$2: doesn't match reference data:"
 	diff $1 $2
@@ -153,7 +175,10 @@ function assert_equal {
 }
 #
 # Initialise and set up dir for test outputs
-TEST_DIR=$(pwd)
+TEST_DIR=$(dirname $0)
+if [ "$TEST_DIR" == "." ] ; then
+    TEST_DIR=$(pwd)
+fi
 REF_DATA=$TEST_DIR/ref-data
 if [ ! -d test-output ] ; then
     mkdir test-output
@@ -208,6 +233,114 @@ GENE_CENTRIC_OUTPUTS="test_genecentric_gene_centric.txt"
 run_test "Gene-centric-only" \
 	 --expected "$GENE_CENTRIC_OUTPUTS" \
 	 --command "RnaChipIntegrator --name=test_genecentric --number=4 --analyses=gene_centric $TEST_DIR/ExpressionData.txt $TEST_DIR/ChIP_regions.txt"
+#
+# Batch mode with multiple cutoffs
+BATCH_MULTIPLE_CUTOFFS="test_batch_multi_cutoff_peak_centric.txt test_batch_multi_cutoff_gene_centric.txt"
+run_test "Batch mode: multiple cutoffs" \
+	 --expected "$BATCH_MULTIPLE_CUTOFFS" \
+	 --command "RnaChipIntegrator --name=test_batch_multi_cutoff --number=4 --cutoffs=50000,100000,150000 $TEST_DIR/ExpressionData.txt $TEST_DIR/ChIP_regions.txt"
+#
+# Batch mode with multiple peak files
+BATCH_MULTIPLE_PEAKS="test_batch_multi_peaks_peak_centric.txt test_batch_multi_peaks_gene_centric.txt"
+run_test "Batch mode: multiple peak files" \
+	 --expected "$BATCH_MULTIPLE_PEAKS" \
+	 --command "RnaChipIntegrator --name=test_batch_multi_peaks --number=4 --peaks $TEST_DIR/peaks1.txt $TEST_DIR/peaks2.txt --genes $TEST_DIR/ExpressionData.txt" \
+	 --strip-paths
+#
+# Batch mode with multiple gene files
+BATCH_MULTIPLE_GENES="test_batch_multi_genes_peak_centric.txt test_batch_multi_genes_gene_centric.txt"
+run_test "Batch mode: multiple gene files" \
+	 --expected "$BATCH_MULTIPLE_GENES" \
+	 --command "RnaChipIntegrator --name=test_batch_multi_genes --number=4 --peaks $TEST_DIR/ChIP_regions.txt --genes $TEST_DIR/genes1.txt $TEST_DIR/genes2.txt" \
+	 --strip-paths
+#
+# Batch mode with multiple peak files
+BATCH_MULTIPLE_PEAKS="test_batch_multi_peaks_peak_centric.txt test_batch_multi_peaks_gene_centric.txt"
+run_test "Batch mode: multiple peak files" \
+	 --expected "$BATCH_MULTIPLE_PEAKS" \
+	 --command "RnaChipIntegrator --name=test_batch_multi_peaks --number=4 --peaks $TEST_DIR/peaks1.txt $TEST_DIR/peaks2.txt --genes $TEST_DIR/ExpressionData.txt" \
+	 --strip-paths
+#
+# Batch mode with multiple peaks and gene files over multiple cutoffs
+BATCH_ALL="test_batch_all_peak_centric.txt test_batch_all_gene_centric.txt"
+run_test "Batch mode: multiple peaks and gene files over multiple cutoffs" \
+	 --expected "$BATCH_ALL" \
+	 --command "RnaChipIntegrator --name=test_batch_all --number=4 --peaks $TEST_DIR/peaks1.txt $TEST_DIR/peaks2.txt --genes $TEST_DIR/genes1.txt $TEST_DIR/genes2.txt --cutoffs=50000,100000" \
+	 --strip-paths
+#
+# Batch mode with multiple peaks and gene files over multiple cutoffs
+# with multiple cores
+BATCH_ALL_MULTICORE="test_batch_all_peak_centric.txt test_batch_all_gene_centric.txt"
+run_test "Batch mode: using multicore" \
+	 --expected "$BATCH_ALL_MULTICORE" \
+	 --command "RnaChipIntegrator --name=test_batch_all --number=4 --peaks $TEST_DIR/peaks1.txt $TEST_DIR/peaks2.txt --genes $TEST_DIR/genes1.txt $TEST_DIR/genes2.txt --cutoffs=50000,100000 --nprocessors=2" \
+	 --strip-paths
+#
+# Batch mode with multiple peaks and gene files over multiple cutoffs
+# with multiple outputs
+BATCH_SPLIT_OUTPUTS=\
+"test_split_peaks1_genes1_d50000_peak_centric.txt
+ test_split_peaks1_genes1_d50000_gene_centric.txt
+ test_split_peaks1_genes1_d100000_peak_centric.txt
+ test_split_peaks1_genes1_d100000_gene_centric.txt
+ test_split_peaks1_genes2_d50000_peak_centric.txt
+ test_split_peaks1_genes2_d50000_gene_centric.txt
+ test_split_peaks1_genes2_d100000_peak_centric.txt
+ test_split_peaks1_genes2_d100000_gene_centric.txt
+ test_split_peaks2_genes1_d50000_peak_centric.txt
+ test_split_peaks2_genes1_d50000_gene_centric.txt
+ test_split_peaks2_genes1_d100000_peak_centric.txt
+ test_split_peaks2_genes1_d100000_gene_centric.txt
+ test_split_peaks2_genes2_d50000_peak_centric.txt
+ test_split_peaks2_genes2_d50000_gene_centric.txt
+ test_split_peaks2_genes2_d100000_peak_centric.txt
+ test_split_peaks2_genes2_d100000_gene_centric.txt
+ test_split.xlsx
+"
+run_test "Batch mode: split outputs" \
+         --must_exist "$BATCH_SPLIT_OUTPUTS" \
+	 --command "RnaChipIntegrator --name=test_split --peaks $TEST_DIR/peaks1.txt $TEST_DIR/peaks2.txt --genes $TEST_DIR/genes1.txt $TEST_DIR/genes2.txt --cutoffs=50000,100000 --split-outputs --xlsx"
+#
+# Batch mode with multiple peaks and gene files over multiple cutoffs
+# with multiple outputs
+BATCH_SPLIT_OUTPUTS_SUMMARY=\
+"test_split_peaks1_genes1_d50000_peak_centric.txt
+ test_split_peaks1_genes1_d50000_gene_centric.txt
+ test_split_peaks1_genes1_d100000_peak_centric.txt
+ test_split_peaks1_genes1_d100000_gene_centric.txt
+ test_split_peaks1_genes2_d50000_peak_centric.txt
+ test_split_peaks1_genes2_d50000_gene_centric.txt
+ test_split_peaks1_genes2_d100000_peak_centric.txt
+ test_split_peaks1_genes2_d100000_gene_centric.txt
+ test_split_peaks2_genes1_d50000_peak_centric.txt
+ test_split_peaks2_genes1_d50000_gene_centric.txt
+ test_split_peaks2_genes1_d100000_peak_centric.txt
+ test_split_peaks2_genes1_d100000_gene_centric.txt
+ test_split_peaks2_genes2_d50000_peak_centric.txt
+ test_split_peaks2_genes2_d50000_gene_centric.txt
+ test_split_peaks2_genes2_d100000_peak_centric.txt
+ test_split_peaks2_genes2_d100000_gene_centric.txt
+ test_split_peaks1_genes1_d50000_peak_centric_summary.txt
+ test_split_peaks1_genes1_d50000_gene_centric_summary.txt
+ test_split_peaks1_genes1_d100000_peak_centric_summary.txt
+ test_split_peaks1_genes1_d100000_gene_centric_summary.txt
+ test_split_peaks1_genes2_d50000_peak_centric_summary.txt
+ test_split_peaks1_genes2_d50000_gene_centric_summary.txt
+ test_split_peaks1_genes2_d100000_peak_centric_summary.txt
+ test_split_peaks1_genes2_d100000_gene_centric_summary.txt
+ test_split_peaks2_genes1_d50000_peak_centric_summary.txt
+ test_split_peaks2_genes1_d50000_gene_centric_summary.txt
+ test_split_peaks2_genes1_d100000_peak_centric_summary.txt
+ test_split_peaks2_genes1_d100000_gene_centric_summary.txt
+ test_split_peaks2_genes2_d50000_peak_centric_summary.txt
+ test_split_peaks2_genes2_d50000_gene_centric_summary.txt
+ test_split_peaks2_genes2_d100000_peak_centric_summary.txt
+ test_split_peaks2_genes2_d100000_gene_centric_summary.txt
+ test_split.xlsx
+"
+run_test "Batch mode: split outputs and include summaries" \
+         --must_exist "$BATCH_SPLIT_OUTPUTS_SUMMARY" \
+	 --command "RnaChipIntegrator --name=test_split --peaks $TEST_DIR/peaks1.txt $TEST_DIR/peaks2.txt --genes $TEST_DIR/genes1.txt $TEST_DIR/genes2.txt --cutoffs=50000,100000 --split-outputs --summary --xlsx"
 #
 # Finished
 report_tests

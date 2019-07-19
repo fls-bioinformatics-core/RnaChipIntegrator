@@ -162,6 +162,98 @@ The advantage of restricting the analyses is that it reduces the
 program run time, and limits the outputs to only those specifically
 requested.
 
+.. _multiple_distance_cutoffs:
+
+Specifying multiple distance cutoffs (``--cutoffs``)
+----------------------------------------------------
+
+``RnaChipIntegrator`` can peform its analyses over multiple cutoff
+distances by using the ``--cutoffs`` option to supply a comma-separated
+list of distances, for example::
+
+    RnaChipIntegrator --cutoffs=50000,100000,150000 GENES PEAKS
+
+The selected analyses will be repeated for each of the specified
+cutoff distances, and the distance will be reported as an additional
+field for each gene/peak pair in the output files (see
+:ref:`additional_fields_for_batch_operation`).
+
+Note that ``--cutoffs`` is an alternative to the ``--cutoff`` option
+and the two cannot be used together.
+
+.. note::
+
+   This option can be used along with ``--peaks`` and
+   ``genes`` (see :ref:`multiple_input_files`), to apply several
+   cutoff distances to analyses of multiple peaks and/or genes
+   files.
+
+.. _multiple_input_files:
+
+Specifying multiple peaks and/or genes files  (``--peaks`` and ``--genes``)
+---------------------------------------------------------------------------
+
+In normal operation ``RnaChipIntegrator`` operates on a single pair
+of files specifying the gene and peak data.
+
+However it can also operate on multiple peaks and/or genes files
+within a single run, by using the ``--peaks`` and ``--genes`` options.
+
+For example, to analyse a pair of genes sets against the same set
+of peaks::
+
+    RnaChipIntegrator --genes GENES1 GENES2 --peak PEAKS
+
+which would result in the program performing two analyses (i.e.
+``GENES1`` versus ``PEAKS`` and ``GENES2`` versus ``PEAKS``).
+
+Analysing several sets of peaks against a single set of genes would
+look like::
+
+    RnaChipIntegrator --genes GENES --peak PEAKS1 PEAKS2 PEAKS3
+
+which would result in the program performing three analyses (i.e.
+``GENES`` versus ``PEAKS1``, ``PEAKS2`` and ``PEAKS3``).
+
+Analysing multiple sets of genes against multiple sets of peaks
+would look like::
+
+    RnaChipIntegrator --genes GENES1 GENES2 --peak PEAKS1 PEAKS2 PEAKS3
+
+This would result in the program performing six analyses (i.e.
+``GENES1`` versus ``PEAKS1``, ``PEAKS2`` and ``PEAKS3`` then ``GENES2``
+versus the three peaks files).
+
+Note that ``--peaks`` and ``--genes`` must always be used together,
+and instead of specifying a single pair of files at the end of the
+command line.
+
+In all cases where there is more than one file then the name of
+the appropriate file(s) will be reported as an additional field
+for each gene/peak pair in the output files (see
+:ref:`additional_fields_for_batch_operation`).
+
+.. note::
+
+   These options can be used along with ``--cutoffs`` (see
+   :ref:`multiple_distance_cutoffs`), to repeat each set of
+   analyses at various cutoff distances.
+
+.. _multicore_for_batch_modes:
+
+Specifying multiple cores in batch modes (``--nprocessors``)
+------------------------------------------------------------
+
+``RnaChipIntegrator`` can use multiple cores in 'batch' modes (that
+is, any run which performs more than one analysis because multiple
+distance cutoffs and/or multiple peaks or genes files were specified
+on the command line).
+
+In these modes the number of cores to use can be supplied via
+the ``--nprocessors`` option, for example::
+
+    RnaChipIntegrator --cutoffs=50000,100000,150000 --nprocessors=2 GENES PEAKS
+
 Changing the output files and formats
 -------------------------------------
 

@@ -32,6 +32,7 @@ class TestPeakSet(unittest.TestCase):
 
     def test_reading_in_ChIPseq_data(self):
         peaks = PeakSet('ChIP_peaks-ex1.txt')
+        self.assertEqual(peaks.source_file,'ChIP_peaks-ex1.txt')
         self.assertEqual(len(peaks),5,
                          "Wrong number of lines read from ChIP-seq file")
         self.assertEqual(peaks[0],Peak('chr3L',4252919,4252920))
@@ -43,6 +44,7 @@ class TestPeakSet(unittest.TestCase):
     def test_reading_in_ChIPseq_data_custom_columns(self):
         peaks = PeakSet('ChIP_peaks_multi_columns-ex1.txt',
                         columns=(2,4,5))
+        self.assertEqual(peaks.source_file,'ChIP_peaks_multi_columns-ex1.txt')
         self.assertEqual(len(peaks),5,
                          "Wrong number of lines read from ChIP-seq file")
         self.assertEqual(peaks[0],Peak('chr3L',4252919,4252920))
@@ -54,6 +56,7 @@ class TestPeakSet(unittest.TestCase):
     def test_reading_in_ChIPseq_with_id_column(self):
         peaks = PeakSet('ChIP_peaks_multi_columns-ex1.txt',
                         columns=(2,4,5),id_column=1)
+        self.assertEqual(peaks.source_file,'ChIP_peaks_multi_columns-ex1.txt')
         self.assertEqual(len(peaks),5,
                          "Wrong number of lines read from ChIP-seq file")
         self.assertEqual(peaks[0],Peak('chr3L',4252919,4252920,id="peak1"))
@@ -62,12 +65,23 @@ class TestPeakSet(unittest.TestCase):
         self.assertEqual(peaks[3],Peak('chr3L',14983597,14983598,id="peak4"))
         self.assertEqual(peaks[4],Peak('chr3L',17004143,17004144,id="peak5"))
 
+    def test_source_file_is_stored(self):
+        peaks1 = PeakSet('ChIP_peaks-ex1.txt')
+        peaks2 = PeakSet('ChIP_peaks-ex2.txt')
+        self.assertEqual(peaks1.source_file,'ChIP_peaks-ex1.txt')
+        for peak in peaks1:
+            self.assertEqual(peak.source_file,'ChIP_peaks-ex1.txt')
+        self.assertEqual(peaks2.source_file,'ChIP_peaks-ex2.txt')
+        for peak in peaks2:
+            self.assertEqual(peak.source_file,'ChIP_peaks-ex2.txt')
+
     def test_populate_from_list_of_peaks(self):
         peaks = PeakSet(
             peaks_list=(
                 Peak('chr2L',66711,66911),
                 Peak('chr2L',605850,606050),
                 Peak('chr3L',2258089,2258289)))
+        self.assertEqual(peaks.source_file,None)
         self.assertEqual(peaks[0],Peak('chr2L',66711,66911))
         self.assertEqual(peaks[1],Peak('chr2L',605850,606050))
         self.assertEqual(peaks[2],Peak('chr3L',2258089,2258289))
@@ -103,7 +117,7 @@ class TestPeakSet(unittest.TestCase):
         self.assertEqual(len(peaks_pos),2,
                          "Wrong number of peaks filtered")
         for peak in peaks_pos:
-            print str(peak)
+            print(str(peak))
             self.assertTrue((peak.start >= lower and
                              peak.start <= upper),
                             "Peak should have been filtered out")
@@ -194,6 +208,7 @@ class TestPeak(unittest.TestCase):
         self.assertEqual(peak.start,66811)
         self.assertEqual(peak.end,66812)
         self.assertEqual(peak.id,None)
+        self.assertEqual(peak.source_file,None)
         self.assertEqual(str(peak),"chr2L\t66811\t66812")
     def test_peak_with_id(self):
         peak = Peak('chr2L','66811','66812',id='Peak001')
@@ -202,6 +217,15 @@ class TestPeak(unittest.TestCase):
         self.assertEqual(peak.end,66812)
         self.assertEqual(peak.id,'Peak001')
         self.assertEqual(str(peak),"Peak001\tchr2L\t66811\t66812")
+        self.assertEqual(peak.source_file,None)
+    def test_peak_with_source_file(self):
+        peak = Peak('chr2L','66811','66812',source_file="Peaks1.txt")
+        self.assertEqual(peak.chrom,'chr2L')
+        self.assertEqual(peak.start,66811)
+        self.assertEqual(peak.end,66812)
+        self.assertEqual(peak.id,None)
+        self.assertEqual(str(peak),"chr2L\t66811\t66812")
+        self.assertEqual(peak.source_file,"Peaks1.txt")
 
 class TestFeatureSetWithChIPSeqData(unittest.TestCase):
     def setUp(self):

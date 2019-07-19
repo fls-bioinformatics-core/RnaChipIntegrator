@@ -1,8 +1,8 @@
 #!/bin/env python
 #
 #     output.py: functions for outputting analysis results
-#     Copyright (C) University of Manchester 2015 Peter Briggs, Leo Zeef
-#     & Ian Donaldson
+#     Copyright (C) University of Manchester 2015-2018 Peter Briggs,
+#     Leo Zeef & Ian Donaldson
 #
 """
 output.py
@@ -32,6 +32,7 @@ FIELDS = {
     'peak.chr': "chromosome of the peak",
     'peak.start': "peak start position",
     'peak.end': "peak end position",
+    'peak.file': "file the peak was loaded from",
     'feature.id': "<FEATURE> ID",
     'feature.chr': "chromosome of the <FEATURE>",
     'feature.start': "<FEATURE> start position",
@@ -39,6 +40,7 @@ FIELDS = {
     'feature.TSS': "<FEATURE> TSS position",
     'feature.TES': "<FEATURE> TES position",
     'feature.strand': "<FEATURE> strand direction",
+    'feature.file': "file the <FEATURE> was loaded from",
     'dist_closest': "closest distance between peak and <FEATURE> considering all edges (zero if there is overlap)",
     'dist_TSS': "distance between peak and <FEATURE> TSS",
     'dist_TES': "distance between peak and <FEATURE> TES",
@@ -70,10 +72,11 @@ class AnalysisReporter:
     For each method a list of the fields to be reported can be
     specified. Available fields are:
 
-    - (peak.)id: peak ID
+    - peak.id: peak ID
     - (peak.)chr: chromosome for the peak
     - (peak.)start: peak start position
     - (peak.)end: peak end position
+    - peak.file: file the peak was loaded from
     - (feature.)id: feature ID
     - feature.chr: chromosome for the feature
     - feature.start: feature start position
@@ -81,6 +84,7 @@ class AnalysisReporter:
     - (feature.)TSS: feature TSS
     - (feature.)TES: feature TES
     - (feature.)strand: feature strand
+    - (feature).file: file the feature was loaded from
     - dist_closest: closest distance between peak and feature
     - dist_TSS: distance between peak and feature TSS
     - dist_TES: distance between peak and feature TES
@@ -146,8 +150,9 @@ class AnalysisReporter:
         self._is_features = None
         self._feature_type = feature_type
         self._max_pairs = 0
+        self._extra_data = None
 
-    def report_nearest(self,reference,results):
+    def report_nearest(self,reference,results,**extra_data):
         """
         Return details of nearest objects to a reference
 
@@ -164,6 +169,8 @@ class AnalysisReporter:
           results (Object): list of corresponding results
             i.e. FeatureSet (for reference Peak) or
             PeakSet (reference Feature)
+          extra_data (mapping): optional mapping defining
+            arbitrary data items
 
         Yields:
           string: line(s) of text reporting the results
@@ -176,6 +183,7 @@ class AnalysisReporter:
         else:
             self._context_feature = reference
             self._is_features = False
+        self._extra_data = extra_data
         is_features = self._is_features
         # Store largest number of pairs reported
         self._max_pairs = max(self._max_pairs,len(results))
@@ -240,8 +248,9 @@ class AnalysisReporter:
         self._context_peak = None
         self._context_feature = None
         self._is_features = None
+        self._extra_data = None
 
-    def report_nearest_features(self,peak,features):
+    def report_nearest_features(self,peak,features,**extra_data):
         """
         Return details of nearest features for a peak
 
@@ -250,15 +259,17 @@ class AnalysisReporter:
         Arguments:
           peak (Peak): peak of interest
           features (FeatureSet): list of nearest features
+          extra_data (mapping): optional mapping defining
+            arbitrary data items
 
         Yields:
           string: line(s) of text reporting the results
 
         """
-        for line in self.report_nearest(peak,features):
+        for line in self.report_nearest(peak,features,**extra_data):
             yield line
 
-    def report_nearest_peaks(self,feature,peaks):
+    def report_nearest_peaks(self,feature,peaks,**extra_data):
         """
         Return details of nearest peaks for a feature
 
@@ -272,7 +283,7 @@ class AnalysisReporter:
           string: block of text reporting the results
 
         """
-        for line in self.report_nearest(feature,peaks):
+        for line in self.report_nearest(feature,peaks,**extra_data):
             yield line
 
     def value_for(self,attr):
@@ -321,6 +332,7 @@ class AnalysisReporter:
         """
         peak = self._context_peak
         feature = self._context_feature
+        extra_data = self._extra_data
         is_features = self._is_features
         if attr == 'peak.id':
             return peak.id
@@ -330,6 +342,8 @@ class AnalysisReporter:
             return peak.start
         elif attr == 'peak.end' or attr == 'end':
             return peak.end
+        elif attr == 'peak.file':
+            return peak.source_file
         elif attr == 'id' or attr == 'feature.id':
             return feature.id
         elif attr == 'feature.chr':
@@ -338,6 +352,8 @@ class AnalysisReporter:
             return feature.start
         elif attr == 'feature.end':
             return feature.end
+        elif attr == 'feature.file':
+            return feature.source_file
         elif attr == 'TSS':
             return feature.tss
         elif attr == 'TES':
@@ -387,7 +403,11 @@ class AnalysisReporter:
         elif attr == 'features_inbetween':
             raise NotImplementedError("'features_inbetween' not implemented")
         else:
-            raise KeyError("Unrecognised report field: '%s'" % attr)
+            # Check extra data items
+            try:
+                return extra_data[attr]
+            except KeyError:
+                raise KeyError("Unrecognised report field: '%s'" % attr)
 
     def make_header(self):
         """
@@ -440,7 +460,7 @@ class AnalysisReportWriter(AnalysisReporter):
     def __init__(self,mode,fields,promoter_region=None,
                  null_placeholder='.',feature_type=None,
                  max_hits=None,pad=None,
-                 outfile=None,summary=None):
+                 outfile=None,summary=None,append=False):
         """
         Create new AnalysisReportWriter instance
 
@@ -460,6 +480,8 @@ class AnalysisReportWriter(AnalysisReporter):
           outfile (str): name of output file to write results to
           summary (str): optional, name of file to write summary
             results to
+          append (bool): optional, if True then append to
+            output file (default is to overwrite)
 
         """
         AnalysisReporter.__init__(self,mode,fields,
@@ -479,32 +501,39 @@ class AnalysisReportWriter(AnalysisReporter):
             self._summary = tempfile.TemporaryFile()
         else:
             self._summary = None
+        self._append = bool(append)
 
-    def write_nearest_features(self,peak,features):
+    def write_nearest_features(self,peak,features,**extra_data):
         """
         Write a set of features to the output file(s)
 
         Arguments:
           peak (Peak): peak of interest
           features (FeatureSet): list of nearest features
+          extra_data (mapping): additional arbitrary data
+            items and associated values, to use in output
 
         """
-        lines = list(self.report_nearest_features(peak,features))
+        lines = list(self.report_nearest_features(peak,features,
+                                                  **extra_data))
         if self._fp is not None:
             self._fp.write("%s\n" % '\n'.join(lines))
         if self._summary is not None:
             self._summary.write("%s\n" % lines[0])
 
-    def write_nearest_peaks(self,feature,peaks):
+    def write_nearest_peaks(self,feature,peaks,**extra_data):
         """
         Write a set of peaks to the output file(s)
 
         Arguments:
           feature (Feature): feature of interest
           peaks (PeakSet): list of nearest peaks
+          extra_data (mapping): additional arbitrary data
+            items and associated values, to use in output
 
         """
-        lines = list(self.report_nearest_peaks(feature,peaks))
+        lines = list(self.report_nearest_peaks(feature,peaks,
+                                               **extra_data))
         if self._fp is not None:
             self._fp.write("%s\n" % '\n'.join(lines))
         if self._summary is not None:
@@ -519,14 +548,20 @@ class AnalysisReportWriter(AnalysisReporter):
         write and close the final 'visible' output files.
 
         """
+        # Set the mode
+        if self._append:
+            mode = 'a'
+        else:
+            mode = 'w'
         # Full output file
         if self.outfile:
             # Rewind to the start of the temp file
             self._fp.seek(0)
             # Write the final output file
-            with open(self.outfile,'w') as fp:
-                # Write the header
-                fp.write("#%s\n" % self.make_header())
+            with open(self.outfile,mode) as fp:
+                if not self._append:
+                    # Write the header
+                    fp.write("#%s\n" % self.make_header())
                 # Write the content
                 nitems = len(self.make_header().split('\t'))
                 for line in self._fp:
@@ -544,9 +579,10 @@ class AnalysisReportWriter(AnalysisReporter):
             # Rewind to the start of the temp file
             self._summary.seek(0)
             # Write the final summary file
-            with open(self.summary,'w') as fp:
-                # Write the header
-                fp.write("#%s\n" % self.make_header())
+            with open(self.summary,mode) as fp:
+                if not self._append:
+                    # Write the header
+                    fp.write("#%s\n" % self.make_header())
                 # Write the content
                 for line in self._summary:
                     fp.write(line)
@@ -612,6 +648,7 @@ def describe_fields(fields,feature="feature",
                                  "%s" % description))
         except KeyError:
             if attr.startswith('list('):
+                # List of fields
                 descriptions.append(('For each hit:',))
                 sub_attrs = attr[:-1].split('(')[1].split(',')
                 for sub_attr in sub_attrs:
@@ -621,6 +658,10 @@ def describe_fields(fields,feature="feature",
                                               FEATURE=feature)
                     descriptions.append(("%s_#" % sub_attr,
                                          "%s" % description))
+            else:
+                # Field name not in list of descriptions
+                descriptions.append(("%s" % attr,
+                                    "%s" % attr))
     return descriptions
 
 def update_text(s,**kws):

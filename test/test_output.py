@@ -1,6 +1,6 @@
 #
 #     test_ouptut.py: unit tests for output module
-#     Copyright (C) University of Manchester 2011-5 Peter Briggs
+#     Copyright (C) University of Manchester 2011-2018 Peter Briggs
 
 import unittest
 from itertools import izip_longest
@@ -81,6 +81,32 @@ class TestAnalysisReporterHeader(unittest.TestCase):
         self.assertEqual(ap.make_header(),
                          "gene.id\tgene.chr\tgene.start\tgene.end\tpeak.chr\tpeak.start\tpeak.end")
 
+    def test_make_header_single_line_arbitrary_field(self):
+        ap = AnalysisReporter(output.SINGLE_LINE,
+                              fields=('peak.chr',
+                                      'peak.start',
+                                      'peak.end',
+                                      'cutoff',
+                                      'number_of_results',
+                                      'list(feature.id)'),
+                              max_hits=2)
+        self.assertEqual(ap.make_header(),
+                         "peak.chr\tpeak.start\tpeak.end\tcutoff\tnumber_of_results\tfeature.id_1\tfeature.id_2")
+
+    def test_make_header_multi_line_arbitrary_field(self):
+        ap = AnalysisReporter(output.MULTI_LINE,
+                              fields=('feature.id',
+                                      'feature.chr',
+                                      'feature.start',
+                                      'feature.end',
+                                      'cutoff',
+                                      'peak.chr',
+                                      'peak.start',
+                                      'peak.end'),
+                              max_hits=2)
+        self.assertEqual(ap.make_header(),
+                         "feature.id\tfeature.chr\tfeature.start\tfeature.end\tcutoff\tpeak.chr\tpeak.start\tpeak.end")
+
 class TestAnalysisReporterNearestFeatures(unittest.TestCase):
 
     def setUp(self):
@@ -97,6 +123,13 @@ class TestAnalysisReporterNearestFeatures(unittest.TestCase):
                                    'number_of_results',
                                    'list(feature.id,'
                                    'dist_closest,dist_TSS)')
+        self.single_line_fields_extra_data = ('peak.chr',
+                                              'peak.start',
+                                              'peak.end',
+                                              'cutoff',
+                                              'number_of_results',
+                                              'list(feature.id,'
+                                              'dist_closest,dist_TSS)')
         self.multi_line_fields = ('peak.chr',
                                   'peak.start',
                                   'peak.end',
@@ -160,6 +193,25 @@ class TestAnalysisReporterNearestFeatures(unittest.TestCase):
         for line,expected_line in izip_longest(
                 ap.report_nearest_features(self.peak,
                                            self.features),
+                expected):
+            self.assertEqual(line,expected_line)
+
+    def test_report_nearest_features_single_line_extra_data(self):
+        # Expected lines
+        expected = (
+            "chr2L\t66811\t66812\t100000\t2\t"
+            "CG31973\t7568\t7568\t"
+            "CG2674-RE\t40091\t40091",
+        )
+        # Set up to report some stuff
+        ap = AnalysisReporter(output.SINGLE_LINE,
+                              fields=self.single_line_fields_extra_data,
+                              max_hits=2)
+        # Check that output matches
+        for line,expected_line in izip_longest(
+                ap.report_nearest_features(self.peak,
+                                           self.features,
+                                           cutoff=100000),
                 expected):
             self.assertEqual(line,expected_line)
 
@@ -232,6 +284,11 @@ class TestAnalysisReporterNearestPeaks(unittest.TestCase):
                                    'number_of_results',
                                    'list(peak.chr,peak.start,peak.end,'
                                    'dist_closest,dist_TSS)')
+        self.single_line_fields_extra_data = ('feature.id',
+                                              'cutoff',
+                                              'number_of_results',
+                                              'list(peak.chr,peak.start,peak.end,'
+                                              'dist_closest,dist_TSS)')
         self.multi_line_fields = ('feature.id',
                                   'order',
                                   'peak.chr',
@@ -295,6 +352,26 @@ class TestAnalysisReporterNearestPeaks(unittest.TestCase):
         for line,expected_line in izip_longest(
                 ap.report_nearest_peaks(self.feature,
                                         self.peaks),
+                expected):
+            self.assertEqual(line,expected_line)
+
+    def test_report_nearest_peaks_single_line_extra_data(self):
+        # Expected lines
+        expected = (
+            "CG31973\t100000\t2\t"
+            "chr2L\t66711\t66911\t7468\t7468\t"
+            "chr2L\t249077\t249277\t189834\t189834",
+        )
+        # Set up to report some stuff
+        ap = AnalysisReporter(output.SINGLE_LINE,
+                              fields=self.single_line_fields_extra_data,
+                              max_hits=2,
+                              null_placeholder='.')
+        # Check that output matches
+        for line,expected_line in izip_longest(
+                ap.report_nearest_peaks(self.feature,
+                                        self.peaks,
+                                        cutoff=100000),
                 expected):
             self.assertEqual(line,expected_line)
 
@@ -374,22 +451,26 @@ class TestDescribeFieldsFunction(unittest.TestCase):
         self.assertEqual(desc[6],('TES',expected_fields['TES']))
 
     def test_describe_peak_fields(self):
-        desc = describe_fields(('peak.id','peak.chr','peak.start','peak.end'))
+        desc = describe_fields(('peak.id','peak.chr','peak.start','peak.end',
+                                'peak.file'))
         self.assertEqual(desc[0],('peak.id',output.FIELDS['peak.id']))
         self.assertEqual(desc[1],('peak.chr',output.FIELDS['peak.chr']))
         self.assertEqual(desc[2],('peak.start',output.FIELDS['peak.start']))
         self.assertEqual(desc[3],('peak.end',output.FIELDS['peak.end']))
+        self.assertEqual(desc[4],('peak.file',output.FIELDS['peak.file']))
 
     def test_describe_feature_fields(self):
         desc = describe_fields(('feature.chr','feature.id',
                                 'feature.start','feature.end',
                                 'feature.strand',
-                                'feature.TSS','feature.TES'))
+                                'feature.TSS','feature.TES',
+                                'feature.file'))
         expected_fields = dict()
         for x in ('feature.chr','feature.id',
                   'feature.start','feature.end',
                   'feature.strand',
-                  'feature.TSS','feature.TES'):
+                  'feature.TSS','feature.TES',
+                  'feature.file'):
             expected_fields[x] = output.FIELDS[x].\
                                  replace("<FEATURE>","feature")
         self.assertEqual(desc[0],('feature.chr',expected_fields['feature.chr']))
@@ -401,6 +482,7 @@ class TestDescribeFieldsFunction(unittest.TestCase):
                                   expected_fields['feature.strand']))
         self.assertEqual(desc[5],('feature.TSS',expected_fields['feature.TSS']))
         self.assertEqual(desc[6],('feature.TES',expected_fields['feature.TES']))
+        self.assertEqual(desc[7],('feature.file',expected_fields['feature.file']))
 
     def test_describe_derived_fields(self):
         desc = describe_fields(('dist_closest',
@@ -483,6 +565,10 @@ class TestDescribeFieldsFunction(unittest.TestCase):
         self.assertEqual(desc[6],('direction_#',
                                   expected_fields['direction']))
 
+    def test_field_with_no_description(self):
+        desc = describe_fields(('missing_desc',))
+        self.assertEqual(desc[0],('missing_desc','missing_desc'))
+
 import tempfile
 class TestAnalysisReportWriter(unittest.TestCase):
 
@@ -518,6 +604,39 @@ class TestAnalysisReportWriter(unittest.TestCase):
         # Check that output matches
         self.assertEqual(expected_output,actual_output)
 
+    def test_write_features_with_extra_data(self):
+        # Set up some test data
+        peak = Peak('chr2L',66811,66812)
+        features = FeatureSet(
+            features_list=(
+                Feature('CG31973','chr2L',25402,59243,'-'),
+                Feature('CG2674-RE','chr2L',106903,114433,'+'),
+                Feature('CG2674-RC','chr2L',107926,114433,'+')))
+        # Temp output file
+        fp,outfile = tempfile.mkstemp()
+        # Write peaks to file
+        ap = AnalysisReportWriter(output.MULTI_LINE,
+                                  fields=('peak.chr',
+                                          'peak.start',
+                                          'peak.end',
+                                          'order',
+                                          'cutoff',
+                                          'feature.id',
+                                          'dist_closest',
+                                          'dist_TSS'),
+                                  outfile=outfile)
+        ap.write_nearest_features(peak,features,cutoff=100000)
+        ap.close()
+        # Expected and actual output
+        expected_output = \
+            "#peak.chr\tpeak.start\tpeak.end\torder\tcutoff\tfeature.id\tdist_closest\tdist_TSS\n" \
+            "chr2L\t66811\t66812\t1 of 3\t100000\tCG31973\t7568\t7568\n" \
+            "chr2L\t66811\t66812\t2 of 3\t100000\tCG2674-RE\t40091\t40091\n" \
+            "chr2L\t66811\t66812\t3 of 3\t100000\tCG2674-RC\t41114\t41114\n"
+        actual_output = open(outfile,'r').read()
+        # Check that output matches
+        self.assertEqual(expected_output,actual_output)
+
     def test_write_features_summary(self):
         # Set up some test data
         peak = Peak('chr2L',66811,66812)
@@ -545,6 +664,53 @@ class TestAnalysisReportWriter(unittest.TestCase):
             "#peak.chr\tpeak.start\tpeak.end\torder\tfeature.id\tdist_closest\tdist_TSS\n" \
             "chr2L\t66811\t66812\t1 of 3\tCG31973\t7568\t7568\n"
         actual_output = open(summary,'r').read()
+        # Check that output matches
+        self.assertEqual(expected_output,actual_output)
+
+    def test_write_features_append(self):
+        # Set up some test data
+        peak = Peak('chr2L',66811,66812)
+        features1 = FeatureSet(
+            features_list=(
+                Feature('CG31973','chr2L',25402,59243,'-'),
+                Feature('CG2674-RE','chr2L',106903,114433,'+'),))
+        features2 = FeatureSet(
+            features_list=(
+                Feature('CG2674-RC','chr2L',107926,114433,'+'),))
+        # Temp output file
+        fp,outfile = tempfile.mkstemp()
+        # Write first set of nearest features
+        ap = AnalysisReportWriter(output.MULTI_LINE,
+                                  fields=('peak.chr',
+                                          'peak.start',
+                                          'peak.end',
+                                          'order',
+                                          'feature.id',
+                                          'dist_closest',
+                                          'dist_TSS'),
+                                  outfile=outfile)
+        ap.write_nearest_features(peak,features1)
+        ap.close()
+        # Write second set of nearest features
+        ap = AnalysisReportWriter(output.MULTI_LINE,
+                                  fields=('peak.chr',
+                                          'peak.start',
+                                          'peak.end',
+                                          'order',
+                                          'feature.id',
+                                          'dist_closest',
+                                          'dist_TSS'),
+                                  outfile=outfile,
+                                  append=True)
+        ap.write_nearest_features(peak,features2)
+        ap.close()
+        # Expected and actual output
+        expected_output = \
+            "#peak.chr\tpeak.start\tpeak.end\torder\tfeature.id\tdist_closest\tdist_TSS\n" \
+            "chr2L\t66811\t66812\t1 of 2\tCG31973\t7568\t7568\n" \
+            "chr2L\t66811\t66812\t2 of 2\tCG2674-RE\t40091\t40091\n" \
+            "chr2L\t66811\t66812\t1 of 1\tCG2674-RC\t41114\t41114\n"
+        actual_output = open(outfile,'r').read()
         # Check that output matches
         self.assertEqual(expected_output,actual_output)
 
@@ -576,6 +742,39 @@ class TestAnalysisReportWriter(unittest.TestCase):
             "CG31973\t1 of 3\tchr2L\t66711\t66911\t7468\t7468\n" \
             "CG31973\t2 of 3\tchr2L\t249077\t249277\t189834\t189834\n" \
             "CG31973\t3 of 3\tchr2L\t605850\t606050\t546607\t546607\n"
+        actual_output = open(outfile,'r').read()
+        # Check that output matches
+        self.assertEqual(expected_output,actual_output)
+
+    def test_write_peaks_with_extra_data(self):
+        # Set up some test data
+        feature = Feature('CG31973','chr2L','25402','59243','-')
+        peaks = PeakSet(
+            peaks_list=(
+                Peak('chr2L','66711','66911'),
+                Peak('chr2L','249077','249277'),
+                Peak('chr2L','605850','606050')))
+        # Temp output file
+        fp,outfile = tempfile.mkstemp()
+        # Write peaks to file
+        ap = AnalysisReportWriter(output.MULTI_LINE,
+                                  fields=('feature.id',
+                                          'order',
+                                          'peak.chr',
+                                          'peak.start',
+                                          'peak.end',
+                                          'cutoff',
+                                          'dist_closest',
+                                          'dist_TSS'),
+                                  outfile=outfile)
+        ap.write_nearest_peaks(feature,peaks,cutoff=100000)
+        ap.close()
+        # Expected and actual output
+        expected_output = \
+            "#feature.id\torder\tpeak.chr\tpeak.start\tpeak.end\tcutoff\tdist_closest\tdist_TSS\n" \
+            "CG31973\t1 of 3\tchr2L\t66711\t66911\t100000\t7468\t7468\n" \
+            "CG31973\t2 of 3\tchr2L\t249077\t249277\t100000\t189834\t189834\n" \
+            "CG31973\t3 of 3\tchr2L\t605850\t606050\t100000\t546607\t546607\n"
         actual_output = open(outfile,'r').read()
         # Check that output matches
         self.assertEqual(expected_output,actual_output)
