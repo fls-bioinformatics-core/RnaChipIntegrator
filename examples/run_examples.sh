@@ -175,7 +175,10 @@ function assert_equal {
 }
 #
 # Initialise and set up dir for test outputs
-TEST_DIR=$(pwd)
+TEST_DIR=$(dirname $0)
+if [ "$TEST_DIR" == "." ] ; then
+    TEST_DIR=$(pwd)
+fi
 REF_DATA=$TEST_DIR/ref-data
 if [ ! -d test-output ] ; then
     mkdir test-output
