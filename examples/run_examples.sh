@@ -271,10 +271,76 @@ run_test "Batch mode: multiple peaks and gene files over multiple cutoffs" \
 # Batch mode with multiple peaks and gene files over multiple cutoffs
 # with multiple cores
 BATCH_ALL_MULTICORE="test_batch_all_peak_centric.txt test_batch_all_gene_centric.txt"
-run_test "Batch mode: multiple peaks and gene files over multiple cutoffs (multicore)" \
+run_test "Batch mode: using multicore" \
 	 --expected "$BATCH_ALL_MULTICORE" \
 	 --command "RnaChipIntegrator --name=test_batch_all --number=4 --peaks $TEST_DIR/peaks1.txt $TEST_DIR/peaks2.txt --genes $TEST_DIR/genes1.txt $TEST_DIR/genes2.txt --cutoffs=50000,100000 --nprocessors=2" \
 	 --strip-paths
+#
+# Batch mode with multiple peaks and gene files over multiple cutoffs
+# with multiple outputs
+BATCH_SPLIT_OUTPUTS=\
+"test_split_peaks1_genes1_d50000_peak_centric.txt
+ test_split_peaks1_genes1_d50000_gene_centric.txt
+ test_split_peaks1_genes1_d100000_peak_centric.txt
+ test_split_peaks1_genes1_d100000_gene_centric.txt
+ test_split_peaks1_genes2_d50000_peak_centric.txt
+ test_split_peaks1_genes2_d50000_gene_centric.txt
+ test_split_peaks1_genes2_d100000_peak_centric.txt
+ test_split_peaks1_genes2_d100000_gene_centric.txt
+ test_split_peaks2_genes1_d50000_peak_centric.txt
+ test_split_peaks2_genes1_d50000_gene_centric.txt
+ test_split_peaks2_genes1_d100000_peak_centric.txt
+ test_split_peaks2_genes1_d100000_gene_centric.txt
+ test_split_peaks2_genes2_d50000_peak_centric.txt
+ test_split_peaks2_genes2_d50000_gene_centric.txt
+ test_split_peaks2_genes2_d100000_peak_centric.txt
+ test_split_peaks2_genes2_d100000_gene_centric.txt
+ test_split.xlsx
+"
+run_test "Batch mode: split outputs" \
+         --must_exist "$BATCH_SPLIT_OUTPUTS" \
+	 --command "RnaChipIntegrator --name=test_split --peaks $TEST_DIR/peaks1.txt $TEST_DIR/peaks2.txt --genes $TEST_DIR/genes1.txt $TEST_DIR/genes2.txt --cutoffs=50000,100000 --split-outputs --xlsx"
+#
+# Batch mode with multiple peaks and gene files over multiple cutoffs
+# with multiple outputs
+BATCH_SPLIT_OUTPUTS_SUMMARY=\
+"test_split_peaks1_genes1_d50000_peak_centric.txt
+ test_split_peaks1_genes1_d50000_gene_centric.txt
+ test_split_peaks1_genes1_d100000_peak_centric.txt
+ test_split_peaks1_genes1_d100000_gene_centric.txt
+ test_split_peaks1_genes2_d50000_peak_centric.txt
+ test_split_peaks1_genes2_d50000_gene_centric.txt
+ test_split_peaks1_genes2_d100000_peak_centric.txt
+ test_split_peaks1_genes2_d100000_gene_centric.txt
+ test_split_peaks2_genes1_d50000_peak_centric.txt
+ test_split_peaks2_genes1_d50000_gene_centric.txt
+ test_split_peaks2_genes1_d100000_peak_centric.txt
+ test_split_peaks2_genes1_d100000_gene_centric.txt
+ test_split_peaks2_genes2_d50000_peak_centric.txt
+ test_split_peaks2_genes2_d50000_gene_centric.txt
+ test_split_peaks2_genes2_d100000_peak_centric.txt
+ test_split_peaks2_genes2_d100000_gene_centric.txt
+ test_split_peaks1_genes1_d50000_peak_centric_summary.txt
+ test_split_peaks1_genes1_d50000_gene_centric_summary.txt
+ test_split_peaks1_genes1_d100000_peak_centric_summary.txt
+ test_split_peaks1_genes1_d100000_gene_centric_summary.txt
+ test_split_peaks1_genes2_d50000_peak_centric_summary.txt
+ test_split_peaks1_genes2_d50000_gene_centric_summary.txt
+ test_split_peaks1_genes2_d100000_peak_centric_summary.txt
+ test_split_peaks1_genes2_d100000_gene_centric_summary.txt
+ test_split_peaks2_genes1_d50000_peak_centric_summary.txt
+ test_split_peaks2_genes1_d50000_gene_centric_summary.txt
+ test_split_peaks2_genes1_d100000_peak_centric_summary.txt
+ test_split_peaks2_genes1_d100000_gene_centric_summary.txt
+ test_split_peaks2_genes2_d50000_peak_centric_summary.txt
+ test_split_peaks2_genes2_d50000_gene_centric_summary.txt
+ test_split_peaks2_genes2_d100000_peak_centric_summary.txt
+ test_split_peaks2_genes2_d100000_gene_centric_summary.txt
+ test_split.xlsx
+"
+run_test "Batch mode: split outputs and include summaries" \
+         --must_exist "$BATCH_SPLIT_OUTPUTS_SUMMARY" \
+	 --command "RnaChipIntegrator --name=test_split --peaks $TEST_DIR/peaks1.txt $TEST_DIR/peaks2.txt --genes $TEST_DIR/genes1.txt $TEST_DIR/genes2.txt --cutoffs=50000,100000 --split-outputs --summary --xlsx"
 #
 # Finished
 report_tests
