@@ -9,7 +9,7 @@ import os
 from rnachipintegrator.cli import CLI
 from rnachipintegrator.cli import OutputFiles
 from rnachipintegrator.cli import AnalysisParams
-from rnachipintegrator.cli import Namer
+from rnachipintegrator.cli import BatchNamer
 from rnachipintegrator.cli import read_feature_file
 from rnachipintegrator.cli import read_peak_file
 
@@ -197,65 +197,82 @@ class TestAnalysisParams(unittest.TestCase):
         self.assertTrue(params.tss_only)
         self.assertTrue(params.only_differentially_expressed)
 
-class TestNamer(unittest.TestCase):
+class TestBatchNamer(unittest.TestCase):
+
+    def test_no_batching(self):
+        self.assertEqual(BatchNamer(
+            "BASE",
+            peak_files=('peaks1',),
+            gene_files=('genes1',),
+            cutoffs=(100000,)).get_name('peaks1',
+                                        'genes1',
+                                        100000),
+                         "BASE")
 
     def test_multiple_peaks_only(self):
-        self.assertEqual(Namer("BASE",
-                               peak_files=('peaks1','peaks2'),
-                               gene_files=('genes1',),
-                               cutoffs=(100000,)).get_name('peaks1',
-                                                           'genes1',
-                                                           100000),
+        self.assertEqual(BatchNamer(
+            "BASE",
+            peak_files=('peaks1','peaks2'),
+            gene_files=('genes1',),
+            cutoffs=(100000,)).get_name('peaks1',
+                                        'genes1',
+                                        100000),
                          "BASE_peaks1")
 
     def test_multiple_genes_only(self):
-        self.assertEqual(Namer("BASE",
-                               peak_files=('peaks1',),
-                               gene_files=('genes1','genes2'),
-                               cutoffs=(100000,)).get_name('peaks1',
-                                                           'genes1',
-                                                           100000),
+        self.assertEqual(BatchNamer(
+            "BASE",
+            peak_files=('peaks1',),
+            gene_files=('genes1','genes2'),
+            cutoffs=(100000,)).get_name('peaks1',
+                                        'genes1',
+                                        100000),
                          "BASE_genes1")
 
     def test_multiple_cutoffs_only(self):
-        self.assertEqual(Namer("BASE",
-                               peak_files=('peaks1',),
-                               gene_files=('genes1',),
-                               cutoffs=(100000,150000)).get_name('peaks1',
-                                                                 'genes1',
-                                                                 100000),
+        self.assertEqual(BatchNamer(
+            "BASE",
+            peak_files=('peaks1',),
+            gene_files=('genes1',),
+            cutoffs=(100000,150000)).get_name('peaks1',
+                                              'genes1',
+                                              100000),
                          "BASE_d100000")
 
     def test_pairs_of_multiples(self):
-        self.assertEqual(Namer("BASE",
-                               peak_files=('peaks1','peaks2',),
-                               gene_files=('genes1',),
-                               cutoffs=(100000,150000)).get_name('peaks1',
-                                                                 'genes1',
-                                                                 100000),
+        self.assertEqual(BatchNamer(
+            "BASE",
+            peak_files=('peaks1','peaks2',),
+            gene_files=('genes1',),
+            cutoffs=(100000,150000)).get_name('peaks1',
+                                              'genes1',
+                                              100000),
                          "BASE_peaks1_d100000")
-        self.assertEqual(Namer("BASE",
-                               peak_files=('peaks1',),
-                               gene_files=('genes1','genes2'),
-                               cutoffs=(100000,150000)).get_name('peaks1',
-                                                                 'genes1',
-                                                                 100000),
+        self.assertEqual(BatchNamer(
+            "BASE",
+            peak_files=('peaks1',),
+            gene_files=('genes1','genes2'),
+            cutoffs=(100000,150000)).get_name('peaks1',
+                                              'genes1',
+                                              100000),
                          "BASE_genes1_d100000")
-        self.assertEqual(Namer("BASE",
-                               peak_files=('peaks1','peaks2',),
-                               gene_files=('genes1','genes2'),
-                               cutoffs=(100000,)).get_name('peaks1',
-                                                           'genes1',
-                                                           100000),
+        self.assertEqual(BatchNamer(
+            "BASE",
+            peak_files=('peaks1','peaks2',),
+            gene_files=('genes1','genes2'),
+            cutoffs=(100000,)).get_name('peaks1',
+                                        'genes1',
+                                        100000),
                          "BASE_peaks1_genes1")
 
     def test_all_multiples(self):
-        self.assertEqual(Namer("BASE",
-                               peak_files=('peaks1','peaks2',),
-                               gene_files=('genes1','genes2'),
-                               cutoffs=(100000,150000)).get_name('peaks1',
-                                                                 'genes1',
-                                                                 100000),
+        self.assertEqual(BatchNamer(
+            "BASE",
+            peak_files=('peaks1','peaks2',),
+            gene_files=('genes1','genes2'),
+            cutoffs=(100000,150000)).get_name('peaks1',
+                                              'genes1',
+                                              100000),
                          "BASE_peaks1_genes1_d100000")
 
 class TestReadFeatureFile(unittest.TestCase):

@@ -535,9 +535,9 @@ class AnalysisParams(object):
     def only_differentially_expressed(self):
         return self._params['only_differentially_expressed']
 
-class Namer(object):
+class BatchNamer(object):
     """
-    Class for generating names for multiple outputs
+    Class for generating output names for batch mode
 
     Names will be of the form:
 
@@ -996,7 +996,7 @@ def main(args=None):
         basename = os.path.splitext(os.path.basename(gene_files[0]))[0]
     if multiple_outputs:
         # Split outputs into multiple files
-        namer = Namer(basename,peak_files,gene_files,cutoffs)
+        namer = BatchNamer(basename,peak_files,gene_files,cutoffs)
         for peak_file in peak_files:
             for gene_file in gene_files:
                 for cutoff in cutoffs:
