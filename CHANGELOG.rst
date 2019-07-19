@@ -2,6 +2,19 @@ Version History and Changes
 ===========================
 
 --------------------------
+Version 1.2.0 (2019-07-19)
+--------------------------
+
+* Implement batch mode operation which allows a single run of
+  ``RnaChipIntegrator`` to iterate over any combination of
+  multiple cutoffs (via new ``--cutoffs`` option) and multiple
+  peaks and genes files (via new ``--peaks`` and ``--genes``
+  options)
+  (`PR #58 <https://github.com/fls-bioinformatics-core/RnaChipIntegrator/pull/58>`_).
+* Drop support for Python 2.6
+  (`PR #58 <https://github.com/fls-bioinformatics-core/RnaChipIntegrator/pull/66>`_).
+
+--------------------------
 Version 1.1.0 (2018-08-06)
 --------------------------
 
