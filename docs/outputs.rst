@@ -238,6 +238,22 @@ as an additional field, for example::
     P0002	chr1	9619175	9619382	NM_178399_3110035E14Rik	+	9591248	96172221953	27927	1953	D	0	0
     ...
 
+.. _split_outputs:
+
+Writing results to separate files in batch mode (``--split-outputs``)
+---------------------------------------------------------------------
+
+By default in 'batch' mode (i.e. when multiple cutoff distances and/or
+multiple peak or genes files are supplied) all results for the
+gene-centric analyses will be written to a single file (and similarly
+for the peak-centric analyses).
+
+To force ``RnaChipIntegrator`` to write the results of each batch to
+a separate file, use the ``--split-outputs`` option. When this option
+is specified a set of files will be generated for each peak, gene
+and cutoff with appropriate names to indicate which files and cutoff
+were used.
+
 .. _additional_fields_for_batch_operation:
 
 Additional fields for batch operation
