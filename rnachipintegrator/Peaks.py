@@ -12,7 +12,7 @@ Classes for handling peak data
 """
 
 import logging
-from utils import make_errline
+from .utils import make_errline
 
 class PeakSet:
     """Class for storing a set of peaks

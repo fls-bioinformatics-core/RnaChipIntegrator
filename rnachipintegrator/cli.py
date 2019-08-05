@@ -29,9 +29,9 @@ import os
 import argparse
 from .Features import FeatureSet
 from .Peaks import PeakSet
-import analysis
-import output
-import xls_output
+from . import analysis
+from . import output
+from . import xls_output
 import logging
 from multiprocessing import Pool
 

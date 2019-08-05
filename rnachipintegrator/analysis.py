@@ -15,9 +15,9 @@ Functions for analysing peaks against features, and vice versa:
 """
 import os
 import logging
-import distances
-from Features import FeatureSet
-from Peaks import PeakSet
+from . import distances
+from .Features import FeatureSet
+from .Peaks import PeakSet
 
 #######################################################################
 # Analysis functions

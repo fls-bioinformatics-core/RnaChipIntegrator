@@ -12,8 +12,8 @@ Classes for handling feature data.
 """
 
 import logging
-from distances import closestDistanceToRegion
-from utils import make_errline
+from .distances import closestDistanceToRegion
+from .utils import make_errline
 
 class FeatureSet:
     """Class for storing a set of features

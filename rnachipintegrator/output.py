@@ -10,8 +10,8 @@ output.py
 Functions for outputing analysis results
 
 """
-import distances
-from Peaks import Peak
+from . import distances
+from .Peaks import Peak
 import tempfile
 
 #######################################################################

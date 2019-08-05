@@ -13,8 +13,8 @@ Functions for outputting analysis results to XLSX spreadsheet
 import datetime
 import xlsxwriter
 import re
-import output
-import utils
+from . import output
+from . import utils
 
 # Regular expressions for styling tags
 RE_STYLE = re.compile(r"^<style +([^>]*)>(.*)</style>$")
