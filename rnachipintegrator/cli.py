@@ -117,8 +117,10 @@ class CLI(object):
         self.parser = argparse.ArgumentParser(
             prog=self._prog,
             usage=usage,
-            version=self._version,
             description=description)
+        self.parser.add_argument('--version',
+                                 action='version',
+                                 version=self._version)
         self.option_groups = dict()
 
     def get_version(self):
