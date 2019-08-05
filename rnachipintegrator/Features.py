@@ -128,7 +128,7 @@ class FeatureSet:
         fp.close()
         # Deal with postponed critical errors
         if critical_error:
-            raise Exception, "critical error(s) in '%s'" % features_file
+            raise Exception("Critical error(s) in '%s'" % features_file)
         # Store the source file
         self.source_file = features_file
         # Return a reference to this object

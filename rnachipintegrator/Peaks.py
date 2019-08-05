@@ -118,7 +118,7 @@ class PeakSet:
                             items[end],
                             id=id_,
                             source_file=peaks_file)
-            except PeakRangeError,ex:
+            except PeakRangeError as ex:
                 logging.error("Peaks file: bad line: %s" % line.strip())
                 logging.error("                      %s" %
                               make_errline(line,(start,end)))
