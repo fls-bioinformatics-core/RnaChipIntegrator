@@ -1192,7 +1192,7 @@ def main(args=None):
                               else "No"))
         # Add features to peaks
         if peak_centric:
-            names = sorted(peak_centric_outputs.keys())
+            names = sorted(list(peak_centric_outputs))
             xlsx.write_peak_centric(peak_fields)
             if options.summary:
                 xlsx.append_to_notes("\n'Peak-centric (summary)' lists the "
@@ -1212,7 +1212,7 @@ def main(args=None):
                                           peak_centric_summary[name])
         # Add peaks to features
         if gene_centric:
-            names = sorted(gene_centric_outputs.keys())
+            names = sorted(list(gene_centric_outputs))
             xlsx.write_feature_centric(gene_fields)
             if options.summary:
                 xlsx.append_to_notes("\n'%s-centric (summary)' lists the "
