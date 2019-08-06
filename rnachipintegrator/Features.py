@@ -12,6 +12,7 @@ Classes for handling feature data.
 """
 
 import logging
+import io
 from .distances import closestDistanceToRegion
 from .utils import make_errline
 
@@ -58,7 +59,7 @@ class FeatureSet(object):
         line_index = 0
         critical_error = False
         # Read in data from file
-        fp = open(features_file,'rU')
+        fp = io.open(features_file,'rt')
         for line in fp:
             # Increment index
             line_index += 1

@@ -12,6 +12,7 @@ Classes for handling peak data
 """
 
 import logging
+import io
 from .utils import make_errline
 
 class PeakSet(object):
@@ -81,7 +82,7 @@ class PeakSet(object):
             ncols = max(ncols,id_column)
             id_column = id_column - 1
         # Read in from file
-        fp = open(peaks_file,'rU')
+        fp = io.open(peaks_file,'rt')
         for line in fp:
             # Skip lines that start with a # symbol
             if line.startswith('#'):
