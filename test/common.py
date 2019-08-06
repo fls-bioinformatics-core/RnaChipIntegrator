@@ -4,6 +4,8 @@
 #
 #########################################################################
 #
+import io
+#
 # Transcripts-ex1.txt
 transcripts_ex1 = \
 """CG9130-RB	chr3L	1252012	1255989	+	1
@@ -246,9 +248,9 @@ from nose.tools import nottest
 @nottest
 def create_test_file(name,data):
     # Writes data to a file to be used in testing
-    fp = open(name,'w')
+    fp = io.open(name,'wt')
     for line in data.split('\n'):
-        fp.write(line+'\n')
+        fp.write(u"%s\n" % line)
     fp.close()
 
 @nottest

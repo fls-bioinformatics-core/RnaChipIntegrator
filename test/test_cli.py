@@ -6,6 +6,7 @@ import unittest
 import tempfile
 import shutil
 import os
+import io
 from rnachipintegrator.cli import CLI
 from rnachipintegrator.cli import OutputFiles
 from rnachipintegrator.cli import AnalysisParams
@@ -286,27 +287,27 @@ class TestReadFeatureFile(unittest.TestCase):
 
     def test_read_feature_file(self):
         feature_data = \
-"""
+u"""
 AK030377_A330023F24Rik	chr1	196781953	196826186	-	1
 AK080193_A530079E22Rik	chr1	89401837	89403491	-	1
 AK082264_C230030N03Rik	chr1	34735043	34781084	+	1
 BC006931_AI597479	chr1	43153807	43172843	+	1
 """
         feature_file = os.path.join(self.wd,"features.txt")
-        open(feature_file,'w').write(feature_data)
+        io.open(feature_file,'wt').write(feature_data)
         features = read_feature_file(feature_file)
         self.assertEqual(len(features),4)
 
     def test_read_feature_file_with_header(self):
         feature_data = \
-"""RefSeq_Gene Symbol	chr1	start	stop	strand	diff_exp
+u"""RefSeq_Gene Symbol	chr1	start	stop	strand	diff_exp
 AK030377_A330023F24Rik	chr1	196781953	196826186	-	1
 AK080193_A530079E22Rik	chr1	89401837	89403491	-	1
 AK082264_C230030N03Rik	chr1	34735043	34781084	+	1
 BC006931_AI597479	chr1	43153807	43172843	+	1
 """
         feature_file = os.path.join(self.wd,"features.txt")
-        open(feature_file,'w').write(feature_data)
+        io.open(feature_file,'wt').write(feature_data)
         features = read_feature_file(feature_file)
         self.assertEqual(len(features),4)
 
@@ -321,7 +322,7 @@ class TestReadPeakFile(unittest.TestCase):
 
     def test_read_peak_file(self):
         peak_data = \
-"""chr1	9619046	9619167
+u"""chr1	9619046	9619167
 chr1	9619175	9619382
 chr1	10617233	10617437
 chr1	13829227	13829564
@@ -331,13 +332,13 @@ chr1	24609562	24609623
 chr1	24609562	24609623
 """
         peak_file = os.path.join(self.wd,"peaks.txt")
-        open(peak_file,'w').write(peak_data)
+        io.open(peak_file,'wt').write(peak_data)
         peaks = read_peak_file(peak_file)
         self.assertEqual(len(peaks),8)
 
     def test_read_peak_file_with_header(self):
         peak_data = \
-"""peak	s	e
+u"""peak	s	e
 chr1	9619046	9619167
 chr1	9619175	9619382
 chr1	10617233	10617437
@@ -348,13 +349,13 @@ chr1	24609562	24609623
 chr1	24609562	24609623
 """
         peak_file = os.path.join(self.wd,"peaks.txt")
-        open(peak_file,'w').write(peak_data)
+        io.open(peak_file,'wt').write(peak_data)
         peaks = read_peak_file(peak_file)
         self.assertEqual(len(peaks),8)
 
     def test_read_peak_file_cols(self):
         peak_data = \
-"""9619046	9619167	chr1
+u"""9619046	9619167	chr1
 9619175	9619382	chr1
 10617233	10617437	chr1
 13829227	13829564	chr1
@@ -364,13 +365,13 @@ chr1	24609562	24609623
 24609562	24609623	chr1
 """
         peak_file = os.path.join(self.wd,"peaks.txt")
-        open(peak_file,'w').write(peak_data)
+        io.open(peak_file,'wt').write(peak_data)
         peaks = read_peak_file(peak_file,peak_cols=(3,1,2))
         self.assertEqual(len(peaks),8)
 
     def test_read_peak_file_ids(self):
         peak_data = \
-"""chr1	9619046	9619167	P001
+u"""chr1	9619046	9619167	P001
 chr1	9619175	9619382	P002
 chr1	10617233	10617437	P003
 chr1	13829227	13829564	P004
@@ -380,7 +381,7 @@ chr1	24609562	24609623	P007
 chr1	24609562	24609623	P008
 """
         peak_file = os.path.join(self.wd,"peaks.txt")
-        open(peak_file,'w').write(peak_data)
+        io.open(peak_file,'wt').write(peak_data)
         peaks = read_peak_file(peak_file,peak_id_col=4)
         self.assertEqual(len(peaks),8)
         for peak in peaks:
