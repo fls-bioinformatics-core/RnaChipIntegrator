@@ -12,6 +12,7 @@ Functions for outputting analysis results to XLSX spreadsheet
 """
 import datetime
 import xlsxwriter
+import io
 import re
 from . import output
 from . import utils
@@ -252,7 +253,7 @@ class XLSX(object):
         """
         ws = self.add_sheet(title)
         # Get header line
-        with open(tsv_file,'r') as fp:
+        with io.open(tsv_file,'rt') as fp:
             i = self._rows[title]
             for line in fp:
                 j = 0
