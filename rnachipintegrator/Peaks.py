@@ -14,7 +14,7 @@ Classes for handling peak data
 import logging
 from .utils import make_errline
 
-class PeakSet:
+class PeakSet(object):
     """Class for storing a set of peaks
 
     ChIP-seq data consists of ChIP peak information, each of which are
@@ -251,7 +251,7 @@ class PeakSet:
                 return True
         return False
 
-class Peak:
+class Peak(object):
     """Class for storing a peak
 
     Access the data from the line using the object's properties:

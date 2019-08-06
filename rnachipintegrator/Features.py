@@ -15,7 +15,7 @@ import logging
 from .distances import closestDistanceToRegion
 from .utils import make_errline
 
-class FeatureSet:
+class FeatureSet(object):
     """Class for storing a set of features
 
     RNA-seq features consists of genes/transcripts/isomers, which
@@ -321,7 +321,7 @@ class FeatureSet:
                 return True
         return False
 
-class Feature:
+class Feature(object):
     """Class for storing an 'feature' (gene/transcript/isomer)
 
     Access the data for the feature using the object's properties:

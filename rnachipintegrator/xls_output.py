@@ -37,7 +37,7 @@ NOTES['feature_centric'] = """
 <style font=bold bgcolor=gray>'%s-centric': nearest peaks to each %s</style>
 Column\tDescription"""
 
-class XLSX:
+class XLSX(object):
     """
     Class to assemble XLSX output file
 

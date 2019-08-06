@@ -58,7 +58,7 @@ FIELDS = {
 # Classes
 #######################################################################
 
-class AnalysisReporter:
+class AnalysisReporter(object):
     """
     Class to handle reporting of analysis results
 
