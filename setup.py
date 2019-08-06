@@ -3,7 +3,7 @@
 Setup script to install RnaChipIntegrator: analyses of peak data with
 genomic feature data
 
-Copyright (C) University of Manchester 2011-16 Peter Briggs, Ian Donaldson, Leo Zeef
+Copyright (C) University of Manchester 2011-19 Peter Briggs, Ian Donaldson, Leo Zeef
 
 """
 
@@ -49,6 +49,8 @@ setup(
         'Natural Language :: English',
         "Programming Language :: Python :: 2",
         'Programming Language :: Python :: 2.7',
+        "Programming Language :: Python :: 3",
+        'Programming Language :: Python :: 3.7',
     ],
     install_requires = ['xlsxwriter >= 0.8.4',],
     test_suite = 'nose.collector',
