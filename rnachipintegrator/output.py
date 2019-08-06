@@ -12,6 +12,7 @@ Functions for outputing analysis results
 """
 from . import distances
 from .Peaks import Peak
+import io
 import tempfile
 
 #######################################################################
@@ -492,13 +493,13 @@ class AnalysisReportWriter(AnalysisReporter):
         self.outfile = outfile
         if self.outfile is not None:
             # Open temporary file to handle output
-            self._fp = tempfile.TemporaryFile()
+            self._fp = tempfile.TemporaryFile(mode='w+t')
         else:
             self._fp = None
         self.summary = summary
         if self.summary is not None:
             # Open temporary file to handle summary
-            self._summary = tempfile.TemporaryFile()
+            self._summary = tempfile.TemporaryFile(mode='w+t')
         else:
             self._summary = None
         self._append = bool(append)
@@ -550,18 +551,18 @@ class AnalysisReportWriter(AnalysisReporter):
         """
         # Set the mode
         if self._append:
-            mode = 'a'
+            mode = 'at'
         else:
-            mode = 'w'
+            mode = 'wt'
         # Full output file
         if self.outfile:
             # Rewind to the start of the temp file
             self._fp.seek(0)
             # Write the final output file
-            with open(self.outfile,mode) as fp:
+            with io.open(self.outfile,mode) as fp:
                 if not self._append:
                     # Write the header
-                    fp.write("#%s\n" % self.make_header())
+                    fp.write(u"#%s\n" % self.make_header())
                 # Write the content
                 nitems = len(self.make_header().split('\t'))
                 for line in self._fp:
@@ -571,7 +572,7 @@ class AnalysisReportWriter(AnalysisReporter):
                         while len(fields) < nitems:
                             fields.append(self._placeholder)
                         line = '\t'.join(fields) + '\n'
-                    fp.write(line)
+                    fp.write(u"%s" % line)
             # Dispose of the temp file
             self._fp.close()
         # Summary output file
@@ -579,13 +580,13 @@ class AnalysisReportWriter(AnalysisReporter):
             # Rewind to the start of the temp file
             self._summary.seek(0)
             # Write the final summary file
-            with open(self.summary,mode) as fp:
+            with io.open(self.summary,mode) as fp:
                 if not self._append:
                     # Write the header
-                    fp.write("#%s\n" % self.make_header())
+                    fp.write(u"#%s\n" % self.make_header())
                 # Write the content
                 for line in self._summary:
-                    fp.write(line)
+                    fp.write(u"%s" % line)
             # Dispose of the temp file
             self._summary.close()
 
