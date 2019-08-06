@@ -195,7 +195,8 @@ class AnalysisReporter:
             results = results[:]
         nresults = len(results)
         # Pad with null results
-        if self._mode == SINGLE_LINE or self._pad:
+        if self._max_hits is not None and (self._mode == SINGLE_LINE or
+                                           self._pad):
             while len(results) < self._max_hits:
                 if is_features:
                     results.addFeature(None)
