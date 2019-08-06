@@ -1,7 +1,7 @@
 #!/bin/env python
 #
 #     xls_output.py: functions for writing analysis results to Excel files
-#     Copyright (C) University of Manchester 2015-16 Peter Briggs, Leo Zeef
+#     Copyright (C) University of Manchester 2015-2019 Peter Briggs, Leo Zeef
 #     & Ian Donaldson
 #
 """

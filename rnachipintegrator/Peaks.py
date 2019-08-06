@@ -1,7 +1,7 @@
 #!/bin/env python
 #
 #     Peaks.py: classes for handling peak data
-#     Copyright (C) University of Manchester 2011-2018 Peter Briggs, Leo Zeef
+#     Copyright (C) University of Manchester 2011-2019 Peter Briggs, Leo Zeef
 #     & Ian Donaldson
 #
 """

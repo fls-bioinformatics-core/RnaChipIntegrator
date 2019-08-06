@@ -1,7 +1,7 @@
 #!/bin/env python
 #
 #     analysis.py: analyses of peaks vs features and vice versa
-#     Copyright (C) University of Manchester 2011-15 Peter Briggs, Leo Zeef
+#     Copyright (C) University of Manchester 2011-2019 Peter Briggs, Leo Zeef
 #     & Ian Donaldson
 #
 """

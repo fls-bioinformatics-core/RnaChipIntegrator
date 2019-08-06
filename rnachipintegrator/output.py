@@ -1,7 +1,7 @@
 #!/bin/env python
 #
 #     output.py: functions for outputting analysis results
-#     Copyright (C) University of Manchester 2015-2018 Peter Briggs,
+#     Copyright (C) University of Manchester 2015-2019 Peter Briggs,
 #     Leo Zeef & Ian Donaldson
 #
 """

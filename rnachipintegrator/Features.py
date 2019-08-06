@@ -1,7 +1,7 @@
 #!/bin/env python
 #
 #     Features.py: classes for handling feature data
-#     Copyright (C) University of Manchester 2011-15 Peter Briggs, Leo Zeef
+#     Copyright (C) University of Manchester 2011-2019 Peter Briggs, Leo Zeef
 #     & Ian Donaldson
 #
 """
