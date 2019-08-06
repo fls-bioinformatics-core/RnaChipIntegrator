@@ -3,7 +3,12 @@
 #     Copyright (C) University of Manchester 2011-2018 Peter Briggs
 
 import unittest
-from itertools import izip_longest
+try:
+    # Python2
+    from itertools import izip_longest as zip_longest
+except ImportError:
+    # Python3
+    from itertools import zip_longest
 import rnachipintegrator.output as output
 from rnachipintegrator.output import AnalysisReporter,AnalysisReportWriter
 from rnachipintegrator.output import describe_fields
@@ -150,7 +155,7 @@ class TestAnalysisReporterNearestFeatures(unittest.TestCase):
         ap = AnalysisReporter(output.SINGLE_LINE,
                               fields=self.single_line_fields)
         # Check that output matches
-        for line,expected_line in izip_longest(
+        for line,expected_line in zip_longest(
                 ap.report_nearest_features(self.peak,
                                            self.features),
                 expected):
@@ -168,7 +173,7 @@ class TestAnalysisReporterNearestFeatures(unittest.TestCase):
                               fields=self.single_line_fields,
                               max_hits=2)
         # Check that output matches
-        for line,expected_line in izip_longest(
+        for line,expected_line in zip_longest(
                 ap.report_nearest_features(self.peak,
                                            self.features),
                 expected):
@@ -190,7 +195,7 @@ class TestAnalysisReporterNearestFeatures(unittest.TestCase):
                               pad=True,
                               null_placeholder='.')
         # Check that output matches
-        for line,expected_line in izip_longest(
+        for line,expected_line in zip_longest(
                 ap.report_nearest_features(self.peak,
                                            self.features),
                 expected):
@@ -208,7 +213,7 @@ class TestAnalysisReporterNearestFeatures(unittest.TestCase):
                               fields=self.single_line_fields_extra_data,
                               max_hits=2)
         # Check that output matches
-        for line,expected_line in izip_longest(
+        for line,expected_line in zip_longest(
                 ap.report_nearest_features(self.peak,
                                            self.features,
                                            cutoff=100000),
@@ -226,7 +231,7 @@ class TestAnalysisReporterNearestFeatures(unittest.TestCase):
         ap = AnalysisReporter(output.MULTI_LINE,
                               fields=self.multi_line_fields)
         # Check that output matches
-        for line,expected_line in izip_longest(
+        for line,expected_line in zip_longest(
                 ap.report_nearest_features(self.peak,
                                            self.features),
                 expected):
@@ -243,7 +248,7 @@ class TestAnalysisReporterNearestFeatures(unittest.TestCase):
                               fields=self.multi_line_fields,
                               max_hits=2)
         # Check that output matches
-        for line,expected_line in izip_longest(
+        for line,expected_line in zip_longest(
                 ap.report_nearest_features(self.peak,
                                            self.features),
                 expected):
@@ -264,7 +269,7 @@ class TestAnalysisReporterNearestFeatures(unittest.TestCase):
                               pad=True,
                               null_placeholder='.')
         # Check that output matches
-        for line,expected_line in izip_longest(
+        for line,expected_line in zip_longest(
                 ap.report_nearest_features(self.peak,
                                            self.features),
                 expected):
@@ -309,7 +314,7 @@ class TestAnalysisReporterNearestPeaks(unittest.TestCase):
         ap = AnalysisReporter(output.SINGLE_LINE,
                               fields=self.single_line_fields)
         # Check that output matches
-        for line,expected_line in izip_longest(
+        for line,expected_line in zip_longest(
                 ap.report_nearest_peaks(self.feature,
                                         self.peaks),
                 expected):
@@ -328,7 +333,7 @@ class TestAnalysisReporterNearestPeaks(unittest.TestCase):
                               max_hits=2,
                               null_placeholder='.')
         # Check that output matches
-        for line,expected_line in izip_longest(
+        for line,expected_line in zip_longest(
                 ap.report_nearest_peaks(self.feature,
                                         self.peaks),
                 expected):
@@ -349,7 +354,7 @@ class TestAnalysisReporterNearestPeaks(unittest.TestCase):
                               max_hits=4,
                               pad=True)
         # Check that output matches
-        for line,expected_line in izip_longest(
+        for line,expected_line in zip_longest(
                 ap.report_nearest_peaks(self.feature,
                                         self.peaks),
                 expected):
@@ -368,7 +373,7 @@ class TestAnalysisReporterNearestPeaks(unittest.TestCase):
                               max_hits=2,
                               null_placeholder='.')
         # Check that output matches
-        for line,expected_line in izip_longest(
+        for line,expected_line in zip_longest(
                 ap.report_nearest_peaks(self.feature,
                                         self.peaks,
                                         cutoff=100000),
@@ -386,7 +391,7 @@ class TestAnalysisReporterNearestPeaks(unittest.TestCase):
         ap = AnalysisReporter(output.MULTI_LINE,
                               fields=self.multi_line_fields)
         # Check that output matches
-        for line,expected_line in izip_longest(
+        for line,expected_line in zip_longest(
                 ap.report_nearest_peaks(self.feature,
                                         self.peaks),
                 expected):
@@ -403,7 +408,7 @@ class TestAnalysisReporterNearestPeaks(unittest.TestCase):
                               fields=self.multi_line_fields,
                               max_hits=2)
         # Check that output matches
-        for line,expected_line in izip_longest(
+        for line,expected_line in zip_longest(
                 ap.report_nearest_peaks(self.feature,
                                         self.peaks),
                 expected):
@@ -424,7 +429,7 @@ class TestAnalysisReporterNearestPeaks(unittest.TestCase):
                               pad=True,
                               null_placeholder='.')
         # Check that output matches
-        for line,expected_line in izip_longest(
+        for line,expected_line in zip_longest(
                 ap.report_nearest_peaks(self.feature,
                                         self.peaks),
                 expected):
