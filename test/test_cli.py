@@ -294,7 +294,8 @@ AK082264_C230030N03Rik	chr1	34735043	34781084	+	1
 BC006931_AI597479	chr1	43153807	43172843	+	1
 """
         feature_file = os.path.join(self.wd,"features.txt")
-        io.open(feature_file,'wt').write(feature_data)
+        with io.open(feature_file,'wt') as fp:
+            fp.write(feature_data)
         features = read_feature_file(feature_file)
         self.assertEqual(len(features),4)
 
@@ -307,7 +308,8 @@ AK082264_C230030N03Rik	chr1	34735043	34781084	+	1
 BC006931_AI597479	chr1	43153807	43172843	+	1
 """
         feature_file = os.path.join(self.wd,"features.txt")
-        io.open(feature_file,'wt').write(feature_data)
+        with io.open(feature_file,'wt') as fp:
+            fp.write(feature_data)
         features = read_feature_file(feature_file)
         self.assertEqual(len(features),4)
 
@@ -332,7 +334,8 @@ chr1	24609562	24609623
 chr1	24609562	24609623
 """
         peak_file = os.path.join(self.wd,"peaks.txt")
-        io.open(peak_file,'wt').write(peak_data)
+        with io.open(peak_file,'wt') as fp:
+            fp.write(peak_data)
         peaks = read_peak_file(peak_file)
         self.assertEqual(len(peaks),8)
 
@@ -349,7 +352,8 @@ chr1	24609562	24609623
 chr1	24609562	24609623
 """
         peak_file = os.path.join(self.wd,"peaks.txt")
-        io.open(peak_file,'wt').write(peak_data)
+        with io.open(peak_file,'wt') as fp:
+            fp.write(peak_data)
         peaks = read_peak_file(peak_file)
         self.assertEqual(len(peaks),8)
 
@@ -365,7 +369,8 @@ u"""9619046	9619167	chr1
 24609562	24609623	chr1
 """
         peak_file = os.path.join(self.wd,"peaks.txt")
-        io.open(peak_file,'wt').write(peak_data)
+        with io.open(peak_file,'wt') as fp:
+            fp.write(peak_data)
         peaks = read_peak_file(peak_file,peak_cols=(3,1,2))
         self.assertEqual(len(peaks),8)
 
@@ -381,7 +386,8 @@ chr1	24609562	24609623	P007
 chr1	24609562	24609623	P008
 """
         peak_file = os.path.join(self.wd,"peaks.txt")
-        io.open(peak_file,'wt').write(peak_data)
+        with io.open(peak_file,'wt') as fp:
+            fp.write(peak_data)
         peaks = read_peak_file(peak_file,peak_id_col=4)
         self.assertEqual(len(peaks),8)
         for peak in peaks:
