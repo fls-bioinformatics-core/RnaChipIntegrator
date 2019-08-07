@@ -82,51 +82,53 @@ class PeakSet(object):
             ncols = max(ncols,id_column)
             id_column = id_column - 1
         # Read in from file
-        fp = io.open(peaks_file,'rt')
-        for line in fp:
-            # Skip lines that start with a # symbol
-            if line.startswith('#'):
-                logging.debug("Peaks file: skipped line: %s" % line.strip())
-                continue
-            # Lines are tab-delimited
-            items = line.strip().split('\t')
-            if len(items) < ncols:
-                logging.warning("Peaks file: skipped line: %s" % line.strip())
-                logging.warning("Insufficient number of fields (%d): need at "
-                                "least %d" % (len(items),ncols))
-                continue
-            # Check that items in 'start' and 'end' columns are digits
-            if not items[start].isdigit() or not items[end].isdigit():
-                logging.warning("Peaks file: skipped line: %s" % line.strip())
-                # Indicate problem field(s)
-                bad_fields = []
-                for i in (start,end):
-                    if not items[i].isdigit():
-                        bad_fields.append(i)
-                logging.warning("                         %s" % \
-                                make_errline(line,bad_fields))
-                logging.warning("Expected integer at indicated positions")
-                continue
-            # Optional ID
-            try:
-                id_ = items[id_column]
-            except TypeError:
-                id_ = None
-            # Store in a new Peak object
-            try:
-                peak = Peak(items[chrom],
-                            items[start],
-                            items[end],
-                            id=id_,
-                            source_file=peaks_file)
-            except PeakRangeError as ex:
-                logging.error("Peaks file: bad line: %s" % line.strip())
-                logging.error("                      %s" %
-                              make_errline(line,(start,end)))
-                logging.error("%s" % ex)
-                raise ex
-            self.peaks.append(peak)
-        fp.close()
+        with io.open(peaks_file,'rt') as fp:
+            for line in fp:
+                # Skip lines that start with a # symbol
+                if line.startswith('#'):
+                    logging.debug("Peaks file: skipped line: %s" %
+                                  line.strip())
+                    continue
+                # Lines are tab-delimited
+                items = line.strip().split('\t')
+                if len(items) < ncols:
+                    logging.warning("Peaks file: skipped line: %s" %
+                                    line.strip())
+                    logging.warning("Insufficient number of fields (%d): "
+                                    "need at least %d" % (len(items),ncols))
+                    continue
+                # Check that items in 'start' and 'end' columns are digits
+                if not items[start].isdigit() or not items[end].isdigit():
+                    logging.warning("Peaks file: skipped line: %s" %
+                                    line.strip())
+                    # Indicate problem field(s)
+                    bad_fields = []
+                    for i in (start,end):
+                        if not items[i].isdigit():
+                            bad_fields.append(i)
+                    logging.warning("                         %s" % \
+                                    make_errline(line,bad_fields))
+                    logging.warning("Expected integer at indicated positions")
+                    continue
+                # Optional ID
+                try:
+                    id_ = items[id_column]
+                except TypeError:
+                    id_ = None
+                # Store in a new Peak object
+                try:
+                    peak = Peak(items[chrom],
+                                items[start],
+                                items[end],
+                                id=id_,
+                                source_file=peaks_file)
+                except PeakRangeError as ex:
+                    logging.error("Peaks file: bad line: %s" % line.strip())
+                    logging.error("                      %s" %
+                                  make_errline(line,(start,end)))
+                    logging.error("%s" % ex)
+                    raise ex
+                self.peaks.append(peak)
         # Store the source file
         self.source_file = peaks_file
         # Return a reference to this object
