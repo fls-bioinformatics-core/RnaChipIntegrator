@@ -178,6 +178,8 @@ function assert_equal {
 TEST_DIR=$(dirname $0)
 if [ "$TEST_DIR" == "." ] ; then
     TEST_DIR=$(pwd)
+elif [ -z "$(echo $TEST_DIR | grep ^/)" ] ; then
+    TEST_DIR=$(pwd)/$TEST_DIR
 fi
 REF_DATA=$TEST_DIR/ref-data
 if [ ! -d test-output ] ; then
