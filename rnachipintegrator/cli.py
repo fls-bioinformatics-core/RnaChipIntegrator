@@ -29,9 +29,9 @@ import os
 import argparse
 from .Features import FeatureSet
 from .Peaks import PeakSet
-import analysis
-import output
-import xls_output
+from . import analysis
+from . import output
+from . import xls_output
 import logging
 from multiprocessing import Pool
 
@@ -117,8 +117,10 @@ class CLI(object):
         self.parser = argparse.ArgumentParser(
             prog=self._prog,
             usage=usage,
-            version=self._version,
             description=description)
+        self.parser.add_argument('--version',
+                                 action='version',
+                                 version=self._version)
         self.option_groups = dict()
 
     def get_version(self):
@@ -1190,7 +1192,7 @@ def main(args=None):
                               else "No"))
         # Add features to peaks
         if peak_centric:
-            names = sorted(peak_centric_outputs.keys())
+            names = sorted(list(peak_centric_outputs))
             xlsx.write_peak_centric(peak_fields)
             if options.summary:
                 xlsx.append_to_notes("\n'Peak-centric (summary)' lists the "
@@ -1210,7 +1212,7 @@ def main(args=None):
                                           peak_centric_summary[name])
         # Add peaks to features
         if gene_centric:
-            names = sorted(gene_centric_outputs.keys())
+            names = sorted(list(gene_centric_outputs))
             xlsx.write_feature_centric(gene_fields)
             if options.summary:
                 xlsx.append_to_notes("\n'%s-centric (summary)' lists the "

@@ -1,7 +1,7 @@
 #!/bin/env python
 #
 #     xls_output.py: functions for writing analysis results to Excel files
-#     Copyright (C) University of Manchester 2015-16 Peter Briggs, Leo Zeef
+#     Copyright (C) University of Manchester 2015-2019 Peter Briggs, Leo Zeef
 #     & Ian Donaldson
 #
 """
@@ -12,9 +12,10 @@ Functions for outputting analysis results to XLSX spreadsheet
 """
 import datetime
 import xlsxwriter
+import io
 import re
-import output
-import utils
+from . import output
+from . import utils
 
 # Regular expressions for styling tags
 RE_STYLE = re.compile(r"^<style +([^>]*)>(.*)</style>$")
@@ -37,7 +38,7 @@ NOTES['feature_centric'] = """
 <style font=bold bgcolor=gray>'%s-centric': nearest peaks to each %s</style>
 Column\tDescription"""
 
-class XLSX:
+class XLSX(object):
     """
     Class to assemble XLSX output file
 
@@ -252,7 +253,7 @@ class XLSX:
         """
         ws = self.add_sheet(title)
         # Get header line
-        with open(tsv_file,'r') as fp:
+        with io.open(tsv_file,'rt') as fp:
             i = self._rows[title]
             for line in fp:
                 j = 0

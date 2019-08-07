@@ -1,7 +1,7 @@
 #!/bin/env python
 #
 #     Peaks.py: classes for handling peak data
-#     Copyright (C) University of Manchester 2011-2018 Peter Briggs, Leo Zeef
+#     Copyright (C) University of Manchester 2011-2019 Peter Briggs, Leo Zeef
 #     & Ian Donaldson
 #
 """
@@ -12,9 +12,10 @@ Classes for handling peak data
 """
 
 import logging
-from utils import make_errline
+import io
+from .utils import make_errline
 
-class PeakSet:
+class PeakSet(object):
     """Class for storing a set of peaks
 
     ChIP-seq data consists of ChIP peak information, each of which are
@@ -81,51 +82,53 @@ class PeakSet:
             ncols = max(ncols,id_column)
             id_column = id_column - 1
         # Read in from file
-        fp = open(peaks_file,'rU')
-        for line in fp:
-            # Skip lines that start with a # symbol
-            if line.startswith('#'):
-                logging.debug("Peaks file: skipped line: %s" % line.strip())
-                continue
-            # Lines are tab-delimited
-            items = line.strip().split('\t')
-            if len(items) < ncols:
-                logging.warning("Peaks file: skipped line: %s" % line.strip())
-                logging.warning("Insufficient number of fields (%d): need at "
-                                "least %d" % (len(items),ncols))
-                continue
-            # Check that items in 'start' and 'end' columns are digits
-            if not items[start].isdigit() or not items[end].isdigit():
-                logging.warning("Peaks file: skipped line: %s" % line.strip())
-                # Indicate problem field(s)
-                bad_fields = []
-                for i in (start,end):
-                    if not items[i].isdigit():
-                        bad_fields.append(i)
-                logging.warning("                         %s" % \
-                                make_errline(line,bad_fields))
-                logging.warning("Expected integer at indicated positions")
-                continue
-            # Optional ID
-            try:
-                id_ = items[id_column]
-            except TypeError:
-                id_ = None
-            # Store in a new Peak object
-            try:
-                peak = Peak(items[chrom],
-                            items[start],
-                            items[end],
-                            id=id_,
-                            source_file=peaks_file)
-            except PeakRangeError,ex:
-                logging.error("Peaks file: bad line: %s" % line.strip())
-                logging.error("                      %s" %
-                              make_errline(line,(start,end)))
-                logging.error("%s" % ex)
-                raise ex
-            self.peaks.append(peak)
-        fp.close()
+        with io.open(peaks_file,'rt') as fp:
+            for line in fp:
+                # Skip lines that start with a # symbol
+                if line.startswith('#'):
+                    logging.debug("Peaks file: skipped line: %s" %
+                                  line.strip())
+                    continue
+                # Lines are tab-delimited
+                items = line.strip().split('\t')
+                if len(items) < ncols:
+                    logging.warning("Peaks file: skipped line: %s" %
+                                    line.strip())
+                    logging.warning("Insufficient number of fields (%d): "
+                                    "need at least %d" % (len(items),ncols))
+                    continue
+                # Check that items in 'start' and 'end' columns are digits
+                if not items[start].isdigit() or not items[end].isdigit():
+                    logging.warning("Peaks file: skipped line: %s" %
+                                    line.strip())
+                    # Indicate problem field(s)
+                    bad_fields = []
+                    for i in (start,end):
+                        if not items[i].isdigit():
+                            bad_fields.append(i)
+                    logging.warning("                         %s" % \
+                                    make_errline(line,bad_fields))
+                    logging.warning("Expected integer at indicated positions")
+                    continue
+                # Optional ID
+                try:
+                    id_ = items[id_column]
+                except TypeError:
+                    id_ = None
+                # Store in a new Peak object
+                try:
+                    peak = Peak(items[chrom],
+                                items[start],
+                                items[end],
+                                id=id_,
+                                source_file=peaks_file)
+                except PeakRangeError as ex:
+                    logging.error("Peaks file: bad line: %s" % line.strip())
+                    logging.error("                      %s" %
+                                  make_errline(line,(start,end)))
+                    logging.error("%s" % ex)
+                    raise ex
+                self.peaks.append(peak)
         # Store the source file
         self.source_file = peaks_file
         # Return a reference to this object
@@ -251,7 +254,7 @@ class PeakSet:
                 return True
         return False
 
-class Peak:
+class Peak(object):
     """Class for storing a peak
 
     Access the data from the line using the object's properties:

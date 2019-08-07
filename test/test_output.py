@@ -3,7 +3,13 @@
 #     Copyright (C) University of Manchester 2011-2018 Peter Briggs
 
 import unittest
-from itertools import izip_longest
+import io
+try:
+    # Python2
+    from itertools import izip_longest as zip_longest
+except ImportError:
+    # Python3
+    from itertools import zip_longest
 import rnachipintegrator.output as output
 from rnachipintegrator.output import AnalysisReporter,AnalysisReportWriter
 from rnachipintegrator.output import describe_fields
@@ -150,7 +156,7 @@ class TestAnalysisReporterNearestFeatures(unittest.TestCase):
         ap = AnalysisReporter(output.SINGLE_LINE,
                               fields=self.single_line_fields)
         # Check that output matches
-        for line,expected_line in izip_longest(
+        for line,expected_line in zip_longest(
                 ap.report_nearest_features(self.peak,
                                            self.features),
                 expected):
@@ -168,7 +174,7 @@ class TestAnalysisReporterNearestFeatures(unittest.TestCase):
                               fields=self.single_line_fields,
                               max_hits=2)
         # Check that output matches
-        for line,expected_line in izip_longest(
+        for line,expected_line in zip_longest(
                 ap.report_nearest_features(self.peak,
                                            self.features),
                 expected):
@@ -190,7 +196,7 @@ class TestAnalysisReporterNearestFeatures(unittest.TestCase):
                               pad=True,
                               null_placeholder='.')
         # Check that output matches
-        for line,expected_line in izip_longest(
+        for line,expected_line in zip_longest(
                 ap.report_nearest_features(self.peak,
                                            self.features),
                 expected):
@@ -208,7 +214,7 @@ class TestAnalysisReporterNearestFeatures(unittest.TestCase):
                               fields=self.single_line_fields_extra_data,
                               max_hits=2)
         # Check that output matches
-        for line,expected_line in izip_longest(
+        for line,expected_line in zip_longest(
                 ap.report_nearest_features(self.peak,
                                            self.features,
                                            cutoff=100000),
@@ -226,7 +232,7 @@ class TestAnalysisReporterNearestFeatures(unittest.TestCase):
         ap = AnalysisReporter(output.MULTI_LINE,
                               fields=self.multi_line_fields)
         # Check that output matches
-        for line,expected_line in izip_longest(
+        for line,expected_line in zip_longest(
                 ap.report_nearest_features(self.peak,
                                            self.features),
                 expected):
@@ -243,7 +249,7 @@ class TestAnalysisReporterNearestFeatures(unittest.TestCase):
                               fields=self.multi_line_fields,
                               max_hits=2)
         # Check that output matches
-        for line,expected_line in izip_longest(
+        for line,expected_line in zip_longest(
                 ap.report_nearest_features(self.peak,
                                            self.features),
                 expected):
@@ -264,7 +270,7 @@ class TestAnalysisReporterNearestFeatures(unittest.TestCase):
                               pad=True,
                               null_placeholder='.')
         # Check that output matches
-        for line,expected_line in izip_longest(
+        for line,expected_line in zip_longest(
                 ap.report_nearest_features(self.peak,
                                            self.features),
                 expected):
@@ -309,7 +315,7 @@ class TestAnalysisReporterNearestPeaks(unittest.TestCase):
         ap = AnalysisReporter(output.SINGLE_LINE,
                               fields=self.single_line_fields)
         # Check that output matches
-        for line,expected_line in izip_longest(
+        for line,expected_line in zip_longest(
                 ap.report_nearest_peaks(self.feature,
                                         self.peaks),
                 expected):
@@ -328,7 +334,7 @@ class TestAnalysisReporterNearestPeaks(unittest.TestCase):
                               max_hits=2,
                               null_placeholder='.')
         # Check that output matches
-        for line,expected_line in izip_longest(
+        for line,expected_line in zip_longest(
                 ap.report_nearest_peaks(self.feature,
                                         self.peaks),
                 expected):
@@ -349,7 +355,7 @@ class TestAnalysisReporterNearestPeaks(unittest.TestCase):
                               max_hits=4,
                               pad=True)
         # Check that output matches
-        for line,expected_line in izip_longest(
+        for line,expected_line in zip_longest(
                 ap.report_nearest_peaks(self.feature,
                                         self.peaks),
                 expected):
@@ -368,7 +374,7 @@ class TestAnalysisReporterNearestPeaks(unittest.TestCase):
                               max_hits=2,
                               null_placeholder='.')
         # Check that output matches
-        for line,expected_line in izip_longest(
+        for line,expected_line in zip_longest(
                 ap.report_nearest_peaks(self.feature,
                                         self.peaks,
                                         cutoff=100000),
@@ -386,7 +392,7 @@ class TestAnalysisReporterNearestPeaks(unittest.TestCase):
         ap = AnalysisReporter(output.MULTI_LINE,
                               fields=self.multi_line_fields)
         # Check that output matches
-        for line,expected_line in izip_longest(
+        for line,expected_line in zip_longest(
                 ap.report_nearest_peaks(self.feature,
                                         self.peaks),
                 expected):
@@ -403,7 +409,7 @@ class TestAnalysisReporterNearestPeaks(unittest.TestCase):
                               fields=self.multi_line_fields,
                               max_hits=2)
         # Check that output matches
-        for line,expected_line in izip_longest(
+        for line,expected_line in zip_longest(
                 ap.report_nearest_peaks(self.feature,
                                         self.peaks),
                 expected):
@@ -424,7 +430,7 @@ class TestAnalysisReporterNearestPeaks(unittest.TestCase):
                               pad=True,
                               null_placeholder='.')
         # Check that output matches
-        for line,expected_line in izip_longest(
+        for line,expected_line in zip_longest(
                 ap.report_nearest_peaks(self.feature,
                                         self.peaks),
                 expected):
@@ -600,7 +606,8 @@ class TestAnalysisReportWriter(unittest.TestCase):
             "chr2L\t66811\t66812\t1 of 3\tCG31973\t7568\t7568\n" \
             "chr2L\t66811\t66812\t2 of 3\tCG2674-RE\t40091\t40091\n" \
             "chr2L\t66811\t66812\t3 of 3\tCG2674-RC\t41114\t41114\n"
-        actual_output = open(outfile,'r').read()
+        with io.open(outfile,'rt') as fp:
+            actual_output = fp.read()
         # Check that output matches
         self.assertEqual(expected_output,actual_output)
 
@@ -633,7 +640,8 @@ class TestAnalysisReportWriter(unittest.TestCase):
             "chr2L\t66811\t66812\t1 of 3\t100000\tCG31973\t7568\t7568\n" \
             "chr2L\t66811\t66812\t2 of 3\t100000\tCG2674-RE\t40091\t40091\n" \
             "chr2L\t66811\t66812\t3 of 3\t100000\tCG2674-RC\t41114\t41114\n"
-        actual_output = open(outfile,'r').read()
+        with io.open(outfile,'rt') as fp:
+            actual_output = fp.read()
         # Check that output matches
         self.assertEqual(expected_output,actual_output)
 
@@ -663,7 +671,8 @@ class TestAnalysisReportWriter(unittest.TestCase):
         expected_output = \
             "#peak.chr\tpeak.start\tpeak.end\torder\tfeature.id\tdist_closest\tdist_TSS\n" \
             "chr2L\t66811\t66812\t1 of 3\tCG31973\t7568\t7568\n"
-        actual_output = open(summary,'r').read()
+        with io.open(summary,'rt') as fp:
+            actual_output = fp.read()
         # Check that output matches
         self.assertEqual(expected_output,actual_output)
 
@@ -710,7 +719,8 @@ class TestAnalysisReportWriter(unittest.TestCase):
             "chr2L\t66811\t66812\t1 of 2\tCG31973\t7568\t7568\n" \
             "chr2L\t66811\t66812\t2 of 2\tCG2674-RE\t40091\t40091\n" \
             "chr2L\t66811\t66812\t1 of 1\tCG2674-RC\t41114\t41114\n"
-        actual_output = open(outfile,'r').read()
+        with io.open(outfile,'rt') as fp:
+            actual_output = fp.read()
         # Check that output matches
         self.assertEqual(expected_output,actual_output)
 
@@ -742,7 +752,8 @@ class TestAnalysisReportWriter(unittest.TestCase):
             "CG31973\t1 of 3\tchr2L\t66711\t66911\t7468\t7468\n" \
             "CG31973\t2 of 3\tchr2L\t249077\t249277\t189834\t189834\n" \
             "CG31973\t3 of 3\tchr2L\t605850\t606050\t546607\t546607\n"
-        actual_output = open(outfile,'r').read()
+        with io.open(outfile,'rt') as fp:
+            actual_output = fp.read()
         # Check that output matches
         self.assertEqual(expected_output,actual_output)
 
@@ -775,7 +786,8 @@ class TestAnalysisReportWriter(unittest.TestCase):
             "CG31973\t1 of 3\tchr2L\t66711\t66911\t100000\t7468\t7468\n" \
             "CG31973\t2 of 3\tchr2L\t249077\t249277\t100000\t189834\t189834\n" \
             "CG31973\t3 of 3\tchr2L\t605850\t606050\t100000\t546607\t546607\n"
-        actual_output = open(outfile,'r').read()
+        with io.open(outfile,'rt') as fp:
+            actual_output = fp.read()
         # Check that output matches
         self.assertEqual(expected_output,actual_output)
 
@@ -805,7 +817,8 @@ class TestAnalysisReportWriter(unittest.TestCase):
         expected_output = \
             "#feature.id\torder\tpeak.chr\tpeak.start\tpeak.end\tdist_closest\tdist_TSS\n" \
             "CG31973\t1 of 3\tchr2L\t66711\t66911\t7468\t7468\n"
-        actual_output = open(summary,'r').read()
+        with io.open(summary,'rt') as fp:
+            actual_output = fp.read()
         # Check that output matches
         self.assertEqual(expected_output,actual_output)
 

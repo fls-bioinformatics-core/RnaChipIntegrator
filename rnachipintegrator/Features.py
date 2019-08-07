@@ -1,7 +1,7 @@
 #!/bin/env python
 #
 #     Features.py: classes for handling feature data
-#     Copyright (C) University of Manchester 2011-15 Peter Briggs, Leo Zeef
+#     Copyright (C) University of Manchester 2011-2019 Peter Briggs, Leo Zeef
 #     & Ian Donaldson
 #
 """
@@ -12,10 +12,11 @@ Classes for handling feature data.
 """
 
 import logging
-from distances import closestDistanceToRegion
-from utils import make_errline
+import io
+from .distances import closestDistanceToRegion
+from .utils import make_errline
 
-class FeatureSet:
+class FeatureSet(object):
     """Class for storing a set of features
 
     RNA-seq features consists of genes/transcripts/isomers, which
@@ -58,77 +59,85 @@ class FeatureSet:
         line_index = 0
         critical_error = False
         # Read in data from file
-        fp = open(features_file,'rU')
-        for line in fp:
-            # Increment index
-            line_index += 1
-            # Skip lines starting with #
-            if line.startswith('#'):
-                logging.debug("Feature file: skipped line: %s" % line.strip())
-                continue
-            # Lines are tab-delimited and have at least 5 columns:
-            # ID  chr  start  end  strand
-            items = line.strip().split('\t')
-            if len(items) < 5:
-                logging.warning("Feature file: skipped line: %s" % line.strip())
-                logging.warning("Insufficient number of fields (%d)" % \
+        with io.open(features_file,'rt') as fp:
+            for line in fp:
+                # Increment index
+                line_index += 1
+                # Skip lines starting with #
+                if line.startswith('#'):
+                    logging.debug("Feature file: skipped line: %s" %
+                                  line.strip())
+                    continue
+                # Lines are tab-delimited and have at least 5 columns:
+                # ID  chr  start  end  strand
+                items = line.strip().split('\t')
+                if len(items) < 5:
+                    logging.warning("Feature file: skipped line: %s" %
+                                    line.strip())
+                    logging.warning("Insufficient number of fields (%d)" %
                                     len(items))
-                continue
-            # Check line is valid i.e. start and stop should be
-            # numbers, strand should be + or -
-            problem_fields = []
-            if not items[2].isdigit(): problem_fields.append(2)
-            if not items[3].isdigit(): problem_fields.append(3)
-            if not (items[4] == '+' or  items[4] == '-'): problem_fields.append(4)
-            if problem_fields:
-                # If this is the first line then assume it's a header and ignore
-                if line_index == 1:
-                    logging.warning("%s: first line ignored as header: %s" % 
-                                    (features_file,line.strip()))
-                else:
-                    # Indicate problem field(s)
-                    logging.error("%s: critical error line %d: bad values:" %
-                                  (features_file,line_index))
+                    continue
+                # Check line is valid i.e. start and stop should be
+                # numbers, strand should be + or -
+                problem_fields = []
+                if not items[2].isdigit():
+                    problem_fields.append(2)
+                if not items[3].isdigit():
+                    problem_fields.append(3)
+                if not (items[4] == '+' or  items[4] == '-'):
+                    problem_fields.append(4)
+                if problem_fields:
+                    # If this is the first line then assume it's a header
+                    # and ignore
+                    if line_index == 1:
+                        logging.warning("%s: first line ignored as header: "
+                                        "%s" % (features_file,line.strip()))
+                    else:
+                        # Indicate problem field(s)
+                        logging.error("%s: critical error line %d: bad "
+                                      "values:" % (features_file,line_index))
+                        logging.error("%s" % line.strip())
+                        logging.error("%s" % make_errline(line.strip(),
+                                                          problem_fields))
+                        # This is a critical error: update flag
+                        critical_error = True
+                    # Continue to next line
+                    continue
+                elif int(items[2]) >= int(items[3]):
+                    # Start position is same or higher than end
+                    logging.error("%s: critical error line %d: 'end' comes "
+                                  "before 'start':" % (features_file,
+                                                       line_index))
                     logging.error("%s" % line.strip())
-                    logging.error("%s" % make_errline(line.strip(),problem_fields))
-                    # This is a critical error: update flag
+                    logging.error("%s" % make_errline(line.strip(),(2,3)))
+                    # This is a critical error: update flag but continue
+                    # reading
                     critical_error = True
-                # Continue to next line
-                continue
-            elif int(items[2]) >= int(items[3]):
-                # Start position is same or higher than end
-                logging.error("%s: critical error line %d: 'end' comes before 'start':" %
-                              (features_file,line_index))
-                logging.error("%s" % line.strip())
-                logging.error("%s" % make_errline(line.strip(),(2,3)))
-                # This is a critical error: update flag but continue reading
-                critical_error = True
-                continue
-            # Store in a new Feature object
-            feature = Feature(items[0],
-                              items[1],
-                              items[2],
-                              items[3],
-                              items[4],
-                              source_file=features_file)
-            # Additional flag
-            if len(items) >= 6:
-                # Is column 6 a flag?
-                try:
-                    flag_value = int(items[5])
-                    if flag_value != 0 and flag_value != 1:
+                    continue
+                # Store in a new Feature object
+                feature = Feature(items[0],
+                                  items[1],
+                                  items[2],
+                                  items[3],
+                                  items[4],
+                                  source_file=features_file)
+                # Additional flag
+                if len(items) >= 6:
+                    # Is column 6 a flag?
+                    try:
+                        flag_value = int(items[5])
+                        if flag_value != 0 and flag_value != 1:
+                            flag_value = None
+                    except ValueError:
                         flag_value = None
-                except ValueError:
-                    flag_value = None
-                # Store value
-                feature.flag = flag_value
+                    # Store value
+                    feature.flag = flag_value
 
-            # Store data
-            self.features.append(feature)
-        fp.close()
+                # Store data
+                self.features.append(feature)
         # Deal with postponed critical errors
         if critical_error:
-            raise Exception, "critical error(s) in '%s'" % features_file
+            raise Exception("Critical error(s) in '%s'" % features_file)
         # Store the source file
         self.source_file = features_file
         # Return a reference to this object
@@ -321,7 +330,7 @@ class FeatureSet:
                 return True
         return False
 
-class Feature:
+class Feature(object):
     """Class for storing an 'feature' (gene/transcript/isomer)
 
     Access the data for the feature using the object's properties:
