@@ -10,6 +10,8 @@ Technical details
 Python:
 
  * 2.7
+ * 3.5
+ * 3.6
  * 3.7
 
 It requires the external ``xlsxwriter`` library in order to generate the
