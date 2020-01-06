@@ -2,6 +2,14 @@ Version History and Changes
 ===========================
 
 --------------------------
+Version 2.0.0 (2020-01-06)
+--------------------------
+
+* Add support for Python 3 (3.5, 3.6, 3.7 and 3.8)
+  (`PR #69 <https://github.com/fls-bioinformatics-core/RnaChipIntegrator/pull/69>`_,
+   `PR #71 <https://github.com/fls-bioinformatics-core/RnaChipIntegrator/pull/71>`_).
+
+--------------------------
 Version 1.2.0 (2019-07-19)
 --------------------------
 
