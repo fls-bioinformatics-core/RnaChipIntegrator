@@ -13,6 +13,7 @@ Python:
  * 3.5
  * 3.6
  * 3.7
+ * 3.8
 
 It requires the external ``xlsxwriter`` library in order to generate the
 ``.xlsx`` Excel spreadsheets:
