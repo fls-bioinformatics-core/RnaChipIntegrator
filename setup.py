@@ -3,7 +3,7 @@
 Setup script to install RnaChipIntegrator: analyses of peak data with
 genomic feature data
 
-Copyright (C) University of Manchester 2011-19 Peter Briggs, Ian Donaldson, Leo Zeef
+Copyright (C) University of Manchester 2011-20 Peter Briggs, Ian Donaldson, Leo Zeef
 
 """
 
@@ -14,6 +14,9 @@ import rnachipintegrator
 version = rnachipintegrator.get_version()
 
 download_url = 'https://github.com/fls-bioinformatics-core/RnaChipIntegrator/archive/v' + version + '.tar.gz'
+
+with open('README.rst') as fh:
+    readme = fh.read()
 
 # Hack to acquire all scripts that we want to
 # install into 'bin'
@@ -27,6 +30,7 @@ setup(
     name = "RnaChipIntegrator",
     version = version,
     description = "Analyse genes against peak data, and vice versa",
+    long_description = readme,
     url = 'https://github.com/fls-bioinformatics-core/RnaChipIntegrator',
     download_url = download_url,
     author = 'Peter Briggs, Ian Donaldson, Leo Zeef',
