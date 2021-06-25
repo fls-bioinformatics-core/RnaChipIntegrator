@@ -7,8 +7,8 @@ RnaChipIntegrator: analysis of genes with peak data
 .. image:: https://badge.fury.io/py/RnaChipIntegrator.svg
    :target: https://pypi.python.org/pypi/rnachipintegrator/
 
-.. image:: https://travis-ci.org/fls-bioinformatics-core/RnaChipIntegrator.png?branch=master
-   :target: https://travis-ci.org/fls-bioinformatics-core/RnaChipIntegrator
+.. image:: https://github.com/fls-bioinformatics-core/RnaChipIntegrator/workflows/Python%20CI/badge.svg
+   :target: https://github.com/fls-bioinformatics-core/RnaChipIntegrator/actions?query=workflow%3A%22Python+CI%22
 
 ``RnaChipIntegrator`` is a utility that performs integrated analyses
 of 'gene' data (a set of genes or other genomic features) with 'peak'
