@@ -9,11 +9,11 @@ Technical details
 ``RnaChipIntegrator`` has been tested against the following versions of
 Python:
 
- * 2.7
  * 3.5
  * 3.6
  * 3.7
  * 3.8
+ * 3.9
 
 It requires the external ``xlsxwriter`` library in order to generate the
 ``.xlsx`` Excel spreadsheets:
