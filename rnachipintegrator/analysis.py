@@ -29,7 +29,7 @@ from .Peaks import PeakSet
 #   distances from an arbitrary zero, and then calculating distances
 #   between things with reference to that?
 
-def find_nearest_features(peaks,features,distance=None,tss_only=False,
+def find_nearest_features(peaks,features,distance=None,use_edge='BOTH',
                           only_differentially_expressed=False):
     """
     Locate nearest features for each peak
@@ -38,9 +38,10 @@ def find_nearest_features(peaks,features,distance=None,tss_only=False,
       features (FeatureList): list of features
       peaks (PeakList): list of peaks
       distance (int): optional cut-off distance to apply
-      tss_only (bool): only consider distances from the
-        feature TSS (default is to consider distances from
-        both the TSS and TES)
+      use_edge (str): one of 'BOTH' (the default), 'TSS'
+        or 'TSS'. 'Both' considers distances from both the
+        feature TSS and TES and picks the nearest, whereas
+        'tss' and 'tes' only consider the specified edge.
       only_differentially_expressed (bool): only consider
         features that are flagged as differentially expressed
       pad (bool): add extra 'None' items to output
@@ -58,16 +59,21 @@ def find_nearest_features(peaks,features,distance=None,tss_only=False,
         # Differentially-expressed features only?
         if only_differentially_expressed:
             feature_list = feature_list.filterByFlag(1)
-        if tss_only:
+        if use_edge == "TSS":
             sort_features_by_tss_distances(peak,feature_list)
+        elif use_edge == "TES":
+            sort_features_by_tes_distances(peak,feature_list)
         else:
             sort_features_by_edge_distances(peak,feature_list)
         # Apply distance cut-off
         if distance is not None:
             closest = FeatureSet()
             for feature in feature_list:
-                if tss_only:
+                if use_edge == "TSS":
                     if distances.distance_tss(peak,feature) > distance:
+                        break
+                elif use_edge == "TES":
+                    if distances.distance_tes(peak,feature) > distance:
                         break
                 else:
                     if distances.distance_closest_edge(peak,feature) > distance:
@@ -80,7 +86,7 @@ def find_nearest_features(peaks,features,distance=None,tss_only=False,
         # Return result
         yield (peak,feature_list)
 
-def find_nearest_peaks(features,peaks,distance=None,tss_only=False,
+def find_nearest_peaks(features,peaks,distance=None,use_edge='BOTH',
                        only_differentially_expressed=False):
     """
     Locate nearest peaks for each feature
@@ -89,9 +95,10 @@ def find_nearest_peaks(features,peaks,distance=None,tss_only=False,
       features (FeatureList): list of features
       peaks (PeakList): list of peaks
       distance (int): optional cut-off distance to apply
-      tss_only (bool): only consider distances from the
-        feature TSS (default is to consider distances from
-        both the TSS and TES)
+      use_edge (str): one of 'BOTH' (the default), 'TSS'
+        or 'TSS'. 'Both' considers distances from both the
+        feature TSS and TES and picks the nearest, whereas
+        'tss' and 'tes' only consider the specified edge.
       only_differentially_expressed (bool): only consider
         features that are flagged as differentially expressed
 
@@ -102,9 +109,12 @@ def find_nearest_peaks(features,peaks,distance=None,tss_only=False,
 
     """
     # Set functions according to edges
-    if tss_only:
+    if use_edge == "TSS":
         sort_peaks = sort_peaks_by_tss_distances
         get_distance = distances.distance_tss
+    elif use_edge == "TES":
+        sort_peaks = sort_peaks_by_tes_distances
+        get_distance = distances.distance_tes
     else:
         sort_peaks = sort_peaks_by_edge_distances
         get_distance = distances.distance_closest_edge
@@ -145,7 +155,7 @@ def sort_features_by_edge_distances(peak,features):
     """
     features.features = sorted(features.features,
                                key = lambda f:
-                               distances.edge_distances(peak,f))
+                               (distances.edge_distances(peak,f),f.id))
 
 def sort_features_by_tss_distances(peak,features):
     """

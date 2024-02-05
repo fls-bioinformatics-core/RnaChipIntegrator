@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 #
 #     RnaChipIntegrator.py: analyse genomic features (genes) with peak data
-#     Copyright (C) University of Manchester 2011-19 Peter Briggs, Leo Zeef
-#     & Ian Donaldson
+#     Copyright (C) University of Manchester 2011-19,2024 Peter Briggs,
+#     Leo Zeef & Ian Donaldson
 #
 #     This code is free software; you can redistribute it and/or modify it
 #     under the terms of the Artistic License 2.0 (see the file LICENSE
@@ -207,13 +207,13 @@ class CLI(object):
         """
         self.add_option('--edge',
                         action='store',dest="edge",
-                        choices=('tss','both'),
+                        choices=('tss','tes','both'),
                         default='tss',
                         help="Gene edges to consider when calculating "
                         "distances between genes and peaks, either: "
-                        "'tss' (default: only use gene TSS) or 'both' "
-                        "(use whichever of TSS or TES gives shortest "
-                        "distance)",
+                        "'tss' (default: only use gene TSS), 'tes' "
+                        "(only use gene TES), or 'both' (use whichever "
+                        "of TSS or TES gives shortest distance)",
                         group=group)
 
     def add_only_de_option(self,group=None):
@@ -497,7 +497,8 @@ class AnalysisParams(object):
     genes: FeatureSet instance
     peaks: PeakSet instance
     cutoff: cutoff distance
-    tss_only: whether to use TSS or both TSS and TES
+    use_edge: whether to use both TSS and TES, TSS only
+      or TES only
     only_differentially_expressed: whether to restrict
       genes to those flagged as differenitally
       expressed
@@ -514,7 +515,7 @@ class AnalysisParams(object):
             genes=None,
             peaks=None,
             cutoff=None,
-            tss_only=False,
+            use_edge="BOTH",
             only_differentially_expressed=False)
         for key in kws:
             if key not in self._params:
@@ -531,8 +532,8 @@ class AnalysisParams(object):
     def cutoff(self):
         return self._params['cutoff']
     @property
-    def tss_only(self):
-        return self._params['tss_only']
+    def use_edge(self):
+        return self._params['use_edge']
     @property
     def only_differentially_expressed(self):
         return self._params['only_differentially_expressed']
@@ -675,7 +676,7 @@ def find_nearest_features(params):
     for peak,genes in analysis.find_nearest_features(
             params.peaks,
             params.genes,
-            tss_only=params.tss_only,
+            use_edge=params.use_edge,
             distance=params.cutoff,
             only_differentially_expressed=\
             params.only_differentially_expressed):
@@ -695,7 +696,7 @@ def find_nearest_peaks(params):
     for gene,peaks in analysis.find_nearest_peaks(
             params.genes,
             params.peaks,
-            tss_only=params.tss_only,
+            use_edge=params.use_edge,
             distance=params.cutoff,
             only_differentially_expressed=\
             params.only_differentially_expressed):
@@ -853,9 +854,11 @@ def main(args=None):
 
     # Gene edge to use
     if options.edge == 'tss':
-        tss_only = True
+        use_edge = "TSS"
+    elif options.edge == 'tes':
+        use_edge = "TES"
     else:
-        tss_only = False
+        use_edge = "BOTH"
 
     # Promoter region
     promoter = (abs(int(options.promoter_region.split(',')[0])),
@@ -960,8 +963,7 @@ def main(args=None):
     print("Cutoffs (bp)   : %s" % ','.join([str(d) if d is not None
                                             else "no cutoff"
                                             for d in cutoffs]))
-    print("Edge           : %s" % ('TSS only' if tss_only
-                                   else 'TSS or TES'))
+    print("Edge           : %s" % use_edge)
     print("DE only        : %s" % ('yes' if options.only_diff_expressed
                                    else 'no'))
     print("Nprocs         : %s" % options.nprocs)
@@ -1021,7 +1023,7 @@ def main(args=None):
                         genes=gene_lists[genes],
                         peaks=peak_lists[peaks],
                         cutoff=cutoff,
-                        tss_only=tss_only,
+                        use_edge=use_edge,
                         only_differentially_expressed=
                         options.only_diff_expressed
                     ))
@@ -1182,8 +1184,10 @@ def main(args=None):
                                 else "%d" % options.max_closest))
         xlsx.append_to_notes("Promoter region (bp from TSS)\t-%d to %d" %
                              promoter)
-        if tss_only:
+        if use_edge == "TSS":
             xlsx.append_to_notes("Distances calculated from\tTSS only")
+        elif use_edge == "TES":
+            xlsx.append_to_notes("Distances calculated from\tTES only")
         else:
             xlsx.append_to_notes("Distances calculated from\tTSS or TES")
         xlsx.append_to_notes("Only use differentially expressed %ss\t%s" %
