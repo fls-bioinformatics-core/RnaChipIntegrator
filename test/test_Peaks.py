@@ -14,21 +14,21 @@ class TestPeakSet(unittest.TestCase):
 
     def setUp(self):
         # Create input files for tests
-        create_test_file('ChIP_peaks-ex1.txt',chip_peaks_ex1)
-        create_test_file('ChIP_peaks-ex2.txt',chip_peaks_ex2)
-        create_test_file('ChIP_peaks-ex5.txt',chip_peaks_ex5)
-        create_test_file('ChIP_peaks-ex6.txt',chip_peaks_ex6)
-        create_test_file('ChIP_peaks-ex7.txt',chip_peaks_ex7)
-        create_test_file('ChIP_peaks_multi_columns-ex1.txt',
-                         chip_peaks_multi_columns_ex1)
+        create_file('ChIP_peaks-ex1.txt',chip_peaks_ex1)
+        create_file('ChIP_peaks-ex2.txt',chip_peaks_ex2)
+        create_file('ChIP_peaks-ex5.txt',chip_peaks_ex5)
+        create_file('ChIP_peaks-ex6.txt',chip_peaks_ex6)
+        create_file('ChIP_peaks-ex7.txt',chip_peaks_ex7)
+        create_file('ChIP_peaks_multi_columns-ex1.txt',
+                    chip_peaks_multi_columns_ex1)
 
     def tearDown(self):
         # Remove input files
-        delete_test_file('ChIP_peaks-ex1.txt')
-        delete_test_file('ChIP_peaks-ex2.txt')
-        delete_test_file('ChIP_peaks-ex5.txt')
-        delete_test_file('ChIP_peaks-ex6.txt')
-        delete_test_file('ChIP_peaks-ex7.txt')
+        delete_file('ChIP_peaks-ex1.txt')
+        delete_file('ChIP_peaks-ex2.txt')
+        delete_file('ChIP_peaks-ex5.txt')
+        delete_file('ChIP_peaks-ex6.txt')
+        delete_file('ChIP_peaks-ex7.txt')
 
     def test_reading_in_ChIPseq_data(self):
         peaks = PeakSet('ChIP_peaks-ex1.txt')
@@ -230,13 +230,13 @@ class TestPeak(unittest.TestCase):
 class TestFeatureSetWithChIPSeqData(unittest.TestCase):
     def setUp(self):
         # Create input files for tests
-        create_test_file('Transcripts-ex1.txt',transcripts_ex1)
-        create_test_file('ChIP_peaks-ex1.txt',chip_peaks_ex1)
+        create_file('Transcripts-ex1.txt',transcripts_ex1)
+        create_file('ChIP_peaks-ex1.txt',chip_peaks_ex1)
 
     def tearDown(self):
         # Remove input files
-        delete_test_file('Transcripts-ex1.txt')
-        delete_test_file('ChIP_peaks-ex1.txt')
+        delete_file('Transcripts-ex1.txt')
+        delete_file('ChIP_peaks-ex1.txt')
 
     def test_closest_transcript_to_peak(self):
         features = FeatureSet('Transcripts-ex1.txt')

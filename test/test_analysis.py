@@ -1,6 +1,6 @@
 #
 #     test_analysis.py: unit tests for analysis module
-#     Copyright (C) University of Manchester 2011-5 Peter Briggs
+#     Copyright (C) University of Manchester 2011-5,2024 Peter Briggs
 
 import unittest
 from rnachipintegrator.Features import FeatureSet,Feature
@@ -41,15 +41,15 @@ class TestFindNearestFeaturesForSummits(unittest.TestCase):
 
     def setUp(self):
         # Set up data for tests
-        create_test_file('features.txt',feature_data)
-        create_test_file('summits.txt',summit_data)
+        create_file('features.txt',feature_data)
+        create_file('summits.txt',summit_data)
         self.features = FeatureSet('features.txt')
         self.summits = PeakSet('summits.txt')
 
     def tearDown(self):
         # Remove input files
-        delete_test_file('features.txt')
-        delete_test_file('summits.txt')
+        delete_file('features.txt')
+        delete_file('summits.txt')
 
     def test_find_nearest_features_doesnt_change_input_features(self):
         # Check that the input FeatureSet is not altered by the analysis
@@ -387,15 +387,15 @@ class TestFindNearestFeaturesForRegions(unittest.TestCase):
 
     def setUp(self):
         # Set up data for tests
-        create_test_file('features.txt',feature_data)
-        create_test_file('peaks.txt',peak_data)
+        create_file('features.txt',feature_data)
+        create_file('peaks.txt',peak_data)
         self.features = FeatureSet('features.txt')
         self.peaks = PeakSet('peaks.txt')
 
     def tearDown(self):
         # Remove input files
-        delete_test_file('features.txt')
-        delete_test_file('peaks.txt')
+        delete_file('features.txt')
+        delete_file('peaks.txt')
 
     def test_find_nearest_features_doesnt_change_input_features(self):
         # Check that the input FeatureSet is not altered by the analysis
@@ -744,15 +744,15 @@ class TestFindNearestPeaksForSummits(unittest.TestCase):
 
     def setUp(self):
         # Set up data for tests
-        create_test_file('features.txt',feature_data)
-        create_test_file('summits.txt',summit_data)
+        create_file('features.txt',feature_data)
+        create_file('summits.txt',summit_data)
         self.features = FeatureSet('features.txt')
         self.summits = PeakSet('summits.txt')
 
     def tearDown(self):
         # Remove input files
-        delete_test_file('features.txt')
-        delete_test_file('summits.txt')
+        delete_file('features.txt')
+        delete_file('summits.txt')
 
     def test_find_nearest_peaks_summits(self):
         # Run the analysis
@@ -1153,15 +1153,15 @@ class TestFindNearestPeaksForRegions(unittest.TestCase):
 
     def setUp(self):
         # Set up data for tests
-        create_test_file('features.txt',feature_data)
-        create_test_file('peaks.txt',peak_data)
+        create_file('features.txt',feature_data)
+        create_file('peaks.txt',peak_data)
         self.features = FeatureSet('features.txt')
         self.peaks = PeakSet('peaks.txt')
 
     def tearDown(self):
         # Remove input files
-        delete_test_file('features.txt')
-        delete_test_file('peaks.txt')
+        delete_file('features.txt')
+        delete_file('peaks.txt')
 
     def test_find_nearest_peaks_regions(self):
         # Run the analysis
