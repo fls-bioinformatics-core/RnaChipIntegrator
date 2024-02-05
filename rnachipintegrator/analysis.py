@@ -1,8 +1,8 @@
 #!/bin/env python
 #
 #     analysis.py: analyses of peaks vs features and vice versa
-#     Copyright (C) University of Manchester 2011-2019 Peter Briggs, Leo Zeef
-#     & Ian Donaldson
+#     Copyright (C) University of Manchester 2011-2019,2024 Peter Briggs,
+#     Leo Zeef & Ian Donaldson
 #
 """
 analysis.py
@@ -161,7 +161,23 @@ def sort_features_by_tss_distances(peak,features):
     """
     features.features = sorted(features.features,
                                key = lambda f:
-                               distances.tss_distances(peak,f))
+                               (distances.tss_distances(peak,f),f.id))
+
+def sort_features_by_tes_distances(peak,features):
+    """
+    Sort features by TES-to-edge distances to a peak
+
+    Arguments:
+      peak (Peak): peak instance
+      features (FeatureSet): set of features that will
+        be sorted into order according to the smallest
+        distance of their TES positions to the edges of
+        the peak. The sorting is done in place.
+
+    """
+    features.features = sorted(features.features,
+                               key = lambda f:
+                               (distances.tes_distances(peak,f),f.id))
 
 def sort_peaks_by_edge_distances(feature,peaks):
     """
@@ -194,3 +210,19 @@ def sort_peaks_by_tss_distances(feature,peaks):
     peaks.peaks = sorted(peaks.peaks,
                          key = lambda p:
                          distances.tss_distances(p,feature))
+
+def sort_peaks_by_tes_distances(feature,peaks):
+    """
+    Sort peaks by edge-to-TES distances to a feature
+
+    Arguments:
+      feature (Feature): feature instance
+      peaks (PeakSet): set of peaks that will be
+        sorted into order according to the smallest
+        distance of their edges from the TES position
+        of the feature. The sorting is done in place.
+
+    """
+    peaks.peaks = sorted(peaks.peaks,
+                         key = lambda p:
+                         distances.tes_distances(p,feature))
