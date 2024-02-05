@@ -125,14 +125,14 @@ class TestFeatureSet(unittest.TestCase):
 
     def setUp(self):
         # Create input files for tests
-        create_test_file('Transcripts-ex1.txt',transcripts_ex1)
-        create_test_file('Transcripts-ex2.txt',transcripts_ex2)
-        create_test_file('Transcripts-ex2a.txt',transcripts_ex2a)
+        create_file('Transcripts-ex1.txt',transcripts_ex1)
+        create_file('Transcripts-ex2.txt',transcripts_ex2)
+        create_file('Transcripts-ex2a.txt',transcripts_ex2a)
 
     def tearDown(self):
         # Remove input files
-        delete_test_file('Transcripts-ex1.txt')
-        delete_test_file('Transcripts-ex2.txt')
+        delete_file('Transcripts-ex1.txt')
+        delete_file('Transcripts-ex2.txt')
 
     def test_populate_from_list_of_features(self):
         features = FeatureSet(

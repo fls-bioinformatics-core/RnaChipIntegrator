@@ -244,14 +244,14 @@ CG18024-RA	chr2L	8825625	8829671	+	1	3	chr2L	8825470	155	chr2L	8832523	-6898	chr
 
 import os
 
-def create_test_file(name,data):
+def create_file(name,data):
     # Writes data to a file to be used in testing
     fp = io.open(name,'wt')
     for line in data.split('\n'):
         fp.write(u"%s\n" % line)
     fp.close()
 
-def delete_test_file(name):
+def delete_file(name):
     # Deletes named test file
     if os.path.exists(name):
         os.remove(name)
