@@ -1,6 +1,6 @@
 #
 #     test_analysis.py: unit tests for analysis module
-#     Copyright (C) University of Manchester 2011-5 Peter Briggs
+#     Copyright (C) University of Manchester 2011-5,2024 Peter Briggs
 
 from common import *
 from rnachipintegrator.Peaks import Peak
@@ -9,6 +9,7 @@ from rnachipintegrator.distances import regions_overlap
 from rnachipintegrator.distances import closestDistanceToRegion
 from rnachipintegrator.distances import edge_distances
 from rnachipintegrator.distances import tss_distances
+from rnachipintegrator.distances import tes_distances
 from rnachipintegrator.distances import direction
 import unittest
 
@@ -158,6 +159,35 @@ class TestTSSDistancesFunction(unittest.TestCase):
                          (0,75))
         self.assertEqual(tss_distances(Peak('chr1','250','350'),
                                        Feature('NM4','chr1','200','300','-')),
+                         (0,50))
+
+########################################################################
+#
+# TestTESDistancesFunction
+#
+#########################################################################
+
+class TestTESDistancesFunction(unittest.TestCase):
+    def test_tes_distances_peak_before_TES(self):
+        self.assertEqual(tes_distances(Peak('chr1','100','200'),
+                                       Feature('NM1','chr1','250','400','+')),
+                         (200,300))
+        self.assertEqual(tes_distances(Peak('chr1','100','200'),
+                                       Feature('NM1','chr1','250','400','-')),
+                         (50,150))
+    def test_tes_distances_TES_before_peak(self):
+        self.assertEqual(tes_distances(Peak('chr1','250','400'),
+                                       Feature('NM2','chr1','100','200','+')),
+                         (50,200))
+        self.assertEqual(tes_distances(Peak('chr1','250','400'),
+                                       Feature('NM2','chr1','100','200','-')),
+                         (150,300))
+    def test_tes_distances_peak_contains_TES(self):
+        self.assertEqual(tes_distances(Peak('chr1','100','250'),
+                                       Feature('NM3','chr1','50','200','+')),
+                         (0,75))
+        self.assertEqual(tes_distances(Peak('chr1','250','350'),
+                                       Feature('NM4','chr1','300','400','-')),
                          (0,50))
 
 ########################################################################
