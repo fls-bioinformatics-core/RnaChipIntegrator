@@ -1,0 +1,95 @@
+# Workflow to build and publish RnaChipIntegrator to PyPI and TestPyPI
+#
+# - TestPyPI publication only on push to 'devel' branch
+# - PyPI publication only for releases
+#
+# Based on https://packaging.python.org/en/latest/guides/publishing-package-distribution-releases-using-github-actions-ci-cd-workflows/
+#
+# See e.g.
+# https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#example-including-branches-and-tags
+# for syntax for selecting branches for 'on'
+
+name: Publish Python distribution package to PyPI and TestPyPI
+
+on: push
+  branches:
+    - 'devel'
+    - 'releases/**'
+
+jobs:
+  # Build the distribution for publication
+  build:
+    name: Build distribution package
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.x"
+    - name: Install pypa/build
+      run: >-
+        python3 -m
+        pip install
+        build
+        --user
+    - name: Build a binary wheel and a source tarball
+      run: python3 -m build
+    - name: Store the distribution packages
+      uses: actions/upload-artifact@v3
+      with:
+        name: python-package-distributions
+        path: dist/
+
+  # Publish to PyPI
+  publish-to-pypi:
+    name: Publish Python distribution package to PyPI
+    # Only publish to PyPI on release tag pushes
+    if: startsWith(github.ref, 'refs/releases/')
+    needs:
+    - build
+    runs-on: ubuntu-latest
+
+    environment:
+      name: pypi
+      url: https://pypi.org/p/RnaChipIntegrator
+    permissions:
+      id-token: write
+
+    steps:
+    - name: Download all the dists
+      uses: actions/download-artifact@v3
+      with:
+        name: python-package-distributions
+        path: dist/
+    - name: Publish distribution package to PyPI
+      uses: pypa/gh-action-pypi-publish@release/v1
+
+  # Publish to TestPyPI
+  publish-to-testpypi:
+    name: Publish Python distribution package to TestPyPI
+    # Should run on all pushes to 'devel' and on release
+    needs:
+    - build
+    runs-on: ubuntu-latest
+
+    environment:
+      name: testpypi
+      url: https://test.pypi.org/p/RnaChipIntegrator
+    permissions:
+      # IMPORTANT: mandatory for trusted publishing
+      id-token: write
+
+    steps:
+    - name: Download all the dists
+      uses: actions/download-artifact@v3
+      with:
+        name: python-package-distributions
+        path: dist/
+    - name: Publish distribution package to TestPyPI
+      uses: pypa/gh-action-pypi-publish@release/v1
+      with:
+        repository-url: https://test.pypi.org/legacy/
+
+  

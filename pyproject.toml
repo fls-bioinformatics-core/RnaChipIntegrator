@@ -4,4 +4,15 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "RnaChipIntegrator"
-dynamic = ["version"]
+dynamic = [
+  "version",
+  "description",
+  "readme",
+  "license",
+  "authors",
+  "maintainers",
+  "keywords",
+  "classifiers",
+  "scripts",
+  "dependencies"
+]
