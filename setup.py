@@ -1,39 +1,47 @@
-"""Description
-
-Setup script to install RnaChipIntegrator: analyses of peak data with
-genomic feature data
-
-Copyright (C) University of Manchester 2011-20,2024 Peter Briggs,
-Ian Donaldson, Leo Zeef
-
+"""
+Setup script to install RnaChipIntegrator (analyses of peak data with
+genomic feature data)
 """
 
 from setuptools import setup
-import rnachipintegrator
+import codecs
+import os.path
 
-# Package version
-version = rnachipintegrator.get_version()
+# Installation requirements
+install_requires = ['xlsxwriter >= 0.8.4']
 
-download_url = 'https://github.com/fls-bioinformatics-core/RnaChipIntegrator/archive/v' + version + '.tar.gz'
+# Acquire package version for installation
+# (see https://packaging.python.org/guides/single-sourcing-package-version/)
+def read(rel_path):
+    here = os.path.abspath(os.path.dirname(__file__))
+    with codecs.open(os.path.join(here, rel_path), 'r') as fp:
+        return fp.read()
 
-with open('README.rst') as fh:
-    readme = fh.read()
+def get_version(rel_path):
+    for line in read(rel_path).splitlines():
+        if line.startswith('__version__'):
+            delim = '"' if '"' in line else "'"
+            return line.split(delim)[1]
+    else:
+        raise RuntimeError("Unable to find version string.")
 
-# Hack to acquire all scripts that we want to
-# install into 'bin'
-from glob import glob
-scripts = []
-for pattern in ('bin/*.py',):
-    scripts.extend(glob(pattern))
+RNACHIPINTEGRATOR_VERSION = get_version("rnachipintegrator/__init__.py")
+
+DOWNLOAD_URL = "https://github.com/fls-bioinformatics-core/"\
+               "RnaChipIntegrator/archive/v%s.tar.gz" %\
+               RNACHIPINTEGRATOR_VERSION
+
+# Get long description from the project README
+readme = read('README.rst')
 
 # Setup for installation etc
 setup(
     name = "RnaChipIntegrator",
-    version = version,
+    version = RNACHIPINTEGRATOR_VERSION,
     description = "Analyse genes against peak data, and vice versa",
     long_description = readme,
     url = 'https://github.com/fls-bioinformatics-core/RnaChipIntegrator',
-    download_url = download_url,
+    download_url = DOWNLOAD_URL,
     author = 'Peter Briggs, Ian Donaldson, Leo Zeef',
     author_email = 'peter.briggs@manchester.ac.uk',
     maintainer = 'Peter Briggs',
@@ -53,16 +61,14 @@ setup(
         'Topic :: Scientific/Engineering :: Bio-Informatics',
         'Natural Language :: English',
         "Programming Language :: Python :: 3",
-        'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: 3.9',
     ],
-    install_requires = ['xlsxwriter >= 0.8.4',],
+    install_requires = install_requires,
     test_suite = 'nose.collector',
     tests_require = ['nose'],
-    scripts = scripts,
     data_files = [ ('RnaChipIntegrator',
                     ['README.rst',
                      'LICENSE',
