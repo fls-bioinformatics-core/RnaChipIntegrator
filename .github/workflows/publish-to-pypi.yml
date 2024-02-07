@@ -11,8 +11,9 @@
 
 name: Publish Python distribution package to PyPI and TestPyPI
 
-on: push
-  branches:
+on:
+  push:
+    branches:
     - 'devel'
     - 'releases/**'
 
