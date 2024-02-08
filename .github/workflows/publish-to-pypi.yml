@@ -1,6 +1,6 @@
 # Workflow to build and publish RnaChipIntegrator to PyPI and TestPyPI
 #
-# - TestPyPI publication only on push to 'devel' branch
+# - TestPyPI publication only on tagging
 # - PyPI publication only for releases
 #
 # Based on https://packaging.python.org/en/latest/guides/publishing-package-distribution-releases-using-github-actions-ci-cd-workflows/
@@ -14,7 +14,7 @@ name: Publish Python distribution package to PyPI and TestPyPI
 on:
   push:
     branches:
-    - 'devel'
+    - 'tags/**'
     - 'releases/**'
 
 jobs:
@@ -70,7 +70,8 @@ jobs:
   # Publish to TestPyPI
   publish-to-testpypi:
     name: Publish Python distribution package to TestPyPI
-    # Should run on all pushes to 'devel' and on release
+    # Should run on all tag pushes
+    if: startsWith(github.ref, 'refs/tags/')
     needs:
     - build
     runs-on: ubuntu-latest
