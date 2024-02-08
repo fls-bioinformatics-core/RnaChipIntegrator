@@ -21,9 +21,12 @@ authors:
     email: leo.zeef@manchester.ac.uk
     affiliation: University of Manchester
 identifiers:
-  - type: doi
+  - description: "This is the collection of archived snapshots of all versions of RnaChipIntegrator"
+    type: doi
+    value: 10.5281/zenodo.592255
+  - description: "This is the archived snapshot of version 1.0.2 of RnaChipIntegrator"
+    type: doi
     value: 10.5281/zenodo.60362
-    description: The URL of version 1.0.2 of the software
 repository-code: >-
   https://github.com/fls-bioinformatics-core/RnaChipIntegrator
 url: >-
