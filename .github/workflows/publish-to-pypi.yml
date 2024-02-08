@@ -14,8 +14,9 @@ name: Publish Python distribution package to PyPI and TestPyPI
 on:
   push:
     branches:
-    - 'tags/**'
     - 'releases/**'
+    tags:
+    - 'v*'
 
 jobs:
   # Build the distribution for publication
