@@ -3,32 +3,45 @@
 Getting started
 ===============
 
-The easiest way to get the latest version of ``RnaChipIntegrator`` is to
-use Python's ``pip`` utility to install the latest version of the program
-directly from the `Python Package Index (PyPI)
-<https://pypi.python.org/pypi/>`_, by doing::
+``RnaChipIntegrator`` is Python software which runs with Python
+version 3.6 or higher.
 
-    pip install RnaChipIntegrator
+---------------------------------------------------------------
+Installing RnaChipIntegrator from PyPI using virtualenv and pip
+---------------------------------------------------------------
+
+The recommended way to get the latest version of ``RnaChipIntegrator``
+is to create a Python virtual environment, and then install the
+software using the ``pip`` utility.
+
+For example: to create and activate a virtual environment called
+``venv.rci`` using the ``virtualenv`` utility:
+
+::
+
+   virtualenv venv.rci
+   source venv.rci/bin/activate
+
+``RnaChipIntegrator`` can then be installed using ``pip``, by
+running:
+
+::
+
+   pip install RnaChipIntegrator
+
+which will make the ``RnaChipIntegrator`` program available.
 
 .. note::
 
-   You may need to have root privileges to install to the system
-   directories, in which case preface this command with ``sudo``
-   i.e.::
+   If using ``RnaChipIntegrator`` from a virtual environment in
+   this way, make sure to activate the environment each time
+   before using it, for example:
 
-       sudo pip install RnaChipIntegrator
+   ::
 
-   or you can do::
+      source venv.rci/bin/activate
 
-       pip install --user RnaChipIntegrator
-
-   to install it under your home area.
-
-Alternatively you can use Python's ``virtualenv`` mechanism to install
-a non-root version (this example creates one under ``.venv``)::
-
-    virtualenv .venv; . .venv/bin/activate
-    pip install RnaChipIntegrator
+To deactive the virtual environment afterwards, do ``deactivate``.
 
 .. note::
 
@@ -37,10 +50,43 @@ a non-root version (this example creates one under ``.venv``)::
    * http://www.dabapps.com/blog/introduction-to-pip-and-virtualenv-python/
    * https://www.biostars.org/p/109179/
 
-To update an existing version of the program to a newer one, use::
+To update an existing version of the program to a newer one, use:
+
+::
 
     pip install -U RnaChipIntegrator
+
+from within the activated virtual environment.
 
 For other ways of installing please refer to the ``INSTALL`` document
 included with the distribution.
 
+----------------------------------------
+Installing RnaChipIntegrator using Conda
+----------------------------------------
+
+Another approach for installing ``RnaChipIntegrator`` to use
+`Conda <http://conda.pydata.org/docs/>`__
+(most easily obtained via the
+`Miniconda Python distribution <http://conda.pydata.org/miniconda.html>`__).
+
+Once you have Conda installed you can create a new Conda environment
+with ``RnaChipIntegrator`` installed using the following command:
+
+::
+
+   conda create -c bioconda -n rci rnachipintegrator
+
+Alternatively you can install ``RnaChipIntegrator`` into an existing
+Conda environment using:
+
+::
+
+   conda install -c bioconda rnachipintegrator
+
+.. warning::
+
+   It's recommended that ``RnaChipIntegrator`` be installed into a
+   new Conda environment to avoid issues with incompatible packages
+   (which is possible for example when trying to install directly
+   into the Conda's ``base`` distribution).
