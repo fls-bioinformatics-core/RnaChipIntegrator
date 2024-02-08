@@ -1,8 +1,8 @@
 #!/bin/env python
 #
 #     distances.py: functions for determining distances and overlaps
-#     Copyright (C) University of Manchester 2011-2019 Peter Briggs, Leo Zeef
-#     & Ian Donaldson
+#     Copyright (C) University of Manchester 2011-2019,2024 Peter Briggs,
+#     Leo Zeef & Ian Donaldson
 #
 """
 distances.py
@@ -217,6 +217,40 @@ def tss_distances(peak,feature):
              abs(feature.tss - peak.end)]
     d_tss.sort()
     return tuple(d_tss)
+
+def tes_distances(peak,feature):
+    """
+    Return distances between peak edges and feature TES
+
+    Arguments:
+      peak (Peak): peak instance
+      feature (Feature): feature instance
+
+    Returns:
+      tuple: a pair of distances, the first being the
+        smallest distance between an edge of the peak
+        region to the TES of the feature region, and
+        the second being the distance from the other peak
+        edge to the TES.
+        If the TES position is entirely contained within
+        the peak then the smallest distance is returned as
+        zero, the second is the average of the distances
+        to the two peak edges from the TES.
+
+    """
+    # TES is considered as a point
+    if (feature.tes >= peak.start and
+        feature.tes <= peak.end):
+        # TES entirely contained in the peak
+        # Rank using the average distance of the peak
+        # edges from the TES
+        return (0,(abs(feature.tes - peak.start) +
+                   abs(feature.tes - peak.end))/2)
+    # Possible distances to TES
+    d_tes = [abs(feature.tes - peak.start),
+             abs(feature.tes - peak.end)]
+    d_tes.sort()
+    return tuple(d_tes)
 
 def distance_closest_edge(peak,feature):
     """

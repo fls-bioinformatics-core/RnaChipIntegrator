@@ -183,19 +183,19 @@ class TestAnalysisParams(unittest.TestCase):
         self.assertEqual(params.peaks,None)
         self.assertEqual(params.genes,None)
         self.assertEqual(params.cutoff,None)
-        self.assertFalse(params.tss_only)
+        self.assertEqual(params.use_edge,"BOTH")
         self.assertFalse(params.only_differentially_expressed)
 
     def test_set_values(self):
         params = AnalysisParams(peaks="peaks",
                                 genes="genes",
                                 cutoff=100000,
-                                tss_only=True,
+                                use_edge="TSS",
                                 only_differentially_expressed=True)
         self.assertEqual(params.peaks,"peaks")
         self.assertEqual(params.genes,"genes")
         self.assertEqual(params.cutoff,100000)
-        self.assertTrue(params.tss_only)
+        self.assertEqual(params.use_edge,"TSS")
         self.assertTrue(params.only_differentially_expressed)
 
 class TestBatchNamer(unittest.TestCase):

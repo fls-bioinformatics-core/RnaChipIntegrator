@@ -58,9 +58,18 @@ example:
 .. image:: nearest_tss.png
    :align: center
 
-Alternatively distances can be calculated as the shortest distance
-between either of the peak edges to either the TSS or the TES of
-the gene, by specifying the ``--edge=both`` option::
+(This behaviour can be made explicit by specifying the
+``--edge=tss`` option.)
+
+Alternatively distances can be calculated as the distance from
+the gene TES (by specifying the ``--edge=tes``), or as the shortest
+distance between either of the peak edges to whichever of the TSS or
+the TES of the gene is closest (by specifying the ``--edge=both``
+option).
+
+For example:
+
+::
 
     RnaChipIntegrator --edge=both GENES PEAKS
 

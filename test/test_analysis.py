@@ -162,7 +162,7 @@ class TestFindNearestFeaturesForSummits(unittest.TestCase):
         # Run the analysis
         results = list(find_nearest_features(self.summits,
                                              self.features,
-                                             tss_only=True))
+                                             use_edge="TSS"))
         # Correct number of results
         self.assertEqual(len(results),5)
         # TSS distances for 1st peak
@@ -245,6 +245,100 @@ class TestFindNearestFeaturesForSummits(unittest.TestCase):
         # CG13051-RA  3239874
         # CG14448-RA  3283489
         # CG9130-RB  18246028
+        peak,features = results[4]
+        self.assertEqual(peak,Peak('chr3L','19498040','19498041'))
+        self.assertEqual(len(features),3)
+        self.assertEqual(features[0].id,'CG13051-RA')
+        self.assertEqual(features[1].id,'CG14448-RA')
+        self.assertEqual(features[2].id,'CG9130-RB')
+
+    def test_find_nearest_features_summits_tes_only(self):
+        # Run the analysis
+        results = list(find_nearest_features(self.summits,
+                                             self.features,
+                                             use_edge="TES"))
+        # Correct number of results
+        self.assertEqual(len(results),5)
+        # TES distances for 1st summit
+        # CG31973     41409
+        # CG2674-RC   47621
+        # CG2674-RE   47621
+        # CG2674-RA   47621
+        # CG3625-RA  216573
+        # CG3625-RB  216573
+        # CG3625-RC  216573
+        # CG2762-RA  473730
+        # CG17941-RA 573209
+        peak,features = results[0]
+        self.assertEqual(peak,Peak('chr2L','66811','66812'))
+        self.assertEqual(len(features),9)
+        self.assertEqual(features[0].id,'CG31973')
+        self.assertEqual(features[1].id,'CG2674-RA')
+        self.assertEqual(features[2].id,'CG2674-RC')
+        self.assertEqual(features[3].id,'CG2674-RE')
+        self.assertEqual(features[4].id,'CG3625-RA')
+        self.assertEqual(features[5].id,'CG3625-RB')
+        self.assertEqual(features[6].id,'CG3625-RC')
+        self.assertEqual(features[7].id,'CG2762-RA')
+        self.assertEqual(features[8].id,'CG17941-RA')
+        # TSS distances for 2nd summit
+        # CG3625-RA   34207
+        # CG3625-RB   34207
+        # CG3625-RC   34207
+        # CG2674-RC  134744
+        # CG2674-RE  134744
+        # CG2674-RA  134744
+        # CG31973    223775
+        # CG2762-RA  291364
+        # CG17941-RA 390843
+        peak,features = results[1]
+        self.assertEqual(peak,Peak('chr2L','249177','249178'))
+        self.assertEqual(len(features),9)
+        self.assertEqual(features[0].id,'CG3625-RA')
+        self.assertEqual(features[1].id,'CG3625-RB')
+        self.assertEqual(features[2].id,'CG3625-RC')
+        self.assertEqual(features[3].id,'CG2674-RA')
+        self.assertEqual(features[4].id,'CG2674-RC')
+        self.assertEqual(features[5].id,'CG2674-RE')
+        self.assertEqual(features[6].id,'CG31973')
+        self.assertEqual(features[7].id,'CG2762-RA')
+        self.assertEqual(features[8].id,'CG17941-RA')
+        # TSS distances for 3rd summit
+        # CG17941-RA  34070
+        # CG2762-RA   65408
+        # CG3625-RA  322565
+        # CG3625-RB  322565
+        # CG3625-RC  322565
+        # CG2674-RC  491517
+        # CG2674-RE  491517
+        # CG2674-RA  491517
+        # CG31973    580548
+        peak,features = results[2]
+        self.assertEqual(peak,Peak('chr2L','605950','605951'))
+        self.assertEqual(len(features),9)
+        self.assertEqual(features[0].id,'CG17941-RA')
+        self.assertEqual(features[1].id,'CG2762-RA')
+        self.assertEqual(features[2].id,'CG3625-RA')
+        self.assertEqual(features[3].id,'CG3625-RB')
+        self.assertEqual(features[4].id,'CG3625-RC')
+        self.assertEqual(features[5].id,'CG2674-RA')
+        self.assertEqual(features[6].id,'CG2674-RC')
+        self.assertEqual(features[7].id,'CG2674-RE')
+        self.assertEqual(features[8].id,'CG31973')
+        # TSS distances for 4th summit
+        # CG9130-RB  1002200
+        # CG13051-RA 13999724
+        # CG14448-RA 20524164
+        peak,features = results[3]
+        self.assertEqual(peak,Peak('chr3L','2258189','2258190'))
+        self.assertEqual(len(features),3)
+        self.assertEqual(features[0].id,'CG9130-RB')
+        self.assertEqual(features[1].id,'CG13051-RA')
+        self.assertEqual(features[2].id,'CG14448-RA')
+        # TSS distances for 5th peak
+        # CG13051-RA  3240126
+        # CG14448-RA  3284313
+        # CG9130-RB  18242051
         peak,features = results[4]
         self.assertEqual(peak,Peak('chr3L','19498040','19498041'))
         self.assertEqual(len(features),3)
@@ -508,7 +602,7 @@ class TestFindNearestFeaturesForRegions(unittest.TestCase):
         # Run the analysis
         results = list(find_nearest_features(self.peaks,
                                              self.features,
-                                             tss_only=True))
+                                             use_edge="TSS"))
         # Correct number of results
         self.assertEqual(len(results),5)
         # Closest distances for 1st peak
@@ -591,6 +685,100 @@ class TestFindNearestFeaturesForRegions(unittest.TestCase):
         # CG13051-RA  3239774
         # CG14448-RA  3283399
         # CG9130-RB  18245928
+        peak,features = results[4]
+        self.assertEqual(peak,Peak('chr3L','19497940','19498140'))
+        self.assertEqual(len(features),3)
+        self.assertEqual(features[0].id,'CG13051-RA')
+        self.assertEqual(features[1].id,'CG14448-RA')
+        self.assertEqual(features[2].id,'CG9130-RB')
+
+    def test_find_nearest_features_regions_tes_only(self):
+        # Run the analysis
+        results = list(find_nearest_features(self.peaks,
+                                             self.features,
+                                             use_edge="TES"))
+        # Correct number of results
+        self.assertEqual(len(results),5)
+        # Closest distances for 1st peak
+        # CG31973     41309
+        # CG2674-RC   47522
+        # CG2674-RE   47522
+        # CG2674-RA   47522
+        # CG3625-RA  216474
+        # CG3625-RB  216474
+        # CG3625-RC  216474
+        # CG2762-RA  473631
+        # CG17941-RA 573110
+        peak,features = results[0]
+        self.assertEqual(peak,Peak('chr2L','66711','66911'))
+        self.assertEqual(len(features),9)
+        self.assertEqual(features[0].id,'CG31973')
+        self.assertEqual(features[1].id,'CG2674-RA')
+        self.assertEqual(features[2].id,'CG2674-RC')
+        self.assertEqual(features[3].id,'CG2674-RE')
+        self.assertEqual(features[4].id,'CG3625-RA')
+        self.assertEqual(features[5].id,'CG3625-RB')
+        self.assertEqual(features[6].id,'CG3625-RC')
+        self.assertEqual(features[7].id,'CG2762-RA')
+        self.assertEqual(features[8].id,'CG17941-RA')
+        # Closest distances for 2nd peak
+        # CG3625-RA   34108
+        # CG3625-RB   34108
+        # CG3625-RC   34108
+        # CG2674-RC  134644
+        # CG2674-RE  134644
+        # CG2674-RA  134644
+        # CG31973    223675
+        # CG2762-RA  291265
+        # CG17941-RA 390744
+        peak,features = results[1]
+        self.assertEqual(peak,Peak('chr2L','249077','249277'))
+        self.assertEqual(len(features),9)
+        self.assertEqual(features[0].id,'CG3625-RA')
+        self.assertEqual(features[1].id,'CG3625-RB')
+        self.assertEqual(features[2].id,'CG3625-RC')
+        self.assertEqual(features[3].id,'CG2674-RA')
+        self.assertEqual(features[4].id,'CG2674-RC')
+        self.assertEqual(features[5].id,'CG2674-RE')
+        self.assertEqual(features[6].id,'CG31973')
+        self.assertEqual(features[7].id,'CG2762-RA')
+        self.assertEqual(features[8].id,'CG17941-RA')
+        # Closest distances for 3rd peak
+        # CG17941-RA  33971
+        # CG2762-RA   65308
+        # CG3625-RA  322465
+        # CG3625-RB  322465
+        # CG3625-RC  322465
+        # CG2674-RC  491417
+        # CG2674-RE  491417
+        # CG2674-RA  491417
+        # CG31973    580448
+        peak,features = results[2]
+        self.assertEqual(peak,Peak('chr2L','605850','606050'))
+        self.assertEqual(len(features),9)
+        self.assertEqual(features[0].id,'CG17941-RA')
+        self.assertEqual(features[1].id,'CG2762-RA')
+        self.assertEqual(features[2].id,'CG3625-RA')
+        self.assertEqual(features[3].id,'CG3625-RB')
+        self.assertEqual(features[4].id,'CG3625-RC')
+        self.assertEqual(features[5].id,'CG2674-RA')
+        self.assertEqual(features[6].id,'CG2674-RC')
+        self.assertEqual(features[7].id,'CG2674-RE')
+        self.assertEqual(features[8].id,'CG31973')
+        # Closest distances for 4th peak
+        # CG9130-RB   1002100
+        # CG13051-RA 13999624
+        # CG14448-RA 20524064
+        peak,features = results[3]
+        self.assertEqual(peak,Peak('chr3L','2258089','2258290'))
+        self.assertEqual(len(features),3)
+        self.assertEqual(features[0].id,'CG9130-RB')
+        self.assertEqual(features[1].id,'CG13051-RA')
+        self.assertEqual(features[2].id,'CG14448-RA')
+        # Closest distances for 5th peak
+        # CG13051-RA  3240026
+        # CG14448-RA  3284214
+        # CG9130-RB  18241951
         peak,features = results[4]
         self.assertEqual(peak,Peak('chr3L','19497940','19498140'))
         self.assertEqual(len(features),3)
@@ -877,7 +1065,7 @@ class TestFindNearestPeaksForSummits(unittest.TestCase):
         # Run the analysis
         results = list(find_nearest_peaks(self.features,
                                           self.summits,
-                                          tss_only=True))
+                                          use_edge="TSS"))
         # Convenience variables for summits
         summits = (Peak('chr2L','66811','66812'),
                    Peak('chr2L','249177','249178'),
@@ -984,6 +1172,126 @@ class TestFindNearestPeaksForSummits(unittest.TestCase):
         # #2   108919
         # #1   465692
         # #0   648058
+        feature,peaks = results[8]
+        self.assertEqual(feature,Feature('CG17941-RA',
+                                         'chr2L','640021','714969','-'))
+        expected = PeakSet()
+        expected.addPeak(summits[2])
+        expected.addPeak(summits[1])
+        expected.addPeak(summits[0])
+        self.assertEqual(peaks,expected)
+
+    def test_find_nearest_peaks_summits_tes_only(self):
+        # Run the analysis
+        results = list(find_nearest_peaks(self.features,
+                                          self.summits,
+                                          use_edge="TES"))
+        # Convenience variables for summits
+        summits = (Peak('chr2L','66811','66812'),
+                   Peak('chr2L','249177','249178'),
+                   Peak('chr2L','605950','605951'))
+        # Correct number of results
+        self.assertEqual(len(results),12)
+        # Closest distances for 1st feature
+        # #0   41409
+        # #1  223775
+        # #2  580548
+        feature,peaks = results[0]
+        self.assertEqual(feature,Feature('CG31973',
+                                         'chr2L','25402','59243','-'))
+        expected = PeakSet()
+        expected.addPeak(summits[0])
+        expected.addPeak(summits[1])
+        expected.addPeak(summits[2])
+        self.assertEqual(peaks,expected)
+        # Closest distances for 2nd feature
+        # #0   47621
+        # #1  134744
+        # #2  491517
+        feature,peaks = results[1]
+        self.assertEqual(feature,Feature('CG2674-RC',
+                                         'chr2L','107926','114433','+'))
+        expected = PeakSet()
+        expected.addPeak(summits[0])
+        expected.addPeak(summits[1])
+        expected.addPeak(summits[2])
+        self.assertEqual(peaks,expected)
+        # Closest distances for 3rd feature
+        # #0   47621
+        # #1  134744
+        # #2  491517
+        feature,peaks = results[2]
+        self.assertEqual(feature,Feature('CG2674-RE',
+                                         'chr2L','106903','114433','+'))
+        expected = PeakSet()
+        expected.addPeak(summits[0])
+        expected.addPeak(summits[1])
+        expected.addPeak(summits[2])
+        self.assertEqual(peaks,expected)
+        # Closest distances for 4th feature
+        # #0   47621
+        # #1  134744
+        # #2  491517
+        feature,peaks = results[3]
+        self.assertEqual(feature,Feature('CG2674-RA',
+                                         'chr2L','107760','114433','+'))
+        expected = PeakSet()
+        expected.addPeak(summits[0])
+        expected.addPeak(summits[1])
+        expected.addPeak(summits[2])
+        self.assertEqual(peaks,expected)
+        # Closest distances for 5th feature
+        # #1   34207
+        # #0  216573
+        # #2  322565
+        feature,peaks = results[4]
+        self.assertEqual(feature,Feature('CG3625-RA',
+                                         'chr2L','283385','286528','-'))
+        expected = PeakSet()
+        expected.addPeak(summits[1])
+        expected.addPeak(summits[0])
+        expected.addPeak(summits[2])
+        self.assertEqual(peaks,expected)
+        # Closest distances for 6th feature
+        # #1   34207
+        # #0  216573
+        # #2  322565
+        feature,peaks = results[5]
+        self.assertEqual(feature,Feature('CG3625-RB',
+                                         'chr2L','283385','285777','-'))
+        expected = PeakSet()
+        expected.addPeak(summits[1])
+        expected.addPeak(summits[0])
+        expected.addPeak(summits[2])
+        self.assertEqual(peaks,expected)
+        # Closest distances for 7th feature
+        # #1   34207
+        # #0  216573
+        # #2  322565
+        feature,peaks = results[6]
+        self.assertEqual(feature,Feature('CG3625-RC',
+                                         'chr2L','283385','291011','-'))
+        expected = PeakSet()
+        expected.addPeak(summits[1])
+        expected.addPeak(summits[0])
+        expected.addPeak(summits[2])
+        self.assertEqual(peaks,expected)
+        # Closest distances for 8th feature
+        # #2    65408
+        # #1   291364
+        # #0   473730
+        feature,peaks = results[7]
+        self.assertEqual(feature,Feature('CG2762-RA',
+                                         'chr2L','523467','540542','+'))
+        expected = PeakSet()
+        expected.addPeak(summits[2])
+        expected.addPeak(summits[1])
+        expected.addPeak(summits[0])
+        self.assertEqual(peaks,expected)
+        # Closest distances for 9th feature
+        # #2    34070
+        # #1   390843
+        # #0   573209
         feature,peaks = results[8]
         self.assertEqual(feature,Feature('CG17941-RA',
                                          'chr2L','640021','714969','-'))
@@ -1286,7 +1594,7 @@ class TestFindNearestPeaksForRegions(unittest.TestCase):
         # Run the analysis
         results = list(find_nearest_peaks(self.features,
                                           self.peaks,
-                                          tss_only=True))
+                                          use_edge="TSS"))
         # Convenience variables for summits
         peaks_ = (Peak('chr2L','66711','66911'),
                   Peak('chr2L','249077','249277'),
@@ -1393,6 +1701,126 @@ class TestFindNearestPeaksForRegions(unittest.TestCase):
         # #2   108919
         # #1   465692
         # #0   648058
+        feature,peaks = results[8]
+        self.assertEqual(feature,Feature('CG17941-RA',
+                                         'chr2L','640021','714969','-'))
+        expected = PeakSet()
+        expected.addPeak(peaks_[2])
+        expected.addPeak(peaks_[1])
+        expected.addPeak(peaks_[0])
+        self.assertEqual(peaks,expected)
+
+    def test_find_nearest_peaks_regions_tes_only(self):
+        # Run the analysis
+        results = list(find_nearest_peaks(self.features,
+                                          self.peaks,
+                                          use_edge="TES"))
+        # Convenience variables for summits
+        peaks_ = (Peak('chr2L','66711','66911'),
+                  Peak('chr2L','249077','249277'),
+                  Peak('chr2L','605850','606050'))
+        # Correct number of results
+        self.assertEqual(len(results),12)
+        # Closest TES distances for 1st feature
+        # #0   41309
+        # #1  223675
+        # #2  580448
+        feature,peaks = results[0]
+        self.assertEqual(feature,Feature('CG31973',
+                                         'chr2L','25402','59243','-'))
+        expected = PeakSet()
+        expected.addPeak(peaks_[0])
+        expected.addPeak(peaks_[1])
+        expected.addPeak(peaks_[2])
+        self.assertEqual(peaks,expected)
+        # Closest distances for 2nd feature
+        # #0   47522
+        # #1  134644
+        # #2  491417
+        feature,peaks = results[1]
+        self.assertEqual(feature,Feature('CG2674-RC',
+                                         'chr2L','107926','114433','+'))
+        expected = PeakSet()
+        expected.addPeak(peaks_[0])
+        expected.addPeak(peaks_[1])
+        expected.addPeak(peaks_[2])
+        self.assertEqual(peaks,expected)
+        # Closest distances for 3rd feature
+        # #0   47522
+        # #1  134644
+        # #2  491417
+        feature,peaks = results[2]
+        self.assertEqual(feature,Feature('CG2674-RE',
+                                         'chr2L','106903','114433','+'))
+        expected = PeakSet()
+        expected.addPeak(peaks_[0])
+        expected.addPeak(peaks_[1])
+        expected.addPeak(peaks_[2])
+        self.assertEqual(peaks,expected)
+        # Closest distances for 4th feature
+        # #0   47522
+        # #1  134644
+        # #2  491417
+        feature,peaks = results[3]
+        self.assertEqual(feature,Feature('CG2674-RA',
+                                         'chr2L','107760','114433','+'))
+        expected = PeakSet()
+        expected.addPeak(peaks_[0])
+        expected.addPeak(peaks_[1])
+        expected.addPeak(peaks_[2])
+        self.assertEqual(peaks,expected)
+        # Closest distances for 5th feature
+        # #1   34108
+        # #0  216474
+        # #2  322465
+        feature,peaks = results[4]
+        self.assertEqual(feature,Feature('CG3625-RA',
+                                         'chr2L','283385','286528','-'))
+        expected = PeakSet()
+        expected.addPeak(peaks_[1])
+        expected.addPeak(peaks_[0])
+        expected.addPeak(peaks_[2])
+        self.assertEqual(peaks,expected)
+        # Closest distances for 6th feature
+        # #1   34108
+        # #0  216474
+        # #2  322465
+        feature,peaks = results[5]
+        self.assertEqual(feature,Feature('CG3625-RB',
+                                         'chr2L','283385','285777','-'))
+        expected = PeakSet()
+        expected.addPeak(peaks_[1])
+        expected.addPeak(peaks_[0])
+        expected.addPeak(peaks_[2])
+        self.assertEqual(peaks,expected)
+        # Closest distances for 7th feature
+        # #1    34108
+        # #0   216474
+        # #2   322465
+        feature,peaks = results[6]
+        self.assertEqual(feature,Feature('CG3625-RC',
+                                         'chr2L','283385','291011','-'))
+        expected = PeakSet()
+        expected.addPeak(peaks_[1])
+        expected.addPeak(peaks_[0])
+        expected.addPeak(peaks_[2])
+        self.assertEqual(peaks,expected)
+        # Closest distances for 8th feature
+        # #2    65308
+        # #1   291265
+        # #0   473631
+        feature,peaks = results[7]
+        self.assertEqual(feature,Feature('CG2762-RA',
+                                         'chr2L','523467','540542','+'))
+        expected = PeakSet()
+        expected.addPeak(peaks_[2])
+        expected.addPeak(peaks_[1])
+        expected.addPeak(peaks_[0])
+        self.assertEqual(peaks,expected)
+        # Closest distances for 9th feature
+        # #2    33971
+        # #1   390744
+        # #0   573110
         feature,peaks = results[8]
         self.assertEqual(feature,Feature('CG17941-RA',
                                          'chr2L','640021','714969','-'))
