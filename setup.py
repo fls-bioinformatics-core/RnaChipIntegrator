@@ -53,7 +53,7 @@ setup(
     license = 'Artistic License',
     keywords = ['RnaChipIntegrator',],
     classifiers=[
-        'Development Status :: 3 - Alpha',
+        'Development Status :: 5 - Production/Stable',
         'Intended Audience :: Science/Research',
         'Environment :: Console',
         'License :: OSI Approved :: Artistic License',
