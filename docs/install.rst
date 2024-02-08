@@ -58,9 +58,6 @@ To update an existing version of the program to a newer one, use:
 
 from within the activated virtual environment.
 
-For other ways of installing please refer to the ``INSTALL`` document
-included with the distribution.
-
 ----------------------------------------
 Installing RnaChipIntegrator using Conda
 ----------------------------------------

@@ -72,7 +72,6 @@ setup(
     data_files = [ ('RnaChipIntegrator',
                     ['README.rst',
                      'LICENSE',
-                     'INSTALL',
                      'CHANGELOG.rst']),],
     include_package_data=True,
     zip_safe = False
