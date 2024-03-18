@@ -25,6 +25,9 @@ identifiers:
   - description: "Archived snapshots of all versions of RnaChipIntegrator"
     type: doi
     value: 10.5281/zenodo.592255
+  - description: "Archived snapshot of version 3.0.0 of RnaChipIntegrator"
+    type: doi
+    value: 10.5281/zenodo.10623997
   - description: "Archived snapshot of version 1.0.2 of RnaChipIntegrator"
     type: doi
     value: 10.5281/zenodo.60362
