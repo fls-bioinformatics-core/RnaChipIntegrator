@@ -2,6 +2,23 @@ Version History and Changes
 ===========================
 
 --------------------------
+Version 3.0.0 (2024-03-18)
+--------------------------
+
+* Add option to compute distances from gene TES only (``--edge=tes``)
+  (`PR #77 <https://github.com/fls-bioinformatics-core/RnaChipIntegrator/pull/78>`_).
+* Add ``CITATION.cff`` file and updated information on how to cite
+  ``RnaChipIntegrator`` (`PR #78 <https://github.com/fls-bioinformatics-core/RnaChipIntegrator/pull/78>`_).
+* Update the installation documentation and metadata
+  (`PR #85 <https://github.com/fls-bioinformatics-core/RnaChipIntegrator/pull/85>`_,
+   `PR #86 <https://github.com/fls-bioinformatics-core/RnaChipIntegrator/pull/86>`_).
+* Add automated CI testing and deployment to PyPI via GitHub Actions,
+  and add support for Python 3.9
+  (`PR #74 <https://github.com/fls-bioinformatics-core/RnaChipIntegrator/pull/74>`_).
+* Drop support for Python 2.7
+  (`PR #76 <https://github.com/fls-bioinformatics-core/RnaChipIntegrator/pull/76>`_).
+
+--------------------------
 Version 2.0.0 (2020-01-06)
 --------------------------
 
@@ -20,7 +37,7 @@ Version 1.2.0 (2019-07-19)
   options)
   (`PR #58 <https://github.com/fls-bioinformatics-core/RnaChipIntegrator/pull/58>`_).
 * Drop support for Python 2.6
-  (`PR #58 <https://github.com/fls-bioinformatics-core/RnaChipIntegrator/pull/66>`_).
+  (`PR #66 <https://github.com/fls-bioinformatics-core/RnaChipIntegrator/pull/66>`_).
 
 --------------------------
 Version 1.1.0 (2018-08-06)
