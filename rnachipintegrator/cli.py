@@ -64,8 +64,8 @@ Authors: Peter Briggs, Ian Donaldson and Leo Zeef
 
 If you use this program in your published work then please cite:
 
-   Briggs PJ, Donaldson IJ, Zeef LAH. RnaChipIntegrator
-   (version %s). Available at:
+   Briggs, P., Donaldson, I., Zeef, L. RnaChipIntegrator
+   (version %s) [Computer software].
    https://github.com/fls-bioinformatics-core/RnaChipIntegrator
 """ % __version__
 

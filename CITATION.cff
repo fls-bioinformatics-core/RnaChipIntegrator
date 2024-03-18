@@ -1,0 +1,40 @@
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+
+cff-version: 1.2.0
+title: RnaChipIntegrator
+version: 1.2.0
+type: software
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+authors:
+  - given-names: Peter
+    family-names: Briggs
+    email: peter.briggs@manchester.ac.uk
+    affiliation: University of Manchester
+  - given-names: Ian
+    family-names: Donaldson
+    affiliation: University of Manchester
+    email: ian.donaldson@manchester.ac.uk
+  - given-names: Leo
+    family-names: Zeef
+    email: leo.zeef@manchester.ac.uk
+    affiliation: University of Manchester
+identifiers:
+  - description: "Archived snapshots of all versions of RnaChipIntegrator"
+    type: doi
+    value: 10.5281/zenodo.592255
+  - description: "Archived snapshot of version 1.0.2 of RnaChipIntegrator"
+    type: doi
+    value: 10.5281/zenodo.60362
+repository-code: >-
+  https://github.com/fls-bioinformatics-core/RnaChipIntegrator
+url: >-
+  https://rnachipintegrator.readthedocs.io/en/latest/index.html
+abstract: >-
+  RnaChipIntegrator is a software utility that performs
+  integrated analyses of 'gene' data (a set of genes or
+  other genomic features) with 'peak' data (a set of
+  regions, for example ChIP peaks) to identify the genes
+  nearest to each peak, and vice versa.
